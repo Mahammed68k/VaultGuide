@@ -19,7 +19,7 @@ export default function IntroScreen({ onComplete }: IntroScreenProps) {
   return (
     <main 
       className={`intro-screen-dark-lock flex flex-col items-center justify-center w-full h-screen fixed inset-0 z-[100] overflow-hidden transition-opacity duration-500 ${isExiting ? 'opacity-0' : 'opacity-100'}`}
-      style={{ backgroundColor: '#05070f', color: '#f8fafc' }}
+      style={{ backgroundColor: '#17100b', color: '#f7ede2' }}
     >
       <style>{`
         @keyframes glowPulse {
@@ -40,20 +40,20 @@ export default function IntroScreen({ onComplete }: IntroScreenProps) {
         .line-effect { animation: lineGrow 1.2s ease-in-out 1.2s forwards; opacity: 0; }
       `}</style>
 
-      {/* Cinematic background glow */}
+      {/* Cinematic warm amber background glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none glow-effect">
-        <div className="w-[100vw] h-[100vw] md:w-[60vw] md:h-[60vw] bg-rose-500/10 rounded-full blur-[40px]" />
+        <div className="w-[100vw] h-[100vw] md:w-[60vw] md:h-[60vw] bg-amber-600/15 rounded-full blur-[40px]" />
       </div>
 
       <div className="flex flex-col items-center z-10 pointer-events-none" style={{ fontFamily: 'Times New Roman, serif' }}>
         <p 
           className="font-display text-2xl md:text-4xl lg:text-5xl font-black uppercase drop-shadow-[0_4px_6px_rgba(0,0,0,0.8)] ml-3 md:ml-4 whitespace-nowrap title-effect"
-          style={{ color: '#fef08a' }}
+          style={{ color: '#fde68a' }}
         >
           MK EDITION
         </p>
         
-        <div className="h-[2px] w-32 md:w-48 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mt-8 origin-center drop-shadow-md line-effect" />
+        <div className="h-[2px] w-32 md:w-48 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-8 origin-center drop-shadow-md line-effect" />
       </div>
     </main>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Smartphone, Shield, Laptop, Server, HardDrive, Cloud, Layers, ChevronRight, Lock } from 'lucide-react';
+import { Smartphone, Shield, Laptop, Server, Cloud, Layers, Lock } from 'lucide-react';
 
 export const TopologyInspector: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<string>('tailscale');
@@ -7,8 +7,8 @@ export const TopologyInspector: React.FC = () => {
   const nodes = [
     {
       id: 'mobile',
-      label: 'Mobile Client (5G)',
-      sub: 'Solid / CX / Nextcloud App',
+      label: 'Mobile Client',
+      sub: '5G WireGuard',
       icon: Smartphone,
       details: {
         title: 'Mobile Client Device (Remote Node)',
@@ -21,8 +21,8 @@ export const TopologyInspector: React.FC = () => {
     },
     {
       id: 'tailscale',
-      label: 'Tailscale Mesh VPN',
-      sub: 'WireGuard Overlay Network',
+      label: 'Tailscale Mesh',
+      sub: 'Encrypted VPN',
       icon: Shield,
       details: {
         title: 'Tailscale Encrypted Mesh Overlay',
@@ -35,8 +35,8 @@ export const TopologyInspector: React.FC = () => {
     },
     {
       id: 'host',
-      label: 'Host Laptop Server',
-      sub: 'Windows 11 / 10 Machine',
+      label: 'Host Laptop',
+      sub: 'Windows Server',
       icon: Laptop,
       details: {
         title: 'Host Machine & Windows OS Environment',
@@ -49,8 +49,8 @@ export const TopologyInspector: React.FC = () => {
     },
     {
       id: 'sftpService',
-      label: 'FileZilla SFTP Service',
-      sub: 'Port 22 Native Daemon',
+      label: 'Direct SFTP',
+      sub: 'Port 22 Native',
       icon: Server,
       details: {
         title: 'FileZilla Server (SSH / SFTP Protocol)',
@@ -63,8 +63,8 @@ export const TopologyInspector: React.FC = () => {
     },
     {
       id: 'dockerAio',
-      label: 'Nextcloud AIO Stack',
-      sub: 'Containerized Cloud Engine',
+      label: 'Nextcloud AIO',
+      sub: 'Docker Cloud',
       icon: Layers,
       details: {
         title: 'Nextcloud All-in-One Containerized Stack',
@@ -76,8 +76,8 @@ export const TopologyInspector: React.FC = () => {
     },
     {
       id: 'backupStorage',
-      label: '3-2-1 Backup Engine',
-      sub: 'BorgBackup + Rclone Cloud',
+      label: '3-2-1 Backup',
+      sub: 'Borg + Rclone',
       icon: Cloud,
       details: {
         title: 'Automated 3-2-1 Backup Pipeline',
@@ -93,19 +93,19 @@ export const TopologyInspector: React.FC = () => {
   const ActiveIcon = activeNode.icon;
 
   return (
-    <div className="p-6 bg-slate-900/50 rounded-xl border border-slate-800 space-y-6 shadow-xs">
+    <div className="p-6 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-6 shadow-xs">
       <div>
-        <h3 className="text-base font-bold text-white flex items-center gap-2">
-          <Lock className="w-4 h-4 text-cyan-400" />
+        <h3 className="text-base font-bold text-[#2d1c10] flex items-center gap-2">
+          <Lock className="w-4 h-4 text-amber-700" />
           <span>Interactive Component Inspector</span>
         </h3>
-        <p className="text-xs text-slate-400 mt-0.5">
+        <p className="text-xs text-[#6b4c35] mt-0.5">
           Select any node in the stack to inspect its protocols, port exposure, and security boundaries.
         </p>
       </div>
 
-      {/* Nodes Selector Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+      {/* Sleek Connected Pipeline Bar (No Black Shades) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2 p-1.5 bg-[#f5ece1]/90 rounded-xl border border-[#dfcebd] shadow-2xs">
         {nodes.map((node) => {
           const isSelected = selectedNode === node.id;
           const NodeIcon = node.icon;
@@ -113,29 +113,26 @@ export const TopologyInspector: React.FC = () => {
             <button
               key={node.id}
               onClick={() => setSelectedNode(node.id)}
-              className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex flex-col justify-between ${
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 ${
                 isSelected
-                  ? 'bg-cyan-500/15 border-cyan-500/50 text-cyan-300 shadow-2xs'
-                  : 'bg-slate-950/70 border-slate-800 hover:border-slate-700 hover:bg-slate-900/40 text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-amber-950 font-bold border border-amber-400 shadow-xs ring-1 ring-amber-400/30'
+                  : 'bg-transparent text-[#6b4c35] hover:text-[#2d1c10] hover:bg-amber-100/70 active:bg-amber-200/50 border border-transparent'
               }`}
             >
-              <div className="space-y-2">
-                <NodeIcon className={`w-4 h-4 ${isSelected ? 'text-cyan-400' : 'text-slate-400'}`} />
-                <div>
-                  <div className={`text-xs font-bold leading-tight ${isSelected ? 'text-white' : 'text-slate-200'}`}>
-                    {node.label}
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5 truncate font-mono">
-                    {node.sub}
-                  </div>
-                </div>
-              </div>
-
-              <div className={`mt-2 pt-2 border-t flex items-center justify-between text-[10px] font-mono ${
-                isSelected ? 'border-cyan-500/30 text-cyan-300 font-semibold' : 'border-slate-800/80 text-slate-400'
+              <div className={`p-2 rounded-lg shrink-0 transition-colors ${
+                isSelected 
+                  ? 'bg-amber-600 text-white shadow-xs' 
+                  : 'bg-amber-100/90 text-amber-800'
               }`}>
-                <span>{isSelected ? 'Viewing' : 'Inspect'}</span>
-                <ChevronRight className="w-3 h-3" />
+                <NodeIcon className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className={`text-xs leading-tight ${isSelected ? 'font-bold text-amber-950' : 'font-semibold text-[#2d1c10]'}`}>
+                  {node.label}
+                </div>
+                <div className={`text-[10px] leading-tight font-mono mt-0.5 ${isSelected ? 'text-amber-800 font-medium' : 'text-[#8c6b51]'}`}>
+                  {node.sub}
+                </div>
               </div>
             </button>
           );
@@ -143,19 +140,19 @@ export const TopologyInspector: React.FC = () => {
       </div>
 
       {/* Selected Node Details Box */}
-      <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 space-y-4 shadow-xs">
-        <div className="flex items-start justify-between gap-4 border-b border-slate-800 pb-3">
+      <div className="p-5 bg-white rounded-xl border border-[#dfcebd] space-y-4 shadow-xs">
+        <div className="flex items-start justify-between gap-4 border-b border-[#ebdcc9] pb-3">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-slate-900 rounded-lg border border-slate-800 text-cyan-400 shadow-2xs">
+            <div className="p-2.5 bg-amber-100/80 rounded-lg border border-amber-300/80 text-amber-700 shadow-2xs">
               <ActiveIcon className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white">{activeNode.details.title}</h4>
-              <p className="text-xs text-slate-300 mt-0.5 max-w-xl leading-relaxed">{activeNode.details.description}</p>
+              <h4 className="text-sm font-bold text-[#2d1c10]">{activeNode.details.title}</h4>
+              <p className="text-xs text-[#6b4c35] mt-0.5 max-w-xl leading-relaxed">{activeNode.details.description}</p>
             </div>
           </div>
 
-          <div className="px-2.5 py-1 bg-slate-900 border border-slate-800 rounded-md text-[11px] font-mono text-cyan-300 font-semibold shrink-0">
+          <div className="px-2.5 py-1 bg-amber-100/80 border border-amber-300/80 rounded-md text-[11px] font-mono text-amber-900 font-bold shrink-0">
             {activeNode.id}
           </div>
         </div>
@@ -165,11 +162,11 @@ export const TopologyInspector: React.FC = () => {
           {Object.entries(activeNode.details)
             .filter(([k]) => k !== 'title' && k !== 'description')
             .map(([key, val], idx) => (
-              <div key={idx} className="p-3 bg-slate-900/70 rounded-lg border border-slate-800/90 space-y-1 shadow-2xs">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block">
+              <div key={idx} className="p-3 bg-[#fbf6f0] rounded-lg border border-[#e8dccf] space-y-1 shadow-2xs">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-[#8c6b51] font-semibold block">
                   {key.replace(/([A-Z])/g, ' $1')}
                 </span>
-                <span className="font-bold text-slate-100 block text-xs leading-snug">
+                <span className="font-bold text-[#2d1c10] block text-xs leading-snug">
                   {val}
                 </span>
               </div>

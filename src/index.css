@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 @layer base {
-  body {
+  html, body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #17100b;
+    color: #f7ede2;
   }
 
   code, pre, kbd, samp, .font-mono {
@@ -11,58 +13,263 @@
   }
 }
 
-/* Custom subtle scrollbar */
+/* Warm roasted coffee scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #17100b;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(189, 160, 133, 0.35);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.35);
+  background: rgba(217, 119, 6, 0.55);
 }
 
-/* Intro Screen Locked in Dark Theme */
+/* Selection highlight in warm caramel */
+::selection {
+  background-color: rgba(217, 119, 6, 0.35);
+  color: #fef3c7;
+}
+
+/* ========================================================
+   OVERALL BROWN THEME (ESPRESSO / MOCHA / BRONZE DARK BASE)
+   ======================================================== */
+
+/* Base surfaces */
+body:not(.theme-light) {
+  background-color: #17100b !important;
+  color: #f7ede2 !important;
+}
+
+/* Surface containers - Dark Mocha & Warm Cocoa */
+.bg-slate-950,
+.bg-zinc-950 {
+  background-color: #1d140e !important;
+}
+
+.bg-slate-950\/90,
+.bg-zinc-950\/90 {
+  background-color: rgba(29, 20, 14, 0.94) !important;
+}
+
+.bg-slate-950\/80,
+.bg-zinc-950\/80 {
+  background-color: rgba(29, 20, 14, 0.85) !important;
+}
+
+.bg-slate-950\/70,
+.bg-zinc-950\/70 {
+  background-color: rgba(29, 20, 14, 0.75) !important;
+}
+
+.bg-slate-950\/60 {
+  background-color: rgba(29, 20, 14, 0.65) !important;
+}
+
+.bg-slate-950\/40 {
+  background-color: rgba(29, 20, 14, 0.45) !important;
+}
+
+/* Elevated Card Surfaces - Roasted Coffee Bean */
+.bg-slate-900,
+.bg-zinc-900 {
+  background-color: #271b13 !important;
+}
+
+.bg-slate-900\/90 {
+  background-color: rgba(39, 27, 19, 0.92) !important;
+}
+
+.bg-slate-900\/80 {
+  background-color: rgba(39, 27, 19, 0.82) !important;
+}
+
+.bg-slate-900\/70 {
+  background-color: rgba(39, 27, 19, 0.72) !important;
+}
+
+.bg-slate-900\/60,
+.bg-zinc-900\/60 {
+  background-color: rgba(39, 27, 19, 0.62) !important;
+}
+
+.bg-slate-900\/50 {
+  background-color: rgba(39, 27, 19, 0.52) !important;
+}
+
+.bg-slate-900\/40,
+.bg-zinc-900\/40 {
+  background-color: rgba(39, 27, 19, 0.42) !important;
+}
+
+.bg-slate-900\/30 {
+  background-color: rgba(39, 27, 19, 0.32) !important;
+}
+
+/* Inner elements & badges */
+.bg-slate-800,
+.bg-zinc-800 {
+  background-color: #38271c !important;
+}
+
+.hover\:bg-slate-800:hover,
+.hover\:bg-slate-800\/80:hover {
+  background-color: #453022 !important;
+}
+
+/* Warm Chestnut & Bronze Borders */
+.border-slate-800,
+.border-zinc-800,
+.border-slate-800\/90,
+.border-slate-800\/80,
+.border-slate-800\/60,
+.border-zinc-800\/80 {
+  border-color: #453022 !important;
+}
+
+.border-slate-700,
+.border-zinc-700 {
+  border-color: #5c412e !important;
+}
+
+.border-slate-900 {
+  border-color: #322319 !important;
+}
+
+/* Warm Cream, Ivory, & Biscuit Typography */
+.text-white {
+  color: #fffaf4 !important;
+}
+
+.text-slate-100,
+.text-zinc-100 {
+  color: #f7ede2 !important;
+}
+
+.text-slate-200,
+.text-zinc-200 {
+  color: #eddac7 !important;
+}
+
+.text-slate-300,
+.text-zinc-300 {
+  color: #dec2a6 !important;
+}
+
+.text-slate-400,
+.text-zinc-400 {
+  color: #bda085 !important;
+}
+
+.text-slate-500,
+.text-zinc-500 {
+  color: #8c7058 !important;
+}
+
+/* Warm Amber, Honey & Caramel Brand Accents (Replacing Cyan) */
+.text-cyan-400,
+.text-cyan-300,
+.hover\:text-cyan-400:hover,
+.group:hover .group-hover\:text-cyan-400 {
+  color: #f59e0b !important;
+}
+
+.text-cyan-500 {
+  color: #d97706 !important;
+}
+
+.bg-cyan-950,
+.bg-cyan-950\/80,
+.bg-cyan-950\/60,
+.bg-cyan-950\/40,
+.bg-cyan-950\/30,
+.bg-cyan-950\/20 {
+  background-color: #382011 !important;
+}
+
+.border-cyan-500,
+.border-cyan-500\/40,
+.border-cyan-500\/30,
+.border-cyan-400\/40,
+.border-cyan-400\/30 {
+  border-color: #b45309 !important;
+}
+
+/* Primary Caramel / Amber Action Buttons */
+.bg-cyan-400 {
+  background-color: #d97706 !important;
+  color: #1a0f07 !important;
+  font-weight: 700 !important;
+}
+
+.bg-cyan-400:hover {
+  background-color: #f59e0b !important;
+  color: #120904 !important;
+}
+
+/* Header & Footer in Dark Espresso */
+header {
+  background-color: rgba(29, 20, 14, 0.95) !important;
+  border-bottom-color: #453022 !important;
+}
+
+footer {
+  background-color: rgba(23, 16, 11, 0.96) !important;
+  border-top-color: #453022 !important;
+}
+
+/* Terminal & Code Blocks */
+pre, code {
+  color: #fde68a !important;
+}
+
+.group > pre {
+  background-color: #150e09 !important;
+  border-color: #3d2b1f !important;
+  color: #fde68a !important;
+}
+
+/* Form inputs & select dropdowns */
+input:not([type="checkbox"]):not([type="radio"]),
+select {
+  background-color: #1d140e !important;
+  border-color: #453022 !important;
+  color: #f7ede2 !important;
+}
+
+/* Intro Screen Locked in Warm Espresso Dark */
 .intro-screen-dark-lock,
 html.theme-light .intro-screen-dark-lock,
 body.theme-light .intro-screen-dark-lock,
 .theme-light .intro-screen-dark-lock {
-  background-color: #05070f !important;
-  color: #f8fafc !important;
+  background-color: #17100b !important;
+  color: #f7ede2 !important;
 }
 
-.intro-screen-dark-lock *,
-html.theme-light .intro-screen-dark-lock *,
-body.theme-light .intro-screen-dark-lock *,
-.theme-light .intro-screen-dark-lock * {
-  /* Prevent any light mode overrides inside IntroScreen */
-}
-
-/* Crisp High-Contrast Modern Light Theme Specifications */
+/* ========================================================
+   WARM LATTE / CAPPUCCINO CREAM LIGHT THEME (.theme-light)
+   ======================================================== */
 html.theme-light,
 body.theme-light,
 .theme-light {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+  background-color: #fcf8f3 !important;
+  color: #2d1c10 !important;
 }
 
-/* Header & Navigation Bar in Light Mode */
 .theme-light header {
-  background-color: rgba(255, 255, 255, 0.98) !important;
-  border-bottom-color: #cbd5e1 !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+  background-color: rgba(252, 248, 243, 0.96) !important;
+  border-bottom-color: #dfcebd !important;
+  box-shadow: 0 1px 3px 0 rgb(45 28 16 / 0.06);
 }
 
-/* Footer in Light Mode */
 .theme-light footer {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-top-color: #cbd5e1 !important;
-  box-shadow: 0 -1px 3px 0 rgb(0 0 0 / 0.04);
+  background-color: rgba(248, 241, 233, 0.96) !important;
+  border-top-color: #dfcebd !important;
+  box-shadow: 0 -1px 3px 0 rgb(45 28 16 / 0.04);
 }
 
 .theme-light .bg-slate-950,
@@ -70,7 +277,8 @@ body.theme-light,
 .theme-light .bg-slate-950\/80,
 .theme-light .bg-slate-950\/70,
 .theme-light .bg-slate-950\/60,
-.theme-light .bg-slate-950\/40 {
+.theme-light .bg-slate-950\/40,
+.theme-light .bg-zinc-950 {
   background-color: #ffffff !important;
 }
 
@@ -81,101 +289,81 @@ body.theme-light,
 .theme-light .bg-slate-900\/60,
 .theme-light .bg-slate-900\/50,
 .theme-light .bg-slate-900\/40,
-.theme-light .bg-slate-900\/30 {
-  background-color: #f1f5f9 !important;
+.theme-light .bg-slate-900\/30,
+.theme-light .bg-zinc-900 {
+  background-color: #f5ece1 !important;
 }
 
-/* Terminal Title Bar Header in Light Mode */
-.theme-light .rounded-xl > .border-b.bg-slate-900 {
-  background-color: #f8fafc !important;
-  border-bottom-color: #cbd5e1 !important;
-  color: #0f172a !important;
+.theme-light .bg-slate-800,
+.theme-light .bg-zinc-800 {
+  background-color: #eadecc !important;
 }
 
-/* Zinc container overrides in Light Mode */
-.theme-light .bg-zinc-950,
-.theme-light .bg-zinc-950\/70 {
-  background-color: #ffffff !important;
+.theme-light .hover\:bg-slate-800:hover {
+  background-color: #ded0bc !important;
 }
 
-.theme-light .bg-zinc-900,
-.theme-light .bg-zinc-900\/60,
-.theme-light .bg-zinc-900\/40 {
-  background-color: #f1f5f9 !important;
+.theme-light .hover\:bg-slate-900:hover,
+.theme-light .hover\:bg-slate-900\/80:hover,
+.theme-light .hover\:bg-slate-900\/60:hover,
+.theme-light .hover\:bg-slate-900\/50:hover,
+.theme-light .hover\:bg-slate-900\/40:hover,
+.theme-light .hover\:bg-slate-900\/30:hover {
+  background-color: #f5ece1 !important;
 }
 
-.theme-light .border-zinc-800,
-.theme-light .border-zinc-800\/80,
-.theme-light .border-zinc-700,
-.theme-light .border-zinc-600 {
-  border-color: #cbd5e1 !important;
+.theme-light .hover\:bg-slate-950:hover,
+.theme-light .hover\:bg-slate-950\/80:hover,
+.theme-light .hover\:bg-slate-950\/60:hover {
+  background-color: #fbf6f0 !important;
 }
 
-.theme-light .text-zinc-100 {
-  color: #090d16 !important;
-}
-
-.theme-light .text-zinc-200 {
-  color: #1e293b !important;
-}
-
-.theme-light .text-zinc-300 {
-  color: #334155 !important;
-}
-
-.theme-light .text-zinc-400 {
-  color: #475569 !important;
-}
-
-.theme-light .text-zinc-500 {
-  color: #64748b !important;
-}
-
-/* Sharp, high-contrast borders */
 .theme-light .border-slate-800,
 .theme-light .border-slate-800\/90,
 .theme-light .border-slate-800\/80,
-.theme-light .border-slate-800\/60 {
-  border-color: #cbd5e1 !important;
-}
-
-.theme-light .border-slate-700 {
-  border-color: #94a3b8 !important;
-}
-
+.theme-light .border-slate-800\/60,
+.theme-light .border-zinc-800,
 .theme-light .border-slate-900 {
-  border-color: #cbd5e1 !important;
+  border-color: #dfcebd !important;
 }
 
-/* High-contrast ink-on-paper typography */
-.theme-light .text-white {
-  color: #000000 !important;
+.theme-light .border-slate-700,
+.theme-light .border-zinc-700 {
+  border-color: #cbb6a1 !important;
 }
 
-.theme-light .text-slate-100 {
-  color: #090d16 !important;
+.theme-light .text-white,
+.theme-light .text-slate-100,
+.theme-light .text-zinc-100 {
+  color: #2d1c10 !important;
 }
 
-.theme-light .text-slate-200 {
-  color: #1e293b !important;
+.theme-light .text-slate-200,
+.theme-light .text-zinc-200 {
+  color: #3e2717 !important;
 }
 
-.theme-light .text-slate-300 {
-  color: #334155 !important;
+.theme-light .text-slate-300,
+.theme-light .text-zinc-300 {
+  color: #543924 !important;
 }
 
-.theme-light .text-slate-400 {
-  color: #475569 !important;
+.theme-light .text-slate-400,
+.theme-light .text-zinc-400 {
+  color: #7d5b3f !important;
 }
 
-.theme-light .text-slate-500 {
-  color: #64748b !important;
+.theme-light .text-slate-500,
+.theme-light .text-zinc-500 {
+  color: #9e7f67 !important;
 }
 
-/* High-contrast Accent Colors & Badges */
+/* Accents in Light Latte mode */
 .theme-light .text-cyan-400,
-.theme-light .text-cyan-300 {
-  color: #0369a1 !important;
+.theme-light .text-cyan-300,
+.theme-light .hover\:text-cyan-400:hover,
+.theme-light .group:hover .group-hover\:text-cyan-400 {
+  color: #b45309 !important;
 }
 
 .theme-light .bg-cyan-950,
@@ -184,120 +372,64 @@ body.theme-light,
 .theme-light .bg-cyan-950\/40,
 .theme-light .bg-cyan-950\/30,
 .theme-light .bg-cyan-950\/20 {
-  background-color: #e0f2fe !important;
+  background-color: #fef3c7 !important;
 }
 
 .theme-light .border-cyan-500,
 .theme-light .border-cyan-500\/40,
-.theme-light .border-cyan-500\/30 {
-  border-color: #0284c7 !important;
-}
-
-/* Emerald Accents */
-.theme-light .text-emerald-400,
-.theme-light .text-emerald-300 {
-  color: #047857 !important;
-}
-
-.theme-light .bg-emerald-950,
-.theme-light .bg-emerald-950\/60,
-.theme-light .bg-emerald-950\/40,
-.theme-light .bg-emerald-950\/30,
-.theme-light .bg-emerald-950\/20 {
-  background-color: #d1fae5 !important;
-}
-
-.theme-light .border-emerald-500,
-.theme-light .border-emerald-500\/40,
-.theme-light .border-emerald-500\/30 {
-  border-color: #059669 !important;
-}
-
-/* Amber Accents */
-.theme-light .text-amber-400,
-.theme-light .text-amber-300 {
-  color: #b45309 !important;
-}
-
-.theme-light .bg-amber-950,
-.theme-light .bg-amber-950\/60,
-.theme-light .bg-amber-950\/40,
-.theme-light .bg-amber-950\/30 {
-  background-color: #fef3c7 !important;
-}
-
-.theme-light .border-amber-500,
-.theme-light .border-amber-500\/40 {
+.theme-light .border-cyan-500\/30,
+.theme-light .border-cyan-400\/40 {
   border-color: #d97706 !important;
 }
 
-/* Rose Accents */
-.theme-light .text-rose-400,
-.theme-light .text-rose-300 {
-  color: #be123c !important;
-}
-
-.theme-light .bg-rose-950,
-.theme-light .bg-rose-950\/40 {
-  background-color: #ffe4e6 !important;
-}
-
-.theme-light .border-rose-500,
-.theme-light .border-rose-500\/40 {
-  border-color: #e11d48 !important;
-}
-
-/* Purple Accents */
-.theme-light .text-purple-400,
-.theme-light .text-purple-300 {
-  color: #6d28d9 !important;
-}
-
-.theme-light .bg-purple-950,
-.theme-light .bg-purple-950\/40 {
-  background-color: #ede9fe !important;
-}
-
-/* Light theme card shadows & elevation */
-.theme-light .rounded-xl,
-.theme-light .rounded-2xl {
-  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
-}
-
-/* High-contrast form controls */
-.theme-light input:not([type="checkbox"]):not([type="radio"]),
-.theme-light select {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #94a3b8 !important;
-  box-shadow: inset 0 1px 2px 0 rgb(0 0 0 / 0.04);
-}
-
-/* Crisp Light Terminal & Code Blocks in Light Mode */
-.theme-light pre {
-  background-color: transparent !important;
-  color: #0f172a !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
-
-/* Standalone copyable PowerShell script cards */
-.theme-light .group > pre {
-  background-color: #090d16 !important;
-  color: #38bdf8 !important;
-  border-color: #1e293b !important;
-  box-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.08);
-}
-
-/* Primary Cyan Action Buttons in Light Mode */
 .theme-light .bg-cyan-400 {
-  background-color: #06b6d4 !important;
-  color: #082f49 !important;
+  background-color: #b45309 !important;
+  color: #ffffff !important;
   font-weight: 700 !important;
 }
 
 .theme-light .bg-cyan-400:hover {
-  background-color: #22d3ee !important;
+  background-color: #92400e !important;
 }
 
+.theme-light .rounded-xl,
+.theme-light .rounded-2xl {
+  box-shadow: 0 1px 4px 0 rgb(45 28 16 / 0.08), 0 1px 2px -1px rgb(45 28 16 / 0.06);
+}
+
+.theme-light input:not([type="checkbox"]):not([type="radio"]),
+.theme-light select {
+  background-color: #ffffff !important;
+  color: #2d1c10 !important;
+  border-color: #cbb6a1 !important;
+  box-shadow: inset 0 1px 2px 0 rgb(45 28 16 / 0.04);
+}
+
+.theme-light pre {
+  background-color: transparent !important;
+  color: #2d1c10 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.theme-light .group > pre {
+  background-color: #241810 !important;
+  color: #fde68a !important;
+  border-color: #453022 !important;
+  box-shadow: 0 2px 8px 0 rgb(45 28 16 / 0.08);
+}
+
+/* For desktop users only: use full maximum length/width */
+@media (min-width: 1024px) {
+  div#root > div > main,
+  #root main,
+  main,
+  div#root > div > main > div:nth-of-type(1),
+  div#root > div > main > div,
+  div#root > div > footer > div:nth-of-type(1),
+  footer > div {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import serverMeshNodeImg from '../assets/images/server_mesh_node_1791216991425.jpg';
 import { ActiveTab } from '../types';
 import { TopologyInspector } from './TopologyInspector';
 import { 
@@ -79,10 +80,18 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
         <div className="lg:col-span-5 relative group">
           <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl aspect-[16/9]">
             <img
-              src="/src/assets/images/server_mesh_node_1791216991425.jpg"
+              src={serverMeshNodeImg}
               alt="VaultGuide mesh server node illustration"
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="eager"
+              decoding="async"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.dataset.fallbackTried) {
+                  target.dataset.fallbackTried = 'true';
+                  target.src = '/assets/images/server_mesh_node_1791216991425.jpg';
+                }
+              }}
             />
             {/* Subtle Gradient Scrim */}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent pointer-events-none" />

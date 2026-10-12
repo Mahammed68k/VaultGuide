@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Vibrant Blue Background Gradient -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00a6ff" />
+      <stop offset="100%" stop-color="#0080ff" />
+    </linearGradient>
+
+    <!-- Cloud Soft Bottom Shadow -->
+    <filter id="cloudShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0055cc" flood-opacity="0.28" />
+    </filter>
+
+    <!-- Downward Arrow Drop Shadow -->
+    <filter id="arrowShadow" x="-40%" y="-30%" width="180%" height="180%">
+      <feDropShadow dx="-6" dy="12" stdDeviation="14" flood-color="#004db3" flood-opacity="0.35" />
+    </filter>
+
+    <!-- Clip path for squircle border -->
+    <clipPath id="squircleClip">
+      <rect x="0" y="0" width="512" height="512" rx="112" ry="112" />
+    </clipPath>
+  </defs>
+
+  <!-- Rounded Squircle Canvas with Clean Smooth Edges -->
+  <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#skyGrad)" />
+
+  <!-- Cloud Vector Graphic -->
+  <g filter="url(#cloudShadow)">
+    <!-- Smooth Balanced Cloud Shape -->
+    <path fill="#ffffff" d="
+      M 148 350 
+      L 364 350 
+      A 56 56 0 0 0 420 294 
+      A 54 54 0 0 0 388 244 
+      A 74 74 0 0 0 318 196 
+      A 88 88 0 0 0 196 206 
+      A 64 64 0 0 0 134 262 
+      A 52 52 0 0 0 92 298 
+      A 56 56 0 0 0 148 350 
+      Z
+    " />
+  </g>
+
+  <!-- Upward Sync Arrow (Blue cutout/fill) -->
+  <path fill="#0088ff" d="
+    M 218 186
+    L 260 254
+    L 235 254
+    L 235 350
+    L 201 350
+    L 201 254
+    L 176 254
+    Z
+  " />
+
+  <!-- Downward Sync Arrow (White with bold definition and drop shadow) -->
+  <g filter="url(#arrowShadow)">
+    <!-- Down Arrow Body -->
+    <path fill="#ffffff" stroke="#0077ee" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" d="
+      M 276 208
+      L 310 208
+      L 310 298
+      L 334 298
+      L 293 378
+      L 252 298
+      L 276 298
+      Z
+    " />
+  </g>
+</svg>

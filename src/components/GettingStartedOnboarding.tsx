@@ -252,7 +252,7 @@ powercfg -setactive SCHEME_CURRENT
 Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -ForegroundColor Green`;
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8 w-full max-w-none">
       {/* Top Banner & Fast-Track Selector */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -317,7 +317,7 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
                 ~5 Minutes Total
               </span>
             </h1>
-            <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs text-slate-400 mt-1 max-w-none leading-relaxed">
               {engine === 'sftp' ? (
                 <>
                   Fastest, lightest private cloud setup: Direct <strong>FileZilla Server</strong> + <strong>Tailscale WireGuard</strong>. Delivers maximum disk throughput, 4K streaming with ~15 MB RAM overhead, zero database indexing lag, and complete isolation on <code className="text-cyan-300 font-mono">D:\PersonalCloud</code> with 0 open router ports.
@@ -1255,10 +1255,6 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
           <ArrowLeft className="w-4 h-4" />
           <span>Minute {Math.max(1, activeMinute - 1)}</span>
         </button>
-
-        <div className="text-slate-500 font-mono">
-          Minute {activeMinute} of 5 ({engine.toUpperCase()})
-        </div>
 
         {activeMinute < 5 ? (
           <button

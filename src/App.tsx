@@ -9,14 +9,11 @@ import { CommandPalette } from './components/CommandPalette';
 import { Footer } from './components/Footer';
 import { TermsPoliciesModal } from './components/TermsPoliciesModal';
 import IntroScreen from './components/IntroScreen';
-import { Shield, ArrowLeft, Sun, Moon } from 'lucide-react';
+import { Shield, ArrowLeft } from 'lucide-react';
 
 export default function App() {
   const [showIntro, setShowIntro] = useState<boolean>(true);
-  const [theme, setTheme] = useState<AppTheme>(() => {
-    const saved = localStorage.getItem('vaulthost-theme');
-    return saved === 'light' ? 'light' : 'dark';
-  });
+  const theme: AppTheme = 'light'; // Permanent Latte theme
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
   const [onboardingEngine, setOnboardingEngine] = useState<'sftp' | 'nextcloud'>('sftp');
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
@@ -24,14 +21,10 @@ export default function App() {
   const [termsInitialTab, setTermsInitialTab] = useState<'terms' | 'privacy' | 'security'>('terms');
 
   useEffect(() => {
+    document.documentElement.classList.add('theme-light');
     document.documentElement.classList.remove('theme-midnight');
-    if (theme === 'light') {
-      document.documentElement.classList.add('theme-light');
-    } else {
-      document.documentElement.classList.remove('theme-light');
-    }
-    localStorage.setItem('vaulthost-theme', theme);
-  }, [theme]);
+    localStorage.setItem('vaulthost-theme', 'light');
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -48,10 +41,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const toggleTheme = () => {
-    setTheme((prev: AppTheme) => (prev === 'light' ? 'dark' : 'light'));
-  };
-
   const handleSelectOnboarding = (engine: 'sftp' | 'nextcloud') => {
     setOnboardingEngine(engine);
     setActiveTab('onboarding');
@@ -63,69 +52,57 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-300 transition-colors duration-200 ${
-      theme === 'light' ? 'theme-light' : ''
-    }`}>
+    <div className="min-h-screen bg-[#fcf8f3] text-[#2d1c10] theme-light flex flex-col font-sans selection:bg-amber-900/20 selection:text-amber-900 transition-colors duration-200">
       {/* Cinematic Intro Splash Screen */}
       {showIntro && (
         <IntroScreen onComplete={() => setShowIntro(false)} />
       )}
 
       {/* Sleek Minimal Header */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/90 transition-colors">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 bg-[#fcf8f3]/95 backdrop-blur-md border-b border-[#dfcebd] shadow-xs transition-colors">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setActiveTab('overview')}
-            className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none"
+            className="flex items-center gap-3 text-left group cursor-pointer focus:outline-none"
           >
-            <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-              <Shield className="w-3.5 h-3.5" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden border border-amber-500/40 flex items-center justify-center bg-amber-100/60 shadow-sm group-hover:border-amber-600/70 transition-all duration-300">
+              <img 
+                src="/logo.svg" 
+                alt="VaultHost Logo" 
+                className="w-full h-full object-contain p-0.5"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.dataset.fallbackTried) {
+                    target.dataset.fallbackTried = 'true';
+                    target.src = '/download.jpeg';
+                  }
+                }}
+              />
             </div>
-            <span className="text-sm font-bold tracking-tight text-white group-hover:text-cyan-400 transition-colors">
-              VaultGuide
-            </span>
+            <div>
+              <span className="text-base font-bold tracking-tight text-[#2d1c10] group-hover:text-amber-700 transition-colors block leading-tight">
+                VaultHost
+              </span>
+              <span className="text-[10px] font-mono text-amber-800/80 block leading-none mt-0.5">
+                Private Cloud & SFTP
+              </span>
+            </div>
           </button>
 
           {activeTab !== 'overview' && (
             <button
               onClick={() => setActiveTab('overview')}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/30 rounded-md transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-amber-900 bg-amber-100/80 hover:bg-amber-200/80 border border-amber-300/80 rounded-md transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3 h-3" />
               <span>Back to Overview</span>
             </button>
           )}
         </div>
-
-        <div className="flex items-center gap-2">
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-md border transition-all cursor-pointer ${
-              theme === 'light'
-                ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100 shadow-xs'
-                : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-            title={theme === 'light' ? 'Switch to Dark mode' : 'Switch to Light mode'}
-            aria-label="Toggle theme mode"
-          >
-            {theme === 'light' ? (
-              <>
-                <Sun className="w-3.5 h-3.5 text-amber-500" />
-                <span className="font-semibold text-[11px]">Light</span>
-              </>
-            ) : (
-              <>
-                <Moon className="w-3.5 h-3.5 text-cyan-400" />
-                <span className="font-semibold text-[11px]">Dark</span>
-              </>
-            )}
-          </button>
-        </div>
       </header>
 
       {/* Main Viewport Content Container */}
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <main className="flex-1 w-full max-w-6xl lg:max-w-full lg:w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-10">
         {activeTab === 'overview' && (
           <ArchitectureView 
             onSelectTab={setActiveTab} 
