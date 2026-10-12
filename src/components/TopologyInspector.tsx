@@ -139,11 +139,11 @@ export const TopologyInspector: React.FC = () => {
         })}
       </div>
 
-      {/* Selected Node Details Box */}
-      <div className="p-5 bg-white rounded-xl border border-[#dfcebd] space-y-4 shadow-xs">
-        <div className="flex items-start justify-between gap-4 border-b border-[#ebdcc9] pb-3">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-amber-100/80 rounded-lg border border-amber-300/80 text-amber-700 shadow-2xs">
+      {/* Selected Node Details Box - Borderless Structure with Theme Colors */}
+      <div className="p-6 bg-white/95 rounded-2xl shadow-sm space-y-5">
+        <div className="flex items-start justify-between gap-4 pb-1">
+          <div className="flex items-center gap-3.5">
+            <div className="p-2.5 bg-amber-100/90 rounded-xl text-amber-800 shadow-2xs">
               <ActiveIcon className="w-5 h-5" />
             </div>
             <div>
@@ -152,17 +152,17 @@ export const TopologyInspector: React.FC = () => {
             </div>
           </div>
 
-          <div className="px-2.5 py-1 bg-amber-100/80 border border-amber-300/80 rounded-md text-[11px] font-mono text-amber-900 font-bold shrink-0">
+          <div className="px-3 py-1 bg-amber-100/90 rounded-full text-[11px] font-mono text-amber-900 font-bold shrink-0">
             {activeNode.id}
           </div>
         </div>
 
-        {/* Technical Specs List */}
+        {/* Technical Specs List - Clean Borderless Theme Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           {Object.entries(activeNode.details)
             .filter(([k]) => k !== 'title' && k !== 'description')
             .map(([key, val], idx) => (
-              <div key={idx} className="p-3 bg-[#fbf6f0] rounded-lg border border-[#e8dccf] space-y-1 shadow-2xs">
+              <div key={idx} className="p-3.5 bg-[#f5ece1]/70 hover:bg-[#f5ece1] rounded-xl space-y-1.5 transition-colors">
                 <span className="text-[10px] uppercase font-mono tracking-wider text-[#8c6b51] font-semibold block">
                   {key.replace(/([A-Z])/g, ' $1')}
                 </span>

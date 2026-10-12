@@ -9,7 +9,6 @@ import {
   Laptop, 
   HardDrive, 
   Lock, 
-  Unlock, 
   Server, 
   FolderSync,
   HelpCircle,
@@ -29,7 +28,7 @@ interface ArchitectureViewProps {
 }
 
 export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab, onSelectOnboarding }) => {
-  const [networkMode, setNetworkMode] = useState<'tailscale' | 'portForward'>('tailscale');
+  const networkMode: 'tailscale' | 'portForward' = 'tailscale';
 
   const handleLaunchTab = (tab: ActiveTab) => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -108,110 +107,167 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
       <TopologyInspector />
 
       {/* Interactive Network Security Simulator */}
-      <section className="p-6 bg-slate-900/60 rounded-xl border border-slate-800 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-white">Network Architecture & Security Model</h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Simulate how traffic flows from your mobile device through the encrypted WireGuard mesh vs direct exposure.
-            </p>
-          </div>
-
-          {/* Interactive Mode Selector */}
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800 self-start sm:self-auto">
-            <button
-              onClick={() => setNetworkMode('tailscale')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                networkMode === 'tailscale'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span>Tailscale Mesh (Safe)</span>
-            </button>
-            <button
-              onClick={() => setNetworkMode('portForward')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                networkMode === 'portForward'
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Unlock className="w-3.5 h-3.5" />
-              <span>Port Forwarding (Vulnerable)</span>
-            </button>
-          </div>
+      <section className="p-6 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-6 shadow-xs">
+        <div className="border-b border-[#ebdcc9] pb-4">
+          <h2 className="text-lg font-bold text-[#2d1c10]">Network Architecture & Security Model</h2>
+          <p className="text-xs text-[#6b4c35] mt-0.5">
+            Simulate how traffic flows from your mobile device through the encrypted WireGuard mesh vs direct exposure.
+          </p>
         </div>
 
         {/* Visual Diagram */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center py-4">
-          {/* Node 1: Mobile Phone */}
-          <div className="p-4 bg-slate-950 rounded-lg border border-slate-800 space-y-2 text-center">
-            <div className="w-10 h-10 mx-auto rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-300">
-              <Smartphone className="w-5 h-5 text-cyan-400" />
+        <div className="space-y-4 py-2">
+          {/* 4 Interactive Connected Architecture Nodes */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-stretch">
+            {/* Node 1: Mobile Phone */}
+            <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs flex flex-col justify-between text-center space-y-3 transition-all hover:shadow-md">
+              <div className="space-y-2">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-amber-100/80 border border-amber-300/80 flex items-center justify-center text-amber-800 shadow-2xs">
+                  <Smartphone className="w-5 h-5 text-amber-700" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-[#2d1c10]">Mobile Device</div>
+                  <div className="text-xs text-[#7d5b3f] mt-0.5">5G Cellular / Remote Wi-Fi</div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[#ebdcc9] space-y-1.5 text-left">
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8c6b51]">Assigned IP:</span>
+                  <span className="font-semibold text-amber-900">
+                    {networkMode === 'tailscale' ? '100.x.y.z (CGNAT)' : 'Dynamic Cell IP'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8c6b51]">Security:</span>
+                  <span className={`font-semibold ${networkMode === 'tailscale' ? 'text-emerald-700' : 'text-amber-800'}`}>
+                    {networkMode === 'tailscale' ? 'WireGuard Peer' : 'Direct Insecure'}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="text-sm font-semibold text-white">Mobile Device</div>
-              <div className="text-xs text-slate-400">5G Cellular / Remote Wi-Fi</div>
+
+            {/* Node 2: Network Gateway / Security Tunnel */}
+            <div className={`p-5 rounded-xl border-2 shadow-xs flex flex-col justify-between text-center space-y-3 transition-all ${
+              networkMode === 'tailscale'
+                ? 'bg-white border-emerald-500/70 ring-2 ring-emerald-500/20'
+                : 'bg-white border-rose-500/70 ring-2 ring-rose-500/20'
+            }`}>
+              <div className="space-y-2">
+                <div className={`w-12 h-12 mx-auto rounded-xl border flex items-center justify-center shadow-2xs transition-all ${
+                  networkMode === 'tailscale'
+                    ? 'bg-emerald-100/90 border-emerald-300 text-emerald-800'
+                    : 'bg-rose-100/90 border-rose-300 text-rose-800 animate-pulse'
+                }`}>
+                  {networkMode === 'tailscale' ? (
+                    <ShieldCheck className="w-6 h-6 text-emerald-700" />
+                  ) : (
+                    <ShieldAlert className="w-6 h-6 text-rose-700" />
+                  )}
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-[#2d1c10]">
+                    {networkMode === 'tailscale' ? 'Tailscale Mesh Gateway' : 'Public Router Gateway'}
+                  </div>
+                  <div className="text-xs text-[#7d5b3f] mt-0.5">
+                    {networkMode === 'tailscale' ? 'Encrypted Mesh Overlay' : 'Port Forwarding (Exposed)'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[#ebdcc9] space-y-1.5 text-left">
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8c6b51]">Router Ports:</span>
+                  <span className={`font-bold ${networkMode === 'tailscale' ? 'text-emerald-700' : 'text-rose-700'}`}>
+                    {networkMode === 'tailscale' ? '0 Open Ports (Safe)' : '22, 8080 (Scannable)'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8c6b51]">Exposure:</span>
+                  <span className={`font-bold ${networkMode === 'tailscale' ? 'text-emerald-700' : 'text-rose-700'}`}>
+                    {networkMode === 'tailscale' ? 'Zero Trust Private' : 'Shodan Searchable'}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="text-[11px] font-mono text-cyan-300/80 pt-1">
-              {networkMode === 'tailscale' ? 'Node: 100.x.y.z' : 'IP: Dynamic Cell'}
+
+            {/* Node 3: Laptop Server */}
+            <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs flex flex-col justify-between text-center space-y-3 transition-all hover:shadow-md">
+              <div className="space-y-2">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-amber-100/80 border border-amber-300/80 flex items-center justify-center text-amber-800 shadow-2xs">
+                  <Laptop className="w-5 h-5 text-amber-700" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-[#2d1c10]">Host Laptop Server</div>
+                  <div className="text-xs text-[#7d5b3f] mt-0.5">Windows 10 / 11 Host</div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[#ebdcc9] space-y-1.5 text-left">
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8c6b51]">Power State:</span>
+                  <span className="font-semibold text-amber-900">24/7 Always On</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8c6b51]">Listening On:</span>
+                  <span className={`font-semibold ${networkMode === 'tailscale' ? 'text-emerald-700' : 'text-rose-700'}`}>
+                    {networkMode === 'tailscale' ? '100.x Interface' : '0.0.0.0 (All WAN)'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Node 4: Target Storage */}
+            <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs flex flex-col justify-between text-center space-y-3 transition-all hover:shadow-md">
+              <div className="space-y-2">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-amber-100/80 border border-amber-300/80 flex items-center justify-center text-amber-800 shadow-2xs">
+                  <HardDrive className="w-5 h-5 text-emerald-700" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-[#2d1c10]">Local Storage Vault</div>
+                  <div className="text-xs text-[#7d5b3f] mt-0.5">D:\PersonalCloud Partition</div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[#ebdcc9] space-y-1.5 text-left">
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8c6b51]">Capacity:</span>
+                  <span className="font-semibold text-emerald-800">500 GB Native</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[#8c6b51]">Throughput:</span>
+                  <span className="font-semibold text-amber-900">Direct Bus (No Throttle)</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Node 2: Network Gateway / Tunnel */}
-          <div className={`p-4 rounded-lg border text-center space-y-2 transition-all ${
+          {/* Real-time Architecture Pathway Ribbon */}
+          <div className={`p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs transition-all ${
             networkMode === 'tailscale'
-              ? 'bg-cyan-950/20 border-cyan-500/30 text-cyan-200'
-              : 'bg-rose-950/20 border-rose-500/30 text-rose-200'
+              ? 'bg-emerald-50/70 border-emerald-300/80 text-emerald-950'
+              : 'bg-rose-50/70 border-rose-300/80 text-rose-950'
           }`}>
-            <div className="w-10 h-10 mx-auto rounded-full bg-slate-900 border flex items-center justify-center">
-              {networkMode === 'tailscale' ? (
-                <ShieldCheck className="w-5 h-5 text-cyan-400" />
-              ) : (
-                <ShieldAlert className="w-5 h-5 text-rose-400" />
-              )}
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${networkMode === 'tailscale' ? 'bg-emerald-600 animate-pulse' : 'bg-rose-600 animate-ping'}`} />
+              <span className="font-mono font-bold uppercase text-[11px] tracking-wide">
+                {networkMode === 'tailscale' ? 'Active Route:' : 'Danger Route:'}
+              </span>
+              <span className="font-mono text-[11px]">
+                {networkMode === 'tailscale'
+                  ? 'Phone (5G) ──► WireGuard Tunnel (100.64.0.0/10) ──► Laptop Host (Port 22/8080 Private) ──► D:\\PersonalCloud'
+                  : 'Phone (5G) ──► Public ISP IP ──► Open Router Port 22 & 8080 (Exposed to Internet Botnets) ──► Host Machine'
+                }
+              </span>
             </div>
-            <div>
-              <div className="text-sm font-semibold text-white">
-                {networkMode === 'tailscale' ? 'Tailscale Mesh Node' : 'Public Router Gateway'}
-              </div>
-              <div className="text-xs text-slate-400">
-                {networkMode === 'tailscale' ? 'WireGuard 256-bit Tunnel' : 'Exposed Port Forwarding'}
-              </div>
-            </div>
-            <div className="text-[11px] font-mono pt-1">
-              {networkMode === 'tailscale' ? 'Ports Open: 0 (Closed)' : 'Ports Open: 22, 8080 (Scannable)'}
-            </div>
-          </div>
 
-          {/* Node 3: Laptop Server */}
-          <div className="p-4 bg-slate-950 rounded-lg border border-slate-800 space-y-2 text-center">
-            <div className="w-10 h-10 mx-auto rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-300">
-              <Laptop className="w-5 h-5 text-amber-400" />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-white">Host Laptop Server</div>
-              <div className="text-xs text-slate-400">Windows 10/11 Host Machine</div>
-            </div>
-            <div className="text-[11px] font-mono text-amber-300/80 pt-1">
-              Power: Always On / Plugged
-            </div>
-          </div>
-
-          {/* Node 4: Target Storage */}
-          <div className="p-4 bg-slate-950 rounded-lg border border-slate-800 space-y-2 text-center">
-            <div className="w-10 h-10 mx-auto rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-300">
-              <HardDrive className="w-5 h-5 text-emerald-400" />
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-white">Local Drive Partition</div>
-              <div className="text-xs text-slate-400">D:\PersonalCloud (500GB)</div>
-            </div>
-            <div className="text-[11px] font-mono text-emerald-300/80 pt-1">
-              Read / Write / Delete
-            </div>
+            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold shrink-0 self-start sm:self-auto ${
+              networkMode === 'tailscale'
+                ? 'bg-emerald-200/80 text-emerald-900 border border-emerald-400/60'
+                : 'bg-rose-200/80 text-rose-900 border border-rose-400/60'
+            }`}>
+              {networkMode === 'tailscale' ? 'Zero Port Forwarding' : 'High Security Vulnerability'}
+            </span>
           </div>
         </div>
       </section>
