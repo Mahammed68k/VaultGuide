@@ -53,7 +53,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'cmd-rclone-sync',
       title: 'Offsite Cloud Backup Sync Script',
       category: 'Command',
-      targetTab: 'terminal',
+      targetTab: 'backup',
       codeSnippet: 'C:\\rclone\\rclone.exe sync E:\\NextcloudBorgBackup b2-cloud:my-bucket --fast-list',
       description: 'Pushes BorgBackup encrypted chunks to Backblaze B2 / AWS S3'
     },

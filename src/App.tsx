@@ -3,7 +3,6 @@ import { ActiveTab, AppTheme } from './types';
 import { ArchitectureView } from './components/ArchitectureView';
 import { BackupSimulatorView } from './components/BackupSimulatorView';
 import { DiagnosticsView } from './components/DiagnosticsView';
-import { InteractiveTerminal } from './components/InteractiveTerminal';
 import { GettingStartedOnboarding } from './components/GettingStartedOnboarding';
 import { CommandPalette } from './components/CommandPalette';
 import { Footer } from './components/Footer';
@@ -68,7 +67,7 @@ export default function App() {
             <div className="w-10 h-10 rounded-xl overflow-hidden border border-amber-500/40 flex items-center justify-center bg-amber-100/60 shadow-sm group-hover:border-amber-600/70 transition-all duration-300">
               <img 
                 src="/logo.svg" 
-                alt="VaultHost Logo" 
+                alt="VaultGuide Logo" 
                 className="w-full h-full object-contain p-0.5"
                 onError={(e) => {
                   const target = e.currentTarget;
@@ -81,7 +80,7 @@ export default function App() {
             </div>
             <div>
               <span className="text-base font-bold tracking-tight text-[#2d1c10] group-hover:text-amber-700 transition-colors block leading-tight">
-                VaultHost
+                VaultGuide
               </span>
               <span className="text-[10px] font-mono text-amber-800/80 block leading-none mt-0.5">
                 Private Cloud & SFTP
@@ -102,7 +101,7 @@ export default function App() {
       </header>
 
       {/* Main Viewport Content Container */}
-      <main className="flex-1 w-full max-w-6xl lg:max-w-full lg:w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-10">
+      <main className="flex-1 w-full max-w-none mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-3 sm:pt-4 pb-8 sm:pb-10">
         {activeTab === 'overview' && (
           <ArchitectureView 
             onSelectTab={setActiveTab} 
@@ -119,10 +118,6 @@ export default function App() {
 
         {activeTab === 'backup' && (
           <BackupSimulatorView />
-        )}
-
-        {activeTab === 'terminal' && (
-          <InteractiveTerminal />
         )}
 
         {activeTab === 'diagnostics' && (

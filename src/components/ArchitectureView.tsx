@@ -18,7 +18,6 @@ import {
   ChevronRight,
   ArrowRight,
   Activity,
-  Terminal,
   CheckCircle2
 } from 'lucide-react';
 
@@ -272,58 +271,58 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
         </div>
       </section>
 
-      {/* 3 Primary Action Simulators & Workbenches */}
-      <section className="p-6 sm:p-8 bg-slate-900/60 rounded-xl border border-slate-800 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-5">
+      {/* Operational Workbenches */}
+      <section className="p-6 sm:p-8 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#ebdcc9] pb-5">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono font-semibold tracking-wider uppercase text-cyan-400 bg-cyan-950/60 border border-cyan-800/50 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-mono font-semibold tracking-wider uppercase text-amber-900 bg-amber-100/80 border border-amber-300/80 px-2 py-0.5 rounded">
                 Operational Workbenches
               </span>
-              <span className="text-xs text-slate-400 font-mono">3 Interactive Tools</span>
+              <span className="text-xs text-[#8c6b51] font-mono">2 Workbenches</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#2d1c10] tracking-tight">
               Operations, Resilience & Interactive Simulators
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300">
-              Directly simulate backup disaster recovery pipelines, validate your Tailscale CGNAT mesh network, or run interactive live console commands.
+            <p className="text-xs sm:text-sm text-[#6b4c35]">
+              Directly simulate backup disaster recovery pipelines or validate your Tailscale CGNAT mesh network.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Action 1: Resilience & Recovery */}
-          <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 hover:border-cyan-500/50 flex flex-col justify-between transition-all duration-200 group">
+          <div className="p-6 bg-white rounded-xl border border-[#dfcebd] hover:border-amber-400 shadow-xs hover:shadow-md flex flex-col justify-between transition-all duration-200 group">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-lg bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                <div className="w-10 h-10 rounded-lg bg-amber-100/80 border border-amber-300/80 flex items-center justify-center text-amber-800">
                   <FolderSync className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/30 font-semibold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-900 border border-amber-300/80 font-semibold">
                   3-2-1 Strategy
                 </span>
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                <h3 className="text-base font-bold text-[#2d1c10] group-hover:text-amber-900 transition-colors">
                   Resilience & Recovery
                 </h3>
-                <p className="text-xs font-mono text-cyan-400/80 mt-0.5">
+                <p className="text-xs font-mono text-amber-800 mt-0.5">
                   3-2-1 Backup Simulator
                 </p>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-[#6b4c35] leading-relaxed">
                 Test automated BorgBackup client-side encrypted repository deduplication, local disk mirroring, and offsite cloud sync with instant RPO/RTO calculation.
               </p>
 
-              <ul className="space-y-1.5 text-xs text-slate-400 font-mono">
+              <ul className="space-y-1.5 text-xs text-[#7d5b3f] font-mono">
                 <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-700 shrink-0" />
                   <span>3 Copies · 2 Media · 1 Cloud</span>
                 </li>
                 <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-700 shrink-0" />
                   <span>Borg + Rclone Pipeline</span>
                 </li>
               </ul>
@@ -331,7 +330,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
 
             <button
               onClick={() => handleLaunchTab('backup')}
-              className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-lg transition-colors cursor-pointer shadow-xs"
+              className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-bold text-amber-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors cursor-pointer shadow-xs"
             >
               <span>Launch Resilience & Recovery</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -339,37 +338,37 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
           </div>
 
           {/* Action 2: Network & Diagnostics Workbench */}
-          <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 hover:border-emerald-500/50 flex flex-col justify-between transition-all duration-200 group">
+          <div className="p-6 bg-white rounded-xl border border-[#dfcebd] hover:border-emerald-400 shadow-xs hover:shadow-md flex flex-col justify-between transition-all duration-200 group">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-lg bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <div className="w-10 h-10 rounded-lg bg-emerald-100/80 border border-emerald-300/80 flex items-center justify-center text-emerald-800">
                   <Activity className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/30 font-semibold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100/80 text-emerald-900 border border-emerald-300/80 font-semibold">
                   Diagnostics & Validation
                 </span>
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
+                <h3 className="text-base font-bold text-[#2d1c10] group-hover:text-emerald-900 transition-colors">
                   Network & Diagnostics Workbench
                 </h3>
-                <p className="text-xs font-mono text-emerald-400/80 mt-0.5">
+                <p className="text-xs font-mono text-emerald-800 mt-0.5">
                   Diagnostics & Validation
                 </p>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-[#6b4c35] leading-relaxed">
                 Inspect 100.64.0.0/10 CGNAT carrier address spaces, validate Tailscale peer handshake state, test Windows Firewall port binding, and fix untrusted domain errors.
               </p>
 
-              <ul className="space-y-1.5 text-xs text-slate-400 font-mono">
+              <ul className="space-y-1.5 text-xs text-[#7d5b3f] font-mono">
                 <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                   <span>RFC 6598 CGNAT Verifier</span>
                 </li>
                 <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                   <span>Port Binding & TLS Inspection</span>
                 </li>
               </ul>
@@ -377,55 +376,9 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
 
             <button
               onClick={() => handleLaunchTab('diagnostics')}
-              className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-emerald-400/60 rounded-lg transition-colors cursor-pointer"
+              className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-bold text-emerald-950 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors cursor-pointer shadow-xs"
             >
               <span>Open Diagnostics Workbench</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Action 3: Interactive Console Simulator */}
-          <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 hover:border-purple-500/50 flex flex-col justify-between transition-all duration-200 group">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-lg bg-purple-950/60 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                  <Terminal className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-500/30 font-semibold">
-                  Live Terminal
-                </span>
-              </div>
-
-              <div>
-                <h3 className="text-base font-bold text-white group-hover:text-purple-300 transition-colors">
-                  Interactive Console Simulator
-                </h3>
-                <p className="text-xs font-mono text-purple-400/80 mt-0.5">
-                  Live Terminal & CLI Sandbox
-                </p>
-              </div>
-
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Run live command executions in an interactive terminal environment. Test Tailscale CLI ping, Docker AIO container management, robocopy, and powercfg scripts.
-              </p>
-
-              <ul className="space-y-1.5 text-xs text-slate-400 font-mono">
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                  <span>Interactive Shell & History</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                  <span>Tailscale & Docker Simulation</span>
-                </li>
-              </ul>
-            </div>
-
-            <button
-              onClick={() => handleLaunchTab('terminal')}
-              className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-purple-400/60 rounded-lg transition-colors cursor-pointer"
-            >
-              <span>Launch Live Terminal</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

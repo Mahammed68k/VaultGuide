@@ -25,7 +25,15 @@ import {
   Layers, 
   Container, 
   Key, 
-  ShieldAlert 
+  ShieldAlert,
+  PowerOff,
+  RotateCcw,
+  Download,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  RefreshCw,
+  Activity
 } from 'lucide-react';
 
 interface GettingStartedOnboardingProps {
@@ -54,10 +62,12 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
   const [completedMinutesNextcloud, setCompletedMinutesNextcloud] = useState<number[]>([]);
 
   // Configuration fields
-  const [tailscaleIp, setTailscaleIp] = useState<string>('100.115.42.88');
+  const [tailscaleIp, setTailscaleIp] = useState<string>('100.116.48.9');
   const [storagePath, setStoragePath] = useState<string>('D:\\PersonalCloud');
   const [username, setUsername] = useState<string>('vaultuser');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showShutdownNow, setShowShutdownNow] = useState<boolean>(true);
+  const [controlProcessTab, setControlProcessTab] = useState<'shutdown' | 'retrieve' | 'restart' | 'status' | 'delete'>('shutdown');
 
   // Nextcloud specific states
   const [passphrase, setPassphrase] = useState<string>('aio-master-secret-vault-2026-safe-key');
@@ -133,37 +143,37 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
     {
       minute: 1,
       timeEst: '01:00',
-      title: 'Install Tailscale & Get Mesh IP',
-      shortTitle: 'Tailscale Mesh',
-      subtitle: 'Encrypted WireGuard peer tunnel (Zero router port forwarding)'
+      title: 'Install Tailscale & FileZilla Server',
+      shortTitle: 'Install Software',
+      subtitle: 'WireGuard encrypted mesh + lightweight native server daemon'
     },
     {
       minute: 2,
       timeEst: '02:00',
-      title: 'Install FileZilla Server & Create User',
-      shortTitle: 'FileZilla User',
-      subtitle: 'Native lightweight daemon (~15 MB RAM) with SSH/SFTP'
+      title: 'Configure User & Storage Mount',
+      shortTitle: 'User & Storage',
+      subtitle: 'Listeners, User credentials, and storage folder mount'
     },
     {
       minute: 3,
       timeEst: '03:00',
-      title: 'Set Mount Point to D:\\PersonalCloud',
-      shortTitle: 'Storage Mount',
-      subtitle: 'Map virtual root "/" to secondary drive to safeguard OS'
-    },
-    {
-      minute: 4,
-      timeEst: '04:00',
       title: 'Firewall Port 22 & 24/7 Power Plan',
       shortTitle: 'Firewall & Power',
       subtitle: 'Allow TCP Port 22 and prevent laptop from sleeping on AC'
     },
     {
+      minute: 4,
+      timeEst: '04:00',
+      title: 'Connect Mobile Phone (5G)',
+      shortTitle: 'Mobile Client 5G',
+      subtitle: 'Solid Explorer / CX File Explorer remote streaming & access'
+    },
+    {
       minute: 5,
       timeEst: '05:00',
-      title: 'Connect Mobile Phone (5G) & Test',
-      shortTitle: 'Mobile Client 5G',
-      subtitle: 'Solid Explorer / CX File Explorer remote streaming & upload'
+      title: 'Host Controls & Maintenance',
+      shortTitle: 'Host Controls',
+      subtitle: 'PowerShell codes for Shutdown, Retrieve, Restart, Status & Reset'
     }
   ];
 
@@ -200,9 +210,9 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
     {
       minute: 5,
       timeEst: '05:00',
-      title: 'Connect Mobile App (5G) & Test Camera Sync',
-      shortTitle: 'Mobile Camera 5G',
-      subtitle: 'Nextcloud Mobile App automated background photo backup test'
+      title: 'Connect Mobile App (5G)',
+      shortTitle: 'Mobile App 5G',
+      subtitle: 'Nextcloud Mobile App automated background photo backup'
     }
   ];
 
@@ -251,57 +261,116 @@ powercfg -setactive SCHEME_CURRENT
 
 Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -ForegroundColor Green`;
 
+  // Process 1: Shutdown copy (Stop FileZilla, Disconnect Tailscale, Screen Time Normal 3 Min)
+  const filezillaShutdownCmd = `Stop-Service -Name "filezilla-server" -Force -ErrorAction SilentlyContinue; taskkill /F /IM "FileZilla Server.exe" /T 2>$null`;
+  const tailscaleShutdownCmd = `& "C:\\Program Files\\Tailscale\\tailscale.exe" down; taskkill /F /IM "tailscale-ipn.exe" /T 2>$null`;
+  const screenTimeNormalCmd = `powercfg /change standby-timeout-ac 3; powercfg /change monitor-timeout-ac 3`;
+  const shutdownCombinedCmd = `# 1. Stop FileZilla Server service
+Stop-Service -Name "filezilla-server" -Force -ErrorAction SilentlyContinue
+
+# 2. Disconnect Tailscale private mesh
+& "C:\\Program Files\\Tailscale\\tailscale.exe" down
+
+# 3. Restore Screen & Sleep Timeout to Normal Mode (3 Minutes)
+powercfg /change standby-timeout-ac 3
+powercfg /change monitor-timeout-ac 3
+
+Write-Host "FileZilla stopped, Tailscale disconnected & Screen Timeout set to 3-minute normal mode!" -ForegroundColor Green`;
+
+  // Process 2: Retrieve copy (Start FileZilla, Reconnect Tailscale, Host 24/7 Mode)
+  const filezillaRetrieveCmd = `Start-Service -Name "filezilla-server" -ErrorAction SilentlyContinue; & "C:\\Program Files\\FileZilla Server\\filezilla-server.exe" 2>$null`;
+  const tailscaleRetrieveCmd = `& "C:\\Program Files\\Tailscale\\tailscale.exe" up`;
+  const screenTime247Cmd = `powercfg /change standby-timeout-ac 0; powercfg /change monitor-timeout-ac 0`;
+  const retrieveCombinedCmd = `# 1. Start FileZilla Server service
+Start-Service -Name "filezilla-server" -ErrorAction SilentlyContinue
+
+# 2. Reconnect Tailscale private mesh
+& "C:\\Program Files\\Tailscale\\tailscale.exe" up
+
+# 3. Restore Host 24/7 Power Mode (Never Sleep on AC)
+powercfg /change standby-timeout-ac 0
+powercfg /change monitor-timeout-ac 0
+
+Write-Host "FileZilla started, Tailscale reconnected & Host 24/7 mode retrieved!" -ForegroundColor Green`;
+
+  // Process 3: Permanent Delete All copy (Tailscale, FileZilla Server, Screen Time Normal 3 Min)
+  const tailscalePermanentDeleteCmd = `& "C:\\Program Files\\Tailscale\\tailscale.exe" logout 2>$null; Stop-Service -Name "Tailscale" -Force -ErrorAction SilentlyContinue; taskkill /F /IM "tailscale*" /T 2>$null; winget uninstall --id Tailscale.Tailscale --silent -h 2>$null`;
+  const filezillaPermanentDeleteCmd = `Stop-Service -Name "filezilla-server" -Force -ErrorAction SilentlyContinue; taskkill /F /IM "FileZilla Server*" /T 2>$null; if (Test-Path "C:\\Program Files\\FileZilla Server\\uninstall.exe") { Start-Process -Wait -FilePath "C:\\Program Files\\FileZilla Server\\uninstall.exe" -ArgumentList "/S" 2>$null }; winget uninstall --id TimKosse.FileZillaServer --silent 2>$null`;
+  const permanentDeleteCombinedCmd = `# 1. Permanently Uninstall & Remove Tailscale
+& "C:\\Program Files\\Tailscale\\tailscale.exe" logout 2>$null
+Stop-Service -Name "Tailscale" -Force -ErrorAction SilentlyContinue
+taskkill /F /IM "tailscale*" /T 2>$null
+winget uninstall --id Tailscale.Tailscale --silent -h 2>$null
+
+# 2. Permanently Uninstall & Remove FileZilla Server
+Stop-Service -Name "filezilla-server" -Force -ErrorAction SilentlyContinue
+taskkill /F /IM "FileZilla Server*" /T 2>$null
+if (Test-Path "C:\\Program Files\\FileZilla Server\\uninstall.exe") { Start-Process -Wait -FilePath "C:\\Program Files\\FileZilla Server\\uninstall.exe" -ArgumentList "/S" 2>$null }
+winget uninstall --id TimKosse.FileZillaServer --silent 2>$null
+
+# 3. Restore Screen & Sleep Timeout to Normal Mode (3 Minutes)
+powercfg /change standby-timeout-ac 3
+powercfg /change monitor-timeout-ac 3
+
+Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3-minute normal mode!" -ForegroundColor Red`;
+
+  // Process 4: Restart Services code (Restart FileZilla, Reset Tailscale, Flush DNS)
+  const restartCombinedCmd = `# 1. Restart FileZilla Server service
+Restart-Service -Name "filezilla-server" -Force -ErrorAction SilentlyContinue
+
+# 2. Reset Tailscale connection
+& "C:\\Program Files\\Tailscale\\tailscale.exe" down 2>$null
+& "C:\\Program Files\\Tailscale\\tailscale.exe" up
+
+# 3. Flush DNS resolver cache
+Clear-DnsClientCache; ipconfig /flushdns
+
+Write-Host "Services restarted, Tailscale mesh refreshed & DNS flushed!" -ForegroundColor Cyan`;
+
+  // Process 5: Status / Diagnostics code (Check FileZilla, Tailscale status/IP, Port 22 listener)
+  const statusCombinedCmd = `# 1. Check FileZilla Server service status
+Get-Service -Name "filezilla-server" -ErrorAction SilentlyContinue | Format-Table -AutoSize
+
+# 2. Check Tailscale mesh status and IP address
+& "C:\\Program Files\\Tailscale\\tailscale.exe" status
+& "C:\\Program Files\\Tailscale\\tailscale.exe" ip -4
+
+# 3. Test SFTP TCP Port 22 listener
+Test-NetConnection -ComputerName 127.0.0.1 -Port 22
+
+Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
+
   return (
-    <div className="space-y-8 w-full max-w-none">
+    <div 
+      className="getting-started-guide-container space-y-8 w-full max-w-full"
+      style={{ width: '100%', maxWidth: '100%' }}
+    >
       {/* Top Banner & Fast-Track Selector */}
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs font-mono text-cyan-400">
-            <span className="px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-bold">
-              ⚡ 5-MINUTE FAST TRACK
-            </span>
-            {engine === 'sftp' ? (
-              <>
-                <span>15 MB RAM FOOTPRINT</span>
-                <span aria-hidden="true">·</span>
-                <span>DIRECT RAW DISK SPEED</span>
-                <span aria-hidden="true">·</span>
-                <span>ZERO ROUTER PORTS</span>
-              </>
-            ) : (
-              <>
-                <span>GOOGLE PHOTOS & DRIVE CLONE</span>
-                <span aria-hidden="true">·</span>
-                <span>AUTO CAMERA SYNC</span>
-                <span aria-hidden="true">·</span>
-                <span>FREE TAILSCALE HTTPS</span>
-              </>
-            )}
-          </div>
-
+        <div className="flex flex-wrap items-center justify-end gap-3">
           {/* Engine Selector Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+          <div className="flex items-center gap-1.5 p-1 bg-[#f5ece1] rounded-xl border border-[#dfcebd] text-xs shadow-2xs">
             <button
               onClick={() => handleEngineSwitch('sftp')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 engine === 'sftp'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white text-amber-950 border border-amber-400 shadow-xs'
+                  : 'text-[#6b4c35] hover:text-[#2d1c10] hover:bg-amber-100/50'
               }`}
             >
-              <Server className="w-3.5 h-3.5 text-cyan-400" />
+              <Server className="w-3.5 h-3.5 text-amber-700" />
               <span>Direct SFTP (5 Min)</span>
             </button>
 
             <button
               onClick={() => handleEngineSwitch('nextcloud')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 engine === 'nextcloud'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white text-emerald-950 border border-emerald-400 shadow-xs'
+                  : 'text-[#6b4c35] hover:text-[#2d1c10] hover:bg-emerald-100/50'
               }`}
             >
-              <FolderSync className="w-3.5 h-3.5 text-emerald-400" />
+              <FolderSync className="w-3.5 h-3.5 text-emerald-700" />
               <span>Nextcloud AIO (5 Min)</span>
             </button>
           </div>
@@ -309,87 +378,495 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
               <span>
                 {engine === 'sftp' ? 'Direct SFTP Getting Started Guide' : 'Nextcloud AIO Getting Started Guide'}
               </span>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/40 text-emerald-300 font-normal">
+              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
                 ~5 Minutes Total
               </span>
             </h1>
-            <p className="text-xs text-slate-400 mt-1 max-w-none leading-relaxed">
+            <p className="text-xs text-[#6b4c35] mt-1.5 max-w-none leading-relaxed">
               {engine === 'sftp' ? (
                 <>
-                  Fastest, lightest private cloud setup: Direct <strong>FileZilla Server</strong> + <strong>Tailscale WireGuard</strong>. Delivers maximum disk throughput, 4K streaming with ~15 MB RAM overhead, zero database indexing lag, and complete isolation on <code className="text-cyan-300 font-mono">D:\PersonalCloud</code> with 0 open router ports.
+                  Fastest, lightest private cloud setup: Direct <strong>FileZilla Server</strong> + <strong>Tailscale WireGuard</strong>. Delivers maximum disk throughput, 4K streaming with ~15 MB RAM overhead, zero database indexing lag, and complete isolation on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports.
                 </>
               ) : (
                 <>
-                  Enterprise personal cloud setup: Full <strong>Google Photos & Drive replacement</strong> via <strong>Docker AIO</strong> + <strong>Tailscale Serve HTTPS</strong>. Delivers native automatic background camera backup, web file portal, AI photo album indexing (Memories), automated 3-2-1 BorgBackup snapshots, and local drive storage on <code className="text-cyan-300 font-mono">D:\PersonalCloud</code> with 0 open router ports and zero domain subscription costs.
+                  Enterprise personal cloud setup: Full <strong>Google Photos & Drive replacement</strong> via <strong>Docker AIO</strong> + <strong>Tailscale Serve HTTPS</strong>. Delivers native automatic background camera backup, web file portal, AI photo album indexing (Memories), automated 3-2-1 BorgBackup snapshots, and local drive storage on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports and zero domain subscription costs.
                 </>
               )}
             </p>
 
             {/* Best Points Feature Highlights */}
-            <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] font-mono">
+            <div className="flex flex-wrap items-center gap-2 pt-2.5">
               {engine === 'sftp' ? (
                 <>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-cyan-300">
-                    ⚡ ~15 MB RAM Footprint
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                    <span>~15 MB RAM Footprint</span>
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">
-                    ⚡ Direct Raw Disk Streaming
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                    <span>Direct Raw Disk Speed</span>
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">
-                    ⚡ Zero Indexing Lag
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                    <span>Zero Indexing Lag</span>
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-emerald-300">
-                    ⚡ Zero Open Router Ports
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50/80 border border-emerald-300 text-emerald-900 shadow-2xs">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+                    <span>Zero Open Router Ports</span>
                   </span>
                 </>
               ) : (
                 <>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-emerald-300">
-                    ☁️ Google Photos & Drive Clone
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                    <span>Google Photos & Drive Clone</span>
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-cyan-300">
-                    ☁️ Auto Camera Roll Sync (5G)
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                    <span>Auto Camera Roll Sync (5G)</span>
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">
-                    ☁️ Free Tailscale HTTPS (0 Port Forwarding)
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50/80 border border-emerald-300 text-emerald-900 shadow-2xs">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+                    <span>Free Tailscale HTTPS</span>
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-purple-300">
-                    ☁️ 3-2-1 BorgBackup Redundancy
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                    <span>3-2-1 BorgBackup Redundancy</span>
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-amber-300">
-                    ☁️ Native Drive Mount (D:\PersonalCloud)
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                    <span>D:\PersonalCloud Native Mount</span>
                   </span>
                 </>
               )}
             </div>
           </div>
 
-          {/* Progress gauge */}
-          <div className="flex items-center gap-3 bg-slate-900 px-4 py-2 rounded-xl border border-slate-800 text-xs shrink-0">
-            <div className="space-y-1">
-              <div className="flex justify-between text-[11px] text-slate-400 font-mono">
-                <span>Completed:</span>
-                <span className="text-cyan-300 font-semibold">{completedMinutes.length}/5 Steps</span>
-              </div>
-              <div className="w-28 bg-slate-800 h-2 rounded-full overflow-hidden">
-                <div 
-                  className="bg-cyan-400 h-full transition-all duration-300"
-                  style={{ width: `${(completedMinutes.length / 5) * 100}%` }}
-                />
-              </div>
+          {/* Process Controls (3 Options: 1. Shutdown copy, 2. Retrieve copy, 3. Permanent Delete All copy) */}
+          <div className="bg-[#fff9f6] p-3 rounded-xl border border-amber-200/90 shadow-2xs text-xs shrink-0 w-full sm:w-auto max-w-lg space-y-2.5 transition-all">
+            <div className={`${showShutdownNow ? 'border-b border-[#ebdcd0] pb-2' : ''}`}>
+              <button
+                type="button"
+                onClick={() => setShowShutdownNow(prev => !prev)}
+                className="flex items-center justify-between w-full gap-2 font-bold text-xs text-[#2d1c10] hover:text-amber-800 transition-colors cursor-pointer group text-left"
+                title={showShutdownNow ? "Click to collapse controls" : "Click to expand controls"}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <PowerOff className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span>Controls</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900 border border-amber-300 font-semibold">5 Controls</span>
+                  </div>
+                </div>
+                {showShutdownNow ? (
+                  <ChevronUp className="w-3.5 h-3.5 text-[#6b4c35] shrink-0" />
+                ) : (
+                  <ChevronDown className="w-3.5 h-3.5 text-[#6b4c35] shrink-0" />
+                )}
+              </button>
             </div>
-            <span className="font-mono text-cyan-300 font-bold text-sm">{totalProgress}%</span>
+
+            {/* When open: 5 Options Switcher & Content */}
+            {showShutdownNow && (
+              <div className="space-y-2.5 pt-0.5">
+                {/* 1. Run in CMD / PowerShell line */}
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#f5ede3] border border-[#dfcebd] text-[11px] font-semibold text-[#543823] shadow-2xs">
+                  <Terminal className="w-3.5 h-3.5 text-amber-800 shrink-0" />
+                  <span>1. Run in CMD / PowerShell</span>
+                </div>
+
+                {/* 5 Options Tabs */}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-1 p-1 bg-stone-100/90 rounded-lg border border-[#ebdcd0] text-[10.5px] font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setControlProcessTab('shutdown')}
+                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center ${
+                      controlProcessTab === 'shutdown'
+                        ? 'bg-red-600 text-white shadow-xs font-semibold'
+                        : 'text-stone-700 hover:text-red-900 hover:bg-white/70'
+                    }`}
+                  >
+                    <PowerOff className="w-3 h-3 shrink-0" />
+                    <span className="truncate">Shutdown code</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setControlProcessTab('retrieve')}
+                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center ${
+                      controlProcessTab === 'retrieve'
+                        ? 'bg-emerald-600 text-white shadow-xs font-semibold'
+                        : 'text-stone-700 hover:text-emerald-900 hover:bg-white/70'
+                    }`}
+                  >
+                    <RotateCcw className="w-3 h-3 shrink-0" />
+                    <span className="truncate">Retrieve code</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setControlProcessTab('restart')}
+                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center ${
+                      controlProcessTab === 'restart'
+                        ? 'bg-amber-600 text-white shadow-xs font-semibold'
+                        : 'text-stone-700 hover:text-amber-900 hover:bg-white/70'
+                    }`}
+                  >
+                    <RefreshCw className="w-3 h-3 shrink-0" />
+                    <span className="truncate">Restart code</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setControlProcessTab('status')}
+                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center ${
+                      controlProcessTab === 'status'
+                        ? 'bg-sky-600 text-white shadow-xs font-semibold'
+                        : 'text-stone-700 hover:text-sky-900 hover:bg-white/70'
+                    }`}
+                  >
+                    <Activity className="w-3 h-3 shrink-0" />
+                    <span className="truncate">Status code</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setControlProcessTab('delete')}
+                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center col-span-2 sm:col-span-1 ${
+                      controlProcessTab === 'delete'
+                        ? 'bg-rose-700 text-white shadow-xs font-semibold'
+                        : 'text-stone-700 hover:text-rose-900 hover:bg-white/70'
+                    }`}
+                  >
+                    <Trash2 className="w-3 h-3 shrink-0" />
+                    <span className="truncate">Permanent delete code</span>
+                  </button>
+                </div>
+
+                {/* Option 1 Content: Shutdown copy */}
+                {controlProcessTab === 'shutdown' && (
+                  <div className="space-y-2.5 bg-red-50/40 p-2.5 sm:p-3 rounded-xl border border-red-200/80">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-red-950">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
+                      <span>Shutdown</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      {/* Left: 3 steps stacked */}
+                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
+                        {/* 1. Stop FileZilla Server */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-red-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-red-100 text-red-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
+                          <span className="text-red-950 font-medium truncate">Stop FileZilla Server</span>
+                        </div>
+
+                        {/* 2. Disconnect Tailscale */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-red-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-red-100 text-red-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
+                          <span className="text-red-950 font-medium truncate">Disconnect Tailscale</span>
+                        </div>
+
+                        {/* 3. Screen Normal (3 Min) */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-red-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-red-100 text-red-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
+                          <span className="text-red-950 font-medium truncate">Screen Normal (3 Min)</span>
+                        </div>
+                      </div>
+
+                      {/* Middle Bracket connecting all 3 steps to copy button */}
+                      <div className="flex items-center justify-center shrink-0 text-red-500 select-none">
+                        <svg className="w-3.5 h-[84px] text-red-500" viewBox="0 0 14 84" fill="none">
+                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                        </svg>
+                      </div>
+
+                      {/* Right: Shutdown copy button vertically centered in the middle */}
+                      <div className="shrink-0 flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(shutdownCombinedCmd, 'proc-shutdown-all')}
+                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-red-600 hover:bg-red-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
+                          title="Copy all 3 shutdown commands into PowerShell"
+                        >
+                          {copiedId === 'proc-shutdown-all' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-white" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Shutdown code</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Option 2 Content: Retrieve copy */}
+                {controlProcessTab === 'retrieve' && (
+                  <div className="space-y-2.5 bg-emerald-50/40 p-2.5 sm:p-3 rounded-xl border border-emerald-200/80">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-950">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+                      <span>Retrieve</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      {/* Left: 3 steps stacked */}
+                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
+                        {/* 1. Start FileZilla Server */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
+                          <span className="text-emerald-950 font-medium truncate">Start FileZilla Server</span>
+                        </div>
+
+                        {/* 2. Reconnect Tailscale */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
+                          <span className="text-emerald-950 font-medium truncate">Reconnect Tailscale (tailscale up)</span>
+                        </div>
+
+                        {/* 3. Screen Time 24/7 Always-On */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
+                          <span className="text-emerald-950 font-medium truncate">Host 24/7 Mode (Never Sleep)</span>
+                        </div>
+                      </div>
+
+                      {/* Middle Bracket connecting all 3 steps to copy button */}
+                      <div className="flex items-center justify-center shrink-0 text-emerald-500 select-none">
+                        <svg className="w-3.5 h-[84px] text-emerald-500" viewBox="0 0 14 84" fill="none">
+                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                        </svg>
+                      </div>
+
+                      {/* Right: Retrieve copy button vertically centered in the middle */}
+                      <div className="shrink-0 flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(retrieveCombinedCmd, 'proc-retrieve-all')}
+                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
+                          title="Copy all 3 retrieve commands into PowerShell"
+                        >
+                          {copiedId === 'proc-retrieve-all' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-white" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Retrieve code</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Option 3 Content: Restart code */}
+                {controlProcessTab === 'restart' && (
+                  <div className="space-y-2.5 bg-amber-50/50 p-2.5 sm:p-3 rounded-xl border border-amber-200/80">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-amber-950">
+                      <RefreshCw className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Restart Services</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      {/* Left: 3 steps stacked */}
+                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
+                        {/* 1. Restart FileZilla Server */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-amber-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
+                          <span className="text-amber-950 font-medium truncate">Restart FileZilla Server</span>
+                        </div>
+
+                        {/* 2. Reset Tailscale Connection */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-amber-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
+                          <span className="text-amber-950 font-medium truncate">Reset Tailscale Connection</span>
+                        </div>
+
+                        {/* 3. Flush DNS Cache */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-amber-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
+                          <span className="text-amber-950 font-medium truncate">Flush DNS Cache</span>
+                        </div>
+                      </div>
+
+                      {/* Middle Bracket connecting all 3 steps to copy button */}
+                      <div className="flex items-center justify-center shrink-0 text-amber-500 select-none">
+                        <svg className="w-3.5 h-[84px] text-amber-500" viewBox="0 0 14 84" fill="none">
+                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                        </svg>
+                      </div>
+
+                      {/* Right: Restart code button vertically centered */}
+                      <div className="shrink-0 flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(restartCombinedCmd, 'proc-restart-all')}
+                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
+                          title="Copy restart commands into PowerShell"
+                        >
+                          {copiedId === 'proc-restart-all' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-white" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Restart code</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Option 4 Content: Status code */}
+                {controlProcessTab === 'status' && (
+                  <div className="space-y-2.5 bg-sky-50/50 p-2.5 sm:p-3 rounded-xl border border-sky-200/80">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-sky-950">
+                      <Activity className="w-3.5 h-3.5 text-sky-600" />
+                      <span>Status & Diagnostics</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      {/* Left: 3 steps stacked */}
+                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
+                        {/* 1. FileZilla Server Status */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-sky-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
+                          <span className="text-sky-950 font-medium truncate">FileZilla Service Status</span>
+                        </div>
+
+                        {/* 2. Tailscale Status & IP */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-sky-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
+                          <span className="text-sky-950 font-medium truncate">Tailscale Mesh Status & IP</span>
+                        </div>
+
+                        {/* 3. Test Port 22 SFTP Listener */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-sky-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
+                          <span className="text-sky-950 font-medium truncate">Test Port 22 SFTP Listener</span>
+                        </div>
+                      </div>
+
+                      {/* Middle Bracket connecting all 3 steps to copy button */}
+                      <div className="flex items-center justify-center shrink-0 text-sky-500 select-none">
+                        <svg className="w-3.5 h-[84px] text-sky-500" viewBox="0 0 14 84" fill="none">
+                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                        </svg>
+                      </div>
+
+                      {/* Right: Status code button vertically centered */}
+                      <div className="shrink-0 flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(statusCombinedCmd, 'proc-status-all')}
+                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-sky-600 hover:bg-sky-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
+                          title="Copy status and diagnostics commands into PowerShell"
+                        >
+                          {copiedId === 'proc-status-all' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-white" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Status code</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Option 5 Content: Permanent Delete All code */}
+                {controlProcessTab === 'delete' && (
+                  <div className="space-y-2.5 bg-rose-50/40 p-2.5 sm:p-3 rounded-xl border border-rose-200/80">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-rose-950">
+                      <Trash2 className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Permanent Delete</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      {/* Left: 3 steps stacked */}
+                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
+                        {/* 1. Tailscale Delete */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-rose-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
+                          <span className="text-rose-950 font-medium truncate">Delete Tailscale (Uninstall)</span>
+                        </div>
+
+                        {/* 2. FileZilla Server Delete */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-rose-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
+                          <span className="text-rose-950 font-medium truncate">Delete FileZilla Server (Uninstall)</span>
+                        </div>
+
+                        {/* 3. Screen time normal mode to 3 minutes */}
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-rose-100 shadow-2xs">
+                          <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
+                          <span className="text-rose-950 font-medium truncate">Screen Normal (3 Min)</span>
+                        </div>
+                      </div>
+
+                      {/* Middle Bracket connecting all 3 steps to copy button */}
+                      <div className="flex items-center justify-center shrink-0 text-rose-500 select-none">
+                        <svg className="w-3.5 h-[84px] text-rose-500" viewBox="0 0 14 84" fill="none">
+                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                        </svg>
+                      </div>
+
+                      {/* Right: perment delete all copy button vertically centered in the middle */}
+                      <div className="shrink-0 flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(permanentDeleteCombinedCmd, 'proc-delete-all')}
+                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-rose-700 hover:bg-rose-800 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
+                          title="Copy all 3 permanent deletion commands into PowerShell"
+                        >
+                          {copiedId === 'proc-delete-all' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-white" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>perment delete all code</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* 5-Minute Pipeline Navigation Bar - Compact Professional Stepper */}
-      <nav aria-label="5-Minute Step Tracker" className="p-1.5 bg-slate-950/90 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-sm">
-        <ol className="grid grid-cols-2 sm:grid-cols-5 gap-1">
+      {/* Pipeline Navigation Bar - Compact Professional Stepper */}
+      <nav aria-label="Step Tracker" className="p-1.5 bg-slate-950/90 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-sm">
+        <ol className={`grid grid-cols-2 ${currentSteps.length === 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-5'} gap-1`}>
           {currentSteps.map((s) => {
             const isDone = completedMinutes.includes(s.minute);
             const isCurrent = activeMinute === s.minute;
@@ -421,10 +898,6 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
                       {s.shortTitle}
                     </span>
                   </div>
-
-                  <span className="text-[10px] font-mono text-slate-500 shrink-0 hidden md:inline">
-                    0{s.minute}:00
-                  </span>
                 </button>
               </li>
             );
@@ -437,32 +910,37 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
       {/* ========================================================================= */}
       {engine === 'sftp' && (
         <div className="p-6 sm:p-8 bg-slate-900/70 rounded-2xl border border-slate-800 space-y-6">
-          {/* MINUTE 1 */}
+          {/* STEP 1: Tailscale & FileZilla Server (Merged) */}
           {activeMinute === 1 && (
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-cyan-400 font-semibold tracking-wider">
-                    MINUTE 1 OF 5 · ESTIMATED TIME: 60 SECONDS
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
-                    1. Install Tailscale & Obtain Your Private Mesh IP
+                  <h2 className="text-xl font-bold text-white">
+                    1. Install Tailscale & FileZilla Server
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-slate-400">Zero Open Router Ports</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-slate-400">Prerequisites</span>
+                  <button
+                    onClick={() => markMinuteCompleted(1)}
+                    className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
+                  >
+                    Confirm Software Installed ✓
+                  </button>
+                </div>
               </div>
 
               <p className="text-xs text-slate-300 leading-relaxed">
-                Tailscale uses WireGuard to negotiate a point-to-point encrypted mesh between your laptop and your mobile device. Because it uses NAT-traversal, <strong>you do not need to open any ports on your home Wi-Fi router</strong> or set up Dynamic DNS.
+                Install both prerequisites on your laptop. <strong>Tailscale</strong> creates a secure encrypted point-to-point mesh network with zero router port forwarding, and <strong>FileZilla Server</strong> runs as an ultra-lightweight native Windows service (~15 MB RAM) to stream your files directly from disk.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
+                {/* Tailscale Card */}
+                <div className="p-4.5 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
                   <div className="font-bold text-white flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-cyan-400" />
-                    <span>Required Checklist:</span>
+                    <span>1. Tailscale Private Mesh Network</span>
                   </div>
-
                   <ul className="space-y-2 text-slate-300">
                     <li className="flex items-start gap-2">
                       <span className="font-mono text-cyan-400">1.</span>
@@ -476,119 +954,251 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
                       <span className="font-mono text-cyan-400">3.</span>
                       <span>Install Tailscale on your mobile phone (App Store / Play Store) and log into the <strong>exact same account</strong>.</span>
                     </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-mono text-cyan-400">4.</span>
+                      <div className="space-y-1.5 flex-1">
+                        <span>
+                          After login, copy your laptop/PC Tailscale IPv4 address (e.g., <code className="px-1.5 py-0.5 bg-slate-900 border border-cyan-500/30 text-cyan-300 font-mono text-[11px] rounded font-semibold">100.116.48.9</code>): In the Tailscale app (or Admin Console <strong>Machines</strong> page), locate your laptop name (e.g., <strong>shaik-mahammed-khasim</strong>) and copy its IPv4 address. You will enter this IP in your phone to connect.
+                        </span>
+                        <div>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard('100.116.48.9', 'tailscale-ip-sample')}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 rounded-md transition-colors cursor-pointer"
+                            title="Copy your laptop Tailscale IPv4"
+                          >
+                            {copiedId === 'tailscale-ip-sample' ? (
+                              <>
+                                <Check className="w-3 h-3 text-emerald-400" />
+                                <span className="text-emerald-300 font-semibold">Copied 100.116.48.9</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3 h-3" />
+                                <span>Copy Laptop IPv4: <strong>100.116.48.9</strong></span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </li>
                   </ul>
                 </div>
 
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
-                  <label className="font-bold text-white block">
-                    Enter your laptop's Tailscale IPv4:
-                  </label>
-                  <input
-                    type="text"
-                    value={tailscaleIp}
-                    onChange={(e) => setTailscaleIp(e.target.value)}
-                    placeholder="100.x.y.z"
-                    className="w-full px-3 py-2 text-xs font-mono bg-slate-900 border border-slate-700 rounded-md text-cyan-300 focus:outline-none focus:border-cyan-400"
-                  />
-
-                  <div className="flex items-center justify-between pt-1">
-                    <div className={`text-[11px] font-mono ${isValidTailscaleIp(tailscaleIp) ? 'text-emerald-400' : 'text-amber-400'}`}>
-                      {isValidTailscaleIp(tailscaleIp) ? '✓ Valid CGNAT IP (100.64.0.0/10)' : '⚠ Check Tailscale system tray icon for 100.x.y.z'}
-                    </div>
-
-                    <button
-                      onClick={testHandshake}
-                      disabled={handshakeStatus === 'testing'}
-                      className="px-3 py-1.5 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded transition-colors cursor-pointer disabled:opacity-50"
-                    >
-                      {handshakeStatus === 'testing' ? 'Handshaking...' : handshakeStatus === 'success' ? 'Verified (18ms)' : 'Verify Tunnel'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* MINUTE 2 */}
-          {activeMinute === 2 && (
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
-                <div>
-                  <span className="text-[11px] font-mono text-cyan-400 font-semibold tracking-wider">
-                    MINUTE 2 OF 5 · ESTIMATED TIME: 60 SECONDS
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
-                    2. Install FileZilla Server & Create User Profile
-                  </h2>
-                </div>
-                <span className="text-xs font-mono text-slate-400">Daemon: ~15 MB RAM</span>
-              </div>
-
-              <p className="text-xs text-slate-300 leading-relaxed">
-                FileZilla Server is an extremely lightweight, high-performance native Windows service. Unlike heavy cloud containers, it draws less than 20MB of RAM and streams 4K video files directly from your physical drive without intermediate transcode caching.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
+                {/* FileZilla Server Card */}
+                <div className="p-4.5 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
                   <div className="font-bold text-white flex items-center gap-2">
                     <Server className="w-4 h-4 text-cyan-400" />
-                    <span>Installation Steps:</span>
+                    <span>2. FileZilla Server Daemon</span>
                   </div>
                   <ol className="space-y-2 text-slate-300">
                     <li className="flex items-start gap-2">
                       <span className="font-mono text-cyan-400">1.</span>
-                      <span>Download FileZilla Server for Windows (official site: <a href="https://filezilla-project.org/download.php?type=server" target="_blank" rel="noopener noreferrer" className="text-cyan-300 underline inline-flex items-center gap-0.5">filezilla-project.org <ExternalLink className="w-2.5 h-2.5" /></a>).</span>
+                      <span>Download FileZilla Server for Windows: <a href="https://filezilla-project.org/download.php?type=server" target="_blank" rel="noopener noreferrer" className="text-cyan-300 underline inline-flex items-center gap-0.5">filezilla-project.org <ExternalLink className="w-2.5 h-2.5" /></a></span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="font-mono text-cyan-400">2.</span>
-                      <span>Install as a standard Windows Service (starts automatically on laptop boot).</span>
+                      <span>Install as a standard Windows Service (starts automatically on boot).</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="font-mono text-cyan-400">3.</span>
                       <span>Launch <strong>FileZilla Server Administration</strong> (connect to localhost <code className="font-mono text-slate-200">127.0.0.1:14148</code>).</span>
                     </li>
                   </ol>
+                </div>
+              </div>
+            </div>
+          )}
 
-                  {/* Initial Connection Helper Box */}
-                  <div className="p-3 bg-cyan-950/30 rounded-lg border border-cyan-500/30 text-[11px] space-y-1 text-slate-300">
-                    <div className="font-bold text-cyan-300 flex items-center gap-1.5">
-                      <span>💡 First-Time "Connection (127.0.0.1:14148)" Prompt:</span>
-                    </div>
-                    <p className="text-slate-300 leading-relaxed">
-                      <strong>Password:</strong> Enter the admin password you chose during FileZilla Server installation. If you didn't set one, leave the box empty and click <strong>OK</strong>.
+          {/* STEP 2: Storage Mount & Connection Instructions */}
+          {activeMinute === 2 && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#dfcebd] pb-3">
+                <div>
+                  <h2 className="text-xl font-bold text-[#2d1c10]">
+                    2. Configure User & Storage Mount
+                  </h2>
+                </div>
+                <span className="text-xs font-mono text-amber-800 px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 font-semibold">
+                  User & Storage Mount (Port 21)
+                </span>
+              </div>
+
+              {/* 1. Click "Connect to Server..." */}
+              <div className="p-4 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-2">
+                <div className="flex items-center gap-2.5 font-bold text-base text-[#2d1c10]">
+                  <span className="w-6 h-6 rounded-full bg-amber-600 text-white flex items-center justify-center text-xs font-mono font-bold shrink-0">
+                    1
+                  </span>
+                  <h3 className="font-bold">1. Click &quot;Connect to Server...&quot;</h3>
+                </div>
+                <p className="text-xs text-[#6b4c35] pl-8.5 leading-relaxed">
+                  Click the <strong>Connect to Server...</strong> button in the center of your FileZilla Server window (or press <kbd className="px-1.5 py-0.5 text-[11px] font-mono bg-[#f5ece1] border border-[#dfcebd] rounded text-[#2d1c10]">Enter</kbd>).
+                </p>
+              </div>
+
+              {/* Step 1: Set Listener Protocol (Recommended) */}
+              <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
+                  <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
+                    Step 1
+                  </span>
+                  <h4 className="font-bold">Set Listener Protocol (Recommended)</h4>
+                </div>
+                <div className="text-xs text-[#6b4c35] space-y-2 pl-2 leading-relaxed">
+                  <p className="font-medium text-[#2d1c10]">
+                    Under <strong>Server listeners</strong> where you are right now:
+                  </p>
+                  <ul className="space-y-1.5 list-disc pl-5">
+                    <li>
+                      Click the dropdown under <strong>Protocol</strong> for{' '}
+                      <code className="font-mono text-amber-950 font-bold bg-[#f5ece1] px-2 py-0.5 rounded border border-[#dfcebd] shadow-2xs">
+                        0.0.0.0 (Port 21)
+                      </code>{' '}
+                      <span className="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-md border border-amber-300">
+                        e.g. Example Port: 21
+                      </span>.
+                    </li>
+                    <li>
+                      Change it to <strong className="text-amber-950 bg-amber-100/70 px-1.5 py-0.5 rounded border border-amber-300">Allow explicit FTP over TLS (or Insecure plain FTP)</strong>.
+                    </li>
+                  </ul>
+                  <div className="p-3 bg-amber-50/90 rounded-lg border border-amber-200 text-amber-950 text-[11px] leading-relaxed mt-2.5 space-y-1.5">
+                    <p>
+                      <strong className="text-amber-900 font-bold">Why?</strong> Tailscale already encrypts 100% of the connection end-to-end with WireGuard. Changing this makes connecting from mobile apps instant without certificate errors.
                     </p>
-                    <p className="text-slate-400 text-[10px]">
-                      Tip: Check <em>"Save the password"</em> and <em>"Automatically connect to this server at startup"</em>.
+                    <p className="text-amber-900 font-medium">
+                      ⚠️ <strong>Getting &quot;503 Use AUTH first&quot;?</strong> This means the listener protocol is still set to <em>Require explicit FTP over TLS</em>. Switch the dropdown to <strong>Allow explicit FTP over TLS</strong> or <strong>Insecure plain FTP</strong> and click OK.
                     </p>
                   </div>
                 </div>
+              </div>
 
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
-                  <div className="font-bold text-white flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-emerald-400" />
-                    <span>Add SFTP User Account:</span>
+              {/* Step 2: Click "Users" on the Left Sidebar */}
+              <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
+                  <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
+                    Step 2
+                  </span>
+                  <h4 className="font-bold">Click &quot;Users&quot; on the Left Sidebar</h4>
+                </div>
+                <div className="text-xs text-[#6b4c35] space-y-2 pl-2 leading-relaxed">
+                  <ul className="space-y-1.5 list-disc pl-5">
+                    <li>In the left panel, click on <strong>Users</strong> (under <em>Rights management</em>).</li>
+                    <li>Click the <strong>Add</strong> button on the right.</li>
+                    <li>
+                      Enter your mobile username: e.g.{' '}
+                      <code className="font-mono text-amber-950 font-bold bg-[#f5ece1] px-2 py-0.5 rounded border border-[#dfcebd] shadow-2xs">
+                        {username || 'vaultuser'}
+                      </code>{' '}
+                      <span className="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-md border border-amber-300">
+                        e.g. (span): vaultuser
+                      </span>{' '}
+                      and click <strong>OK</strong>.
+                    </li>
+                  </ul>
+                  <div className="pt-2 flex flex-wrap items-center gap-2">
+                    <label className="text-[11px] font-medium text-[#7d5b3f]">Custom Username:</label>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="px-2.5 py-1 text-xs font-mono bg-[#fcf8f3] border border-[#dfcebd] rounded text-[#2d1c10] focus:outline-none focus:border-amber-500 w-44"
+                      placeholder="vaultuser"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3: Set Your Password */}
+              <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
+                  <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
+                    Step 3
+                  </span>
+                  <h4 className="font-bold">Set Your Password</h4>
+                </div>
+                <div className="text-xs text-[#6b4c35] space-y-2 pl-2 leading-relaxed">
+                  <ul className="space-y-1.5 list-disc pl-5">
+                    <li>With your new user selected, look under <strong>Credentials (Authentication)</strong>.</li>
+                    <li>Choose <strong>Require password to log in</strong>.</li>
+                    <li>Type a password of your choice (you will use this on your phone).</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Step 4: Choose Your Storage Folder (Mount Points) */}
+              <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3">
+                <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
+                  <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
+                    Step 4
+                  </span>
+                  <h4 className="font-bold">Choose Your Storage Folder (Mount Points)</h4>
+                </div>
+                <div className="text-xs text-[#6b4c35] space-y-3 pl-2 leading-relaxed">
+                  <p>In the user settings sub-list on the left, click <strong>Mount points</strong>.</p>
+                  <p className="font-semibold text-[#2d1c10]">Click the <strong>Add</strong> button:</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-mono text-xs">
+                    <div className="p-3 bg-[#f5ece1] rounded-lg border border-[#dfcebd] flex items-center justify-between">
+                      <span className="text-[#7d5b3f]">Virtual path:</span>
+                      <span className="text-amber-950 font-bold bg-white px-2 py-0.5 rounded border border-[#dfcebd]">Type /</span>
+                    </div>
+                    <div className="p-3 bg-[#f5ece1] rounded-lg border border-[#dfcebd] flex items-center justify-between">
+                      <span className="text-[#7d5b3f]">Native path:</span>
+                      <span className="text-emerald-900 font-bold bg-white px-2 py-0.5 rounded border border-[#dfcebd]">
+                        Click browse or type {storagePath}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <div>
-                      <label className="text-slate-400 block mb-0.5">Username for Mobile Login:</label>
-                      <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="w-full px-3 py-1.5 text-xs font-mono bg-slate-900 border border-slate-700 rounded text-cyan-300"
-                      />
-                    </div>
+                  <div className="pt-1">
+                    <label className="text-[11px] font-medium text-[#7d5b3f] block mb-1">
+                      Native path on your hard drive (to store files in):
+                    </label>
+                    <input
+                      type="text"
+                      value={storagePath}
+                      onChange={(e) => setStoragePath(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs font-mono bg-[#fcf8f3] border border-[#dfcebd] rounded text-[#2d1c10] focus:outline-none focus:border-amber-500"
+                      placeholder="D:\PersonalCloud"
+                    />
+                  </div>
 
-                    <p className="text-[11px] text-slate-400">
-                      Navigate to <strong>Server &gt; Configure &gt; Users &gt; Add</strong>. Set credentials to "Require password to log in" and choose a strong password.
+                  <div className="space-y-1.5 pt-1">
+                    <p className="font-semibold text-[#2d1c10]">Under Permissions, check:</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
+                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-300 text-emerald-950 font-bold flex items-center gap-2">
+                        <span className="text-emerald-700">☑</span>
+                        <span>Read</span>
+                      </div>
+                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-300 text-emerald-950 font-bold flex items-center gap-2">
+                        <span className="text-emerald-700">☑</span>
+                        <span>Write</span>
+                      </div>
+                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-300 text-emerald-950 font-bold flex items-center gap-2">
+                        <span className="text-emerald-700">☑</span>
+                        <span>Delete</span>
+                      </div>
+                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-300 text-emerald-950 font-bold flex items-center gap-2">
+                        <span className="text-emerald-700">☑</span>
+                        <span>Create directory</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#dfcebd] mt-3">
+                    <p className="font-semibold text-amber-950 flex items-center gap-1.5 text-xs">
+                      <span>Click</span>
+                      <strong className="px-2 py-0.5 bg-amber-100 rounded border border-amber-300 text-amber-950 font-bold">OK</strong>
+                      <span>at the very bottom right of the window to save!</span>
                     </p>
 
                     <button
                       onClick={() => markMinuteCompleted(2)}
-                      className="w-full py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
+                      className="w-full sm:w-auto px-4 py-2 text-xs font-semibold text-white bg-amber-700 hover:bg-amber-800 rounded-lg transition-colors cursor-pointer shadow-xs"
                     >
-                      Confirm User Profile Configured ✓
+                      Confirm User & Storage Done ✓
                     </button>
                   </div>
                 </div>
@@ -596,98 +1206,13 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
             </div>
           )}
 
-          {/* MINUTE 3 */}
+          {/* STEP 3 */}
           {activeMinute === 3 && (
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-cyan-400 font-semibold tracking-wider">
-                    MINUTE 3 OF 5 · ESTIMATED TIME: 60 SECONDS
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
-                    3. Set Mount Point to Safe Partition (D:\PersonalCloud)
-                  </h2>
-                </div>
-                <span className="text-xs font-mono text-amber-400">Partition Scoping Guard</span>
-              </div>
-
-              <div className="p-3.5 bg-amber-950/30 border border-amber-500/40 rounded-xl text-xs text-amber-200 flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <span className="font-bold block text-white">Partition Isolation Principle:</span>
-                  <p className="text-[11px] leading-relaxed text-amber-300/90">
-                    <strong>Never set virtual root "/" to "C:\" or "C:\Windows"!</strong> Always restrict the mount point to a dedicated folder like <code className="font-mono font-bold text-white">D:\PersonalCloud</code>. This ensures clients browsing from mobile can never access, modify, or corrupt Windows operating system files.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
-                  <div className="font-bold text-white flex items-center gap-2">
-                    <HardDrive className="w-4 h-4 text-cyan-400" />
-                    <span>Configure Mount Mapping:</span>
-                  </div>
-
-                  <div className="space-y-2 font-mono">
-                    <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Virtual path:</span>
-                      <span className="text-cyan-300 font-bold">/</span>
-                    </div>
-                    <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Native directory:</span>
-                      <span className="text-emerald-300 font-bold">{storagePath}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <label className="text-[11px] text-slate-400 block mb-1">Customize storage folder path:</label>
-                    <input
-                      type="text"
-                      value={storagePath}
-                      onChange={(e) => setStoragePath(e.target.value)}
-                      className="w-full px-3 py-1.5 text-xs font-mono bg-slate-900 border border-slate-700 rounded text-slate-200"
-                    />
-                  </div>
-                </div>
-
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
-                  <div className="font-bold text-white flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span>Grant Permissions Checklist:</span>
-                  </div>
-
-                  <p className="text-slate-400 leading-relaxed">
-                    In FileZilla Server User Mount Points, check all four boxes:
-                  </p>
-
-                  <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 text-emerald-300">✓ Read</div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 text-emerald-300">✓ Write</div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 text-emerald-300">✓ Create</div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 text-emerald-300">✓ Delete</div>
-                  </div>
-
-                  <button
-                    onClick={() => markMinuteCompleted(3)}
-                    className="w-full py-1.5 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded transition-colors cursor-pointer mt-2"
-                  >
-                    Confirm Mount Point Configured ✓
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* MINUTE 4 */}
-          {activeMinute === 4 && (
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
-                <div>
-                  <span className="text-[11px] font-mono text-cyan-400 font-semibold tracking-wider">
-                    MINUTE 4 OF 5 · ESTIMATED TIME: 60 SECONDS
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
-                    4. Open Firewall Port 22 & Configure 24/7 Power Plan
+                  <h2 className="text-xl font-bold text-white">
+                    3. Open Firewall Port 22 & Configure 24/7 Power Plan
                   </h2>
                 </div>
                 <span className="text-xs font-mono text-purple-300">PowerShell Automation</span>
@@ -719,7 +1244,7 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
                   Applied PowerShell rule and verified standby timeout is 0?
                 </span>
                 <button
-                  onClick={() => markMinuteCompleted(4)}
+                  onClick={() => markMinuteCompleted(3)}
                   className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
                 >
                   Mark Step Complete ✓
@@ -728,113 +1253,274 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
             </div>
           )}
 
-          {/* MINUTE 5 */}
-          {activeMinute === 5 && (
+          {/* STEP 4 */}
+          {activeMinute === 4 && (
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-emerald-400 font-semibold tracking-wider">
-                    MINUTE 5 OF 5 · FINAL STEP
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
-                    5. Connect Mobile Phone over 5G & Test File Streaming
+                  <h2 className="text-xl font-bold text-white">
+                    4. Connect Mobile Phone over 5G
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-emerald-300">Live Client Test</span>
+                <span className="text-xs font-mono text-emerald-300">Mobile Setup</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
-                  <div className="flex items-center justify-between">
-                    <div className="font-bold text-white flex items-center gap-2">
-                      <Smartphone className="w-4 h-4 text-cyan-400" />
-                      <span>Mobile App Connection Card:</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-cyan-300">Solid / CX Explorer</span>
+              <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 space-y-4 text-xs">
+                <div className="flex items-center justify-between">
+                  <div className="font-bold text-white flex items-center gap-2">
+                    <Smartphone className="w-4 h-4 text-cyan-400" />
+                    <span>Mobile App Connection Card:</span>
                   </div>
-
-                  <div className="space-y-2 font-mono text-[11px]">
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Connection Type:</span>
-                      <span className="text-white font-bold">SFTP</span>
-                    </div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Remote Host / Server:</span>
-                      <span className="text-cyan-300 font-bold">{tailscaleIp}</span>
-                    </div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Port:</span>
-                      <span className="text-white font-bold">22</span>
-                    </div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Username:</span>
-                      <span className="text-emerald-300 font-bold">{username}</span>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.cxinventor.file.explorer&pcampaignid=web_share"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-cyan-300 hover:text-white bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 rounded-lg transition-colors cursor-pointer shadow-2xs group"
+                      title="Install CX File Explorer from Google Play Store"
+                    >
+                      <Download className="w-3 h-3 text-cyan-400 group-hover:scale-110 transition-transform" />
+                      <span>Install CX File Explorer</span>
+                      <ExternalLink className="w-2.5 h-2.5 text-cyan-400/80" />
+                    </a>
+                    <button
+                      onClick={() => markMinuteCompleted(4)}
+                      className="px-3.5 py-1 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
+                    >
+                      Confirm Mobile Connected ✓
+                    </button>
                   </div>
-
-                  <p className="text-[11px] text-slate-400">
-                    Ensure the Tailscale VPN key toggle is <strong>ACTIVE</strong> on your phone before tapping Connect.
-                  </p>
                 </div>
 
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="font-bold text-white flex items-center gap-2">
-                      <UploadCloud className="w-4 h-4 text-emerald-400" />
-                      <span>Simulate Mobile 5G Upload:</span>
-                    </div>
-                    <p className="text-slate-400 text-[11px]">
-                      Simulate sending a 25MB camera photo over 5G through WireGuard directly to <code className="text-slate-200">{storagePath}</code>.
-                    </p>
-
-                    {isUploading && (
-                      <div className="space-y-1 pt-2">
-                        <div className="flex justify-between text-xs font-mono text-cyan-300">
-                          <span>Transmitting 25MB...</span>
-                          <span>{uploadProgress}%</span>
-                        </div>
-                        <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                          <div 
-                            className="bg-cyan-400 h-full transition-all duration-300"
-                            style={{ width: `${uploadProgress}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {uploadVerified && (
-                      <div className="p-2.5 bg-emerald-950/20 border border-emerald-500/30 rounded text-xs text-emerald-300 flex items-center gap-2">
-                        <FileCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                        <span>Remote transfer verified: 100% throughput achieved!</span>
-                      </div>
-                    )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 font-mono text-[11px]">
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Connection Type:</span>
+                    <span className="text-white font-bold text-xs mt-1">SFTP</span>
                   </div>
-
-                  <button
-                    onClick={simulateMobileUpload}
-                    disabled={isUploading}
-                    className="w-full py-2 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
-                  >
-                    {isUploading ? 'Transmitting...' : uploadVerified ? 'Re-test Transfer' : 'Simulate 5G File Upload'}
-                  </button>
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Remote Host / Server:</span>
+                    <span className="text-cyan-300 font-bold text-xs mt-1">{tailscaleIp}</span>
+                  </div>
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Port:</span>
+                    <span className="text-white font-bold text-xs mt-1">22</span>
+                  </div>
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Username:</span>
+                    <span className="text-emerald-300 font-bold text-xs mt-1">{username}</span>
+                  </div>
                 </div>
+
+                <p className="text-[11px] text-slate-400">
+                  Ensure the Tailscale VPN key toggle is <strong>ACTIVE</strong> on your phone before tapping Connect.
+                </p>
               </div>
 
-              {uploadVerified && (
+              {(completedMinutes.includes(4) || uploadVerified) && (
                 <div className="p-4 bg-emerald-950/30 border border-emerald-500/40 rounded-xl text-center space-y-2">
                   <div className="inline-flex items-center gap-2 text-emerald-300 font-bold text-sm">
                     <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                    <span>5-Minute Direct SFTP Setup Complete!</span>
+                    <span>Direct SFTP Setup Complete!</span>
                   </div>
                   <p className="text-xs text-slate-300 max-w-lg mx-auto">
                     Your laptop is now a 24/7 private cloud. You can stream 4K movies, access uncompressed camera RAW files, and manage your hard drive from anywhere in the world.
                   </p>
                   <div className="flex justify-center gap-2 pt-1">
                     <button
-                      onClick={() => onNavigate('terminal')}
+                      onClick={() => onNavigate('diagnostics')}
                       className="px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded transition-colors cursor-pointer"
                     >
-                      Test in Live Terminal
+                      Open Diagnostics Workbench
+                    </button>
+                    {onOpenRunbookExport && (
+                      <button
+                        onClick={onOpenRunbookExport}
+                        className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded transition-colors cursor-pointer"
+                      >
+                        Export Standalone Runbook (.md)
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STEP 5 - HOST CONTROLS */}
+          {activeMinute === 5 && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <PowerOff className="w-5 h-5 text-amber-400" />
+                    <span>5. Host Controls & 24/7 Server Management</span>
+                  </h2>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-cyan-300 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+                    5 PowerShell Automation Controls
+                  </span>
+                  <button
+                    onClick={() => markMinuteCompleted(5)}
+                    className="px-3.5 py-1 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
+                  >
+                    Confirm Controls Verified ✓
+                  </button>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Manage your host PC without opening configuration menus. Run these 5 pre-configured automation scripts in <strong>Administrator PowerShell</strong> to control your 24/7 SFTP private cloud on demand.
+              </p>
+
+              {/* 5 Control Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {/* 1. Shutdown code */}
+                <div className="p-4 bg-slate-950 rounded-xl border border-red-500/30 space-y-3 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-red-400 text-xs flex items-center gap-1.5">
+                        <PowerOff className="w-3.5 h-3.5 text-red-500" />
+                        <span>1. Shutdown code</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">3 actions</span>
+                    </div>
+                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+                      <li>Stop FileZilla Server service</li>
+                      <li>Disconnect Tailscale mesh</li>
+                      <li>Screen & sleep normal (3 min)</li>
+                    </ul>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(shutdownCombinedCmd, 'step5-shutdown')}
+                    className="w-full py-2 px-3 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                  >
+                    {copiedId === 'step5-shutdown' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedId === 'step5-shutdown' ? 'Copied!' : 'Shutdown code'}</span>
+                  </button>
+                </div>
+
+                {/* 2. Retrieve code */}
+                <div className="p-4 bg-slate-950 rounded-xl border border-emerald-500/30 space-y-3 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-emerald-400 text-xs flex items-center gap-1.5">
+                        <RotateCcw className="w-3.5 h-3.5 text-emerald-500" />
+                        <span>2. Retrieve code</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">3 actions</span>
+                    </div>
+                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+                      <li>Start FileZilla Server daemon</li>
+                      <li>Reconnect Tailscale (tailscale up)</li>
+                      <li>Host 24/7 mode (never sleep)</li>
+                    </ul>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(retrieveCombinedCmd, 'step5-retrieve')}
+                    className="w-full py-2 px-3 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                  >
+                    {copiedId === 'step5-retrieve' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedId === 'step5-retrieve' ? 'Copied!' : 'Retrieve code'}</span>
+                  </button>
+                </div>
+
+                {/* 3. Restart code */}
+                <div className="p-4 bg-slate-950 rounded-xl border border-amber-500/30 space-y-3 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-amber-400 text-xs flex items-center gap-1.5">
+                        <RefreshCw className="w-3.5 h-3.5 text-amber-500" />
+                        <span>3. Restart code</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">3 actions</span>
+                    </div>
+                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+                      <li>Restart FileZilla Server service</li>
+                      <li>Reset Tailscale connection</li>
+                      <li>Flush DNS resolver cache</li>
+                    </ul>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(restartCombinedCmd, 'step5-restart')}
+                    className="w-full py-2 px-3 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                  >
+                    {copiedId === 'step5-restart' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedId === 'step5-restart' ? 'Copied!' : 'Restart code'}</span>
+                  </button>
+                </div>
+
+                {/* 4. Status code */}
+                <div className="p-4 bg-slate-950 rounded-xl border border-sky-500/30 space-y-3 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-sky-400 text-xs flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5 text-sky-500" />
+                        <span>4. Status code</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">Diagnostics</span>
+                    </div>
+                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+                      <li>FileZilla Service status check</li>
+                      <li>Tailscale mesh status & IP</li>
+                      <li>Test TCP Port 22 SFTP listener</li>
+                    </ul>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(statusCombinedCmd, 'step5-status')}
+                    className="w-full py-2 px-3 text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                  >
+                    {copiedId === 'step5-status' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedId === 'step5-status' ? 'Copied!' : 'Status code'}</span>
+                  </button>
+                </div>
+
+                {/* 5. Permanent Delete All code */}
+                <div className="p-4 bg-slate-950 rounded-xl border border-rose-500/30 space-y-3 flex flex-col justify-between md:col-span-2 lg:col-span-2">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-rose-400 text-xs flex items-center gap-1.5">
+                        <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                        <span>5. Permanent delete all code</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-rose-300/80 bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800/50">Clean Uninstall</span>
+                    </div>
+                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+                      <li>Uninstall & remove Tailscale service & processes</li>
+                      <li>Uninstall & purge FileZilla Server service & software</li>
+                      <li>Restore screen & sleep timeout to normal mode (3 min)</li>
+                    </ul>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(permanentDeleteCombinedCmd, 'step5-delete')}
+                    className="w-full py-2 px-3 text-xs font-bold bg-rose-700 hover:bg-rose-800 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
+                  >
+                    {copiedId === 'step5-delete' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedId === 'step5-delete' ? 'Copied!' : 'perment delete all code'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {(completedMinutes.includes(5) || uploadVerified) && (
+                <div className="p-4 bg-emerald-950/30 border border-emerald-500/40 rounded-xl text-center space-y-2">
+                  <div className="inline-flex items-center gap-2 text-emerald-300 font-bold text-sm">
+                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                    <span>5-Step Direct SFTP Private Cloud Complete!</span>
+                  </div>
+                  <p className="text-xs text-slate-300 max-w-lg mx-auto">
+                    Your host is fully configured with 24/7 personal cloud storage and 5 one-click automation controls.
+                  </p>
+                  <div className="flex justify-center gap-2 pt-1">
+                    <button
+                      onClick={() => onNavigate('diagnostics')}
+                      className="px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded transition-colors cursor-pointer"
+                    >
+                      Open Diagnostics Workbench
                     </button>
                     {onOpenRunbookExport && (
                       <button
@@ -862,10 +1548,7 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-cyan-400 font-semibold tracking-wider">
-                    MINUTE 1 OF 5 · ESTIMATED TIME: 60 SECONDS
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
+                  <h2 className="text-xl font-bold text-white">
                     1. Verify Docker Desktop + WSL2 & Tailscale Mesh IP
                   </h2>
                 </div>
@@ -876,57 +1559,36 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
                 Nextcloud All-in-One (AIO) runs under Docker with a WSL2 Linux backend. It gives you Google Photos facial recognition, camera roll synchronization, and web file browsing—all secured through your private Tailscale WireGuard mesh.
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
+              <div className="p-4.5 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
+                <div className="flex items-center justify-between">
                   <div className="font-bold text-white flex items-center gap-2">
                     <Container className="w-4 h-4 text-cyan-400" />
                     <span>Prerequisites Checklist:</span>
                   </div>
-
-                  <ul className="space-y-2 text-slate-300">
-                    <li className="flex items-start gap-2">
-                      <span className="font-mono text-cyan-400">1.</span>
-                      <span>
-                        Download & install <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:text-cyan-200 underline inline-flex items-center gap-0.5 font-medium">Docker Desktop for Windows <ExternalLink className="w-2.5 h-2.5" /></a> with <strong>Use the WSL 2 based engine</strong> enabled.
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="font-mono text-cyan-400">2.</span>
-                      <span>Ensure Tailscale is connected on both Windows and your smartphone.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="font-mono text-cyan-400">3.</span>
-                      <span>Verify in PowerShell: <code className="text-cyan-300 font-mono">wsl --status</code> returns Version 2.</span>
-                    </li>
-                  </ul>
+                  <button
+                    onClick={() => markMinuteCompleted(1)}
+                    className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
+                  >
+                    Mark Step Complete ✓
+                  </button>
                 </div>
 
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
-                  <label className="font-bold text-white block">
-                    Host Tailscale IPv4 Address:
-                  </label>
-                  <input
-                    type="text"
-                    value={tailscaleIp}
-                    onChange={(e) => setTailscaleIp(e.target.value)}
-                    placeholder="100.x.y.z"
-                    className="w-full px-3 py-2 text-xs font-mono bg-slate-900 border border-slate-700 rounded-md text-cyan-300 focus:outline-none focus:border-cyan-400"
-                  />
-
-                  <div className="flex items-center justify-between pt-1">
-                    <div className={`text-[11px] font-mono ${isValidTailscaleIp(tailscaleIp) ? 'text-emerald-400' : 'text-amber-400'}`}>
-                      {isValidTailscaleIp(tailscaleIp) ? '✓ Valid CGNAT IP (100.64.0.0/10)' : '⚠ Check Tailscale IP'}
-                    </div>
-
-                    <button
-                      onClick={testHandshake}
-                      disabled={handshakeStatus === 'testing'}
-                      className="px-3 py-1.5 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded transition-colors cursor-pointer disabled:opacity-50"
-                    >
-                      {handshakeStatus === 'testing' ? 'Testing...' : handshakeStatus === 'success' ? 'Mesh Ready (18ms)' : 'Verify Mesh'}
-                    </button>
-                  </div>
-                </div>
+                <ul className="space-y-2 text-slate-300">
+                  <li className="flex items-start gap-2">
+                    <span className="font-mono text-cyan-400">1.</span>
+                    <span>
+                      Download & install <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener noreferrer" className="text-cyan-300 hover:text-cyan-200 underline inline-flex items-center gap-0.5 font-medium">Docker Desktop for Windows <ExternalLink className="w-2.5 h-2.5" /></a> with <strong>Use the WSL 2 based engine</strong> enabled.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-mono text-cyan-400">2.</span>
+                    <span>Ensure Tailscale is connected on both Windows and your smartphone.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-mono text-cyan-400">3.</span>
+                    <span>Verify in PowerShell: <code className="text-cyan-300 font-mono">wsl --status</code> returns Version 2.</span>
+                  </li>
+                </ul>
               </div>
             </div>
           )}
@@ -936,10 +1598,7 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-cyan-400 font-semibold tracking-wider">
-                    MINUTE 2 OF 5 · ESTIMATED TIME: 60 SECONDS
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
+                  <h2 className="text-xl font-bold text-white">
                     2. Deploy Nextcloud AIO Mastercontainer
                   </h2>
                 </div>
@@ -990,10 +1649,7 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-cyan-400 font-semibold tracking-wider">
-                    MINUTE 3 OF 5 · ESTIMATED TIME: 60 SECONDS
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
+                  <h2 className="text-xl font-bold text-white">
                     3. Save Master Passphrase & Mount D:\PersonalCloud
                   </h2>
                 </div>
@@ -1074,10 +1730,7 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-cyan-400 font-semibold tracking-wider">
-                    MINUTE 4 OF 5 · ESTIMATED TIME: 60 SECONDS
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
+                  <h2 className="text-xl font-bold text-white">
                     4. Tailscale Serve HTTPS & 24/7 Host Power Plan
                   </h2>
                 </div>
@@ -1124,96 +1777,55 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-emerald-400 font-semibold tracking-wider">
-                    MINUTE 5 OF 5 · FINAL STEP
-                  </span>
-                  <h2 className="text-xl font-bold text-white mt-0.5">
-                    5. Connect Nextcloud Mobile App (5G) & Test Camera Sync
+                  <h2 className="text-xl font-bold text-white">
+                    5. Connect Nextcloud Mobile App (5G)
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-emerald-300">Live Client Test</span>
+                <span className="text-xs font-mono text-emerald-300">Mobile Setup</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Mobile Client Card */}
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
-                  <div className="flex items-center justify-between">
-                    <div className="font-bold text-white flex items-center gap-2">
-                      <Smartphone className="w-4 h-4 text-cyan-400" />
-                      <span>Nextcloud iOS / Android Connection:</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-cyan-300">Official App</span>
+              <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 space-y-4 text-xs">
+                <div className="flex items-center justify-between">
+                  <div className="font-bold text-white flex items-center gap-2">
+                    <Smartphone className="w-4 h-4 text-cyan-400" />
+                    <span>Nextcloud iOS / Android Connection:</span>
                   </div>
-
-                  <div className="space-y-2 font-mono text-[11px]">
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Server Address:</span>
-                      <span className="text-cyan-300 font-bold">https://{tailscaleIp}</span>
-                    </div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Tailnet MagicDNS:</span>
-                      <span className="text-slate-300">https://vault-host.tailnet.ts.net</span>
-                    </div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Username:</span>
-                      <span className="text-emerald-300 font-bold">admin</span>
-                    </div>
-                    <div className="p-2 bg-slate-900 rounded border border-slate-800 flex justify-between">
-                      <span className="text-slate-400">Target Drive:</span>
-                      <span className="text-white font-bold">{storagePath}</span>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-cyan-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Official App</span>
+                    <button
+                      onClick={() => markMinuteCompleted(5)}
+                      className="px-3.5 py-1 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
+                    >
+                      Confirm Mobile Connected ✓
+                    </button>
                   </div>
-
-                  <p className="text-[11px] text-slate-400">
-                    In the app settings, turn on <strong>Auto-upload &gt; Camera</strong> to automatically backup phone photos over 5G.
-                  </p>
                 </div>
 
-                {/* Upload Simulator */}
-                <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="font-bold text-white flex items-center gap-2">
-                      <UploadCloud className="w-4 h-4 text-emerald-400" />
-                      <span>Simulate Nextcloud Camera Roll Sync:</span>
-                    </div>
-                    <p className="text-slate-400 text-[11px]">
-                      Simulates phone camera auto-uploading a 25MB photo album over 5G encrypted through WireGuard to Nextcloud.
-                    </p>
-
-                    {isUploading && (
-                      <div className="space-y-1 pt-2">
-                        <div className="flex justify-between text-xs font-mono text-cyan-300">
-                          <span>Syncing Camera/IMG_2026_0904.heic...</span>
-                          <span>{uploadProgress}%</span>
-                        </div>
-                        <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                          <div 
-                            className="bg-cyan-400 h-full transition-all duration-300"
-                            style={{ width: `${uploadProgress}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {uploadVerified && (
-                      <div className="p-2.5 bg-emerald-950/20 border border-emerald-500/30 rounded text-xs text-emerald-300 flex items-center gap-2">
-                        <FileCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                        <span>Nextcloud sync verified: Indexed in Memories database!</span>
-                      </div>
-                    )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 font-mono text-[11px]">
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Server Address:</span>
+                    <span className="text-cyan-300 font-bold text-xs mt-1">https://{tailscaleIp}</span>
                   </div>
-
-                  <button
-                    onClick={simulateMobileUpload}
-                    disabled={isUploading}
-                    className="w-full py-2 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
-                  >
-                    {isUploading ? 'Syncing...' : uploadVerified ? 'Re-test Sync' : 'Simulate 5G Photo Sync'}
-                  </button>
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Tailnet MagicDNS:</span>
+                    <span className="text-slate-300 text-xs mt-1">https://vault-host.tailnet.ts.net</span>
+                  </div>
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Username:</span>
+                    <span className="text-emerald-300 font-bold text-xs mt-1">admin</span>
+                  </div>
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Target Drive:</span>
+                    <span className="text-white font-bold text-xs mt-1">{storagePath}</span>
+                  </div>
                 </div>
+
+                <p className="text-[11px] text-slate-400">
+                  In the app settings, turn on <strong>Auto-upload &gt; Camera</strong> to automatically backup phone photos over 5G.
+                </p>
               </div>
 
-              {uploadVerified && (
+              {(completedMinutes.includes(5) || uploadVerified) && (
                 <div className="p-4 bg-emerald-950/30 border border-emerald-500/40 rounded-xl text-center space-y-2">
                   <div className="inline-flex items-center gap-2 text-emerald-300 font-bold text-sm">
                     <ShieldCheck className="w-5 h-5 text-emerald-400" />
@@ -1224,10 +1836,10 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
                   </p>
                   <div className="flex justify-center gap-2 pt-1">
                     <button
-                      onClick={() => onNavigate('terminal')}
+                      onClick={() => onNavigate('diagnostics')}
                       className="px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded transition-colors cursor-pointer"
                     >
-                      Test in Live Terminal
+                      Open Diagnostics Workbench
                     </button>
                     {onOpenRunbookExport && (
                       <button
@@ -1253,24 +1865,24 @@ Write-Host "Nextcloud AIO HTTPS serve & 24/7 host power plan activated!" -Foregr
           className="flex items-center gap-1.5 px-3 py-1.5 font-medium text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Minute {Math.max(1, activeMinute - 1)}</span>
+          <span>Step {Math.max(1, activeMinute - 1)}</span>
         </button>
 
-        {activeMinute < 5 ? (
+        {activeMinute < currentSteps.length ? (
           <button
             onClick={() => {
               markMinuteCompleted(activeMinute);
-              setActiveMinute(prev => Math.min(5, prev + 1));
+              setActiveMinute(prev => Math.min(currentSteps.length, prev + 1));
             }}
             className="flex items-center gap-1.5 px-4 py-2 font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
           >
-            <span>Next: Minute {activeMinute + 1}</span>
+            <span>Next: Step {activeMinute + 1}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         ) : (
           <button
             onClick={() => {
-              markMinuteCompleted(5);
+              markMinuteCompleted(currentSteps.length);
               onNavigate('overview');
             }}
             className="flex items-center gap-1.5 px-4 py-2 font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-md transition-colors cursor-pointer shadow-xs"
