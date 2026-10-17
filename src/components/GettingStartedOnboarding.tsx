@@ -28,12 +28,12 @@ import {
   ShieldAlert,
   PowerOff,
   RotateCcw,
+  RefreshCw,
+  Activity,
   Download,
   ChevronDown,
   ChevronUp,
-  Trash2,
-  RefreshCw,
-  Activity
+  Trash2
 } from 'lucide-react';
 
 interface GettingStartedOnboardingProps {
@@ -66,7 +66,6 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
   const [storagePath, setStoragePath] = useState<string>('D:\\PersonalCloud');
   const [username, setUsername] = useState<string>('vaultuser');
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [showShutdownNow, setShowShutdownNow] = useState<boolean>(true);
   const [controlProcessTab, setControlProcessTab] = useState<'shutdown' | 'retrieve' | 'restart' | 'status' | 'delete'>('shutdown');
 
   // Nextcloud specific states
@@ -170,10 +169,10 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
     },
     {
       minute: 5,
-      timeEst: '05:00',
-      title: 'Host Controls & Maintenance',
-      shortTitle: 'Host Controls',
-      subtitle: 'PowerShell codes for Shutdown, Retrieve, Restart, Status & Reset'
+      timeEst: '00:00',
+      title: 'Controls',
+      shortTitle: 'Controls',
+      subtitle: 'Shutdown code, Retrieve code & Permanent delete code'
     }
   ];
 
@@ -293,7 +292,32 @@ powercfg /change monitor-timeout-ac 0
 
 Write-Host "FileZilla started, Tailscale reconnected & Host 24/7 mode retrieved!" -ForegroundColor Green`;
 
-  // Process 3: Permanent Delete All copy (Tailscale, FileZilla Server, Screen Time Normal 3 Min)
+  // Process 3: Restart code (Restart FileZilla Server, Reset Tailscale Connection, Flush DNS Cache)
+  const restartCombinedCmd = `# 1. Restart FileZilla Server
+Restart-Service -Name "filezilla-server" -Force -ErrorAction SilentlyContinue
+
+# 2. Reset Tailscale Connection
+& "C:\\Program Files\\Tailscale\\tailscale.exe" down
+& "C:\\Program Files\\Tailscale\\tailscale.exe" up --unattended
+
+# 3. Flush DNS Cache
+Clear-DnsClientCache
+ipconfig /flushdns
+
+Write-Host "FileZilla Server restarted, Tailscale connection reset & DNS cache flushed!" -ForegroundColor Yellow`;
+
+  // Process 4: Status code (FileZilla Service Status, Tailscale Mesh Status & IP Check, Test TCP Port 22 SFTP Listener)
+  const statusCombinedCmd = `# 1. FileZilla Service Status
+Get-Service -Name "filezilla-server" -ErrorAction SilentlyContinue | Select-Object Name, Status, StartType
+
+# 2. Tailscale Mesh Status & IP Check
+& "C:\\Program Files\\Tailscale\\tailscale.exe" status
+& "C:\\Program Files\\Tailscale\\tailscale.exe" ip -4
+
+# 3. Test TCP Port 22 SFTP Listener
+Test-NetConnection -ComputerName 127.0.0.1 -Port 22 -InformationLevel Detailed`;
+
+  // Process 5: Permanent Delete All copy (Tailscale, FileZilla Server, Screen Time Normal 3 Min)
   const tailscalePermanentDeleteCmd = `& "C:\\Program Files\\Tailscale\\tailscale.exe" logout 2>$null; Stop-Service -Name "Tailscale" -Force -ErrorAction SilentlyContinue; taskkill /F /IM "tailscale*" /T 2>$null; winget uninstall --id Tailscale.Tailscale --silent -h 2>$null`;
   const filezillaPermanentDeleteCmd = `Stop-Service -Name "filezilla-server" -Force -ErrorAction SilentlyContinue; taskkill /F /IM "FileZilla Server*" /T 2>$null; if (Test-Path "C:\\Program Files\\FileZilla Server\\uninstall.exe") { Start-Process -Wait -FilePath "C:\\Program Files\\FileZilla Server\\uninstall.exe" -ArgumentList "/S" 2>$null }; winget uninstall --id TimKosse.FileZillaServer --silent 2>$null`;
   const permanentDeleteCombinedCmd = `# 1. Permanently Uninstall & Remove Tailscale
@@ -314,68 +338,408 @@ powercfg /change monitor-timeout-ac 3
 
 Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3-minute normal mode!" -ForegroundColor Red`;
 
-  // Process 4: Restart Services code (Restart FileZilla, Reset Tailscale, Flush DNS)
-  const restartCombinedCmd = `# 1. Restart FileZilla Server service
-Restart-Service -Name "filezilla-server" -Force -ErrorAction SilentlyContinue
+  const renderControlsTab = (stepNum: number) => (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+        <div>
+          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <PowerOff className="w-5 h-5 text-red-500" />
+            <span>{stepNum}. Controls</span>
+          </h2>
+        </div>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#241a15] border border-amber-900/60 text-[11px] font-semibold text-amber-300 shadow-2xs">
+          <Terminal className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <span>1. Run in CMD / PowerShell</span>
+        </div>
+      </div>
 
-# 2. Reset Tailscale connection
-& "C:\\Program Files\\Tailscale\\tailscale.exe" down 2>$null
-& "C:\\Program Files\\Tailscale\\tailscale.exe" up
+      {/* 5 Options Tabs */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs font-bold max-w-3xl">
+        <button
+          type="button"
+          onClick={() => setControlProcessTab('shutdown')}
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+            controlProcessTab === 'shutdown'
+              ? 'bg-red-600 text-white shadow-xs font-semibold'
+              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+          }`}
+        >
+          <PowerOff className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Shutdown code</span>
+        </button>
 
-# 3. Flush DNS resolver cache
-Clear-DnsClientCache; ipconfig /flushdns
+        <button
+          type="button"
+          onClick={() => setControlProcessTab('retrieve')}
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+            controlProcessTab === 'retrieve'
+              ? 'bg-emerald-600 text-white shadow-xs font-semibold'
+              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+          }`}
+        >
+          <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Retrieve code</span>
+        </button>
 
-Write-Host "Services restarted, Tailscale mesh refreshed & DNS flushed!" -ForegroundColor Cyan`;
+        <button
+          type="button"
+          onClick={() => setControlProcessTab('restart')}
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+            controlProcessTab === 'restart'
+              ? 'bg-amber-600 text-white shadow-xs font-semibold'
+              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+          }`}
+        >
+          <RefreshCw className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Restart code</span>
+        </button>
 
-  // Process 5: Status / Diagnostics code (Check FileZilla, Tailscale status/IP, Port 22 listener)
-  const statusCombinedCmd = `# 1. Check FileZilla Server service status
-Get-Service -Name "filezilla-server" -ErrorAction SilentlyContinue | Format-Table -AutoSize
+        <button
+          type="button"
+          onClick={() => setControlProcessTab('status')}
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+            controlProcessTab === 'status'
+              ? 'bg-cyan-600 text-white shadow-xs font-semibold'
+              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+          }`}
+        >
+          <Activity className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Status code</span>
+        </button>
 
-# 2. Check Tailscale mesh status and IP address
-& "C:\\Program Files\\Tailscale\\tailscale.exe" status
-& "C:\\Program Files\\Tailscale\\tailscale.exe" ip -4
+        <button
+          type="button"
+          onClick={() => setControlProcessTab('delete')}
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+            controlProcessTab === 'delete'
+              ? 'bg-rose-700 text-white shadow-xs font-semibold'
+              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+          }`}
+        >
+          <Trash2 className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Permanent delete</span>
+        </button>
+      </div>
 
-# 3. Test SFTP TCP Port 22 listener
-Test-NetConnection -ComputerName 127.0.0.1 -Port 22
+      {/* Option 1 Content: Shutdown code */}
+      {controlProcessTab === 'shutdown' && (
+        <div className="space-y-3 bg-red-950/20 p-4 sm:p-5 rounded-xl border border-red-900/60 max-w-2xl">
+          <div className="flex items-center gap-2 font-bold text-sm text-red-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+            <span>Shutdown</span>
+          </div>
 
-Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Left: 3 steps stacked */}
+            <div className="flex-1 space-y-2 text-xs min-w-0">
+              {/* 1. Stop FileZilla Server */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-red-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-red-950 text-red-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-red-800/60">1</span>
+                <span className="text-slate-200 font-medium truncate">Stop FileZilla Server</span>
+              </div>
+
+              {/* 2. Disconnect Tailscale */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-red-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-red-950 text-red-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-red-800/60">2</span>
+                <span className="text-slate-200 font-medium truncate">Disconnect Tailscale</span>
+              </div>
+
+              {/* 3. Screen Normal (3 Min) */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-red-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-red-950 text-red-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-red-800/60">3</span>
+                <span className="text-slate-200 font-medium truncate">Screen Normal (3 Min)</span>
+              </div>
+            </div>
+
+            {/* Middle Bracket connecting all 3 steps to copy button */}
+            <div className="flex items-center justify-center shrink-0 text-red-500 select-none">
+              <svg className="w-4 h-[96px] text-red-500" viewBox="0 0 14 84" fill="none">
+                <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Right: Shutdown copy button vertically centered in the middle */}
+            <div className="shrink-0 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => copyToClipboard(shutdownCombinedCmd, 'proc-shutdown-all')}
+                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-red-600 hover:bg-red-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                title="Copy all 3 shutdown commands into PowerShell"
+              >
+                {copiedId === 'proc-shutdown-all' ? (
+                  <>
+                    <Check className="w-4 h-4 text-white" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>Shutdown code</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Option 2 Content: Retrieve code */}
+      {controlProcessTab === 'retrieve' && (
+        <div className="space-y-3 bg-emerald-950/20 p-4 sm:p-5 rounded-xl border border-emerald-900/60 max-w-2xl">
+          <div className="flex items-center gap-2 font-bold text-sm text-emerald-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span>Retrieve</span>
+          </div>
+
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Left: 3 steps stacked */}
+            <div className="flex-1 space-y-2 text-xs min-w-0">
+              {/* 1. Start FileZilla Server */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-emerald-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-emerald-950 text-emerald-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-emerald-800/60">1</span>
+                <span className="text-slate-200 font-medium truncate">Start FileZilla Server</span>
+              </div>
+
+              {/* 2. Reconnect Tailscale */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-emerald-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-emerald-950 text-emerald-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-emerald-800/60">2</span>
+                <span className="text-slate-200 font-medium truncate">Reconnect Tailscale (tailscale up)</span>
+              </div>
+
+              {/* 3. Screen Time 24/7 Always-On */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-emerald-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-emerald-950 text-emerald-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-emerald-800/60">3</span>
+                <span className="text-slate-200 font-medium truncate">Host 24/7 Mode (Never Sleep)</span>
+              </div>
+            </div>
+
+            {/* Middle Bracket connecting all 3 steps to copy button */}
+            <div className="flex items-center justify-center shrink-0 text-emerald-500 select-none">
+              <svg className="w-4 h-[96px] text-emerald-500" viewBox="0 0 14 84" fill="none">
+                <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Right: Retrieve copy button vertically centered in the middle */}
+            <div className="shrink-0 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => copyToClipboard(retrieveCombinedCmd, 'proc-retrieve-all')}
+                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                title="Copy all 3 retrieve commands into PowerShell"
+              >
+                {copiedId === 'proc-retrieve-all' ? (
+                  <>
+                    <Check className="w-4 h-4 text-white" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>Retrieve code</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Option: Restart code */}
+      {controlProcessTab === 'restart' && (
+        <div className="space-y-3 bg-amber-950/20 p-4 sm:p-5 rounded-xl border border-amber-900/60 max-w-2xl">
+          <div className="flex items-center gap-2 font-bold text-sm text-amber-400">
+            <RefreshCw className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Restart</span>
+          </div>
+
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Left: 3 steps stacked */}
+            <div className="flex-1 space-y-2 text-xs min-w-0">
+              {/* 1. Restart FileZilla Server */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-amber-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-amber-950 text-amber-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-amber-800/60">1</span>
+                <span className="text-slate-200 font-medium truncate">Restart FileZilla Server</span>
+              </div>
+
+              {/* 2. Reset Tailscale Connection */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-amber-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-amber-950 text-amber-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-amber-800/60">2</span>
+                <span className="text-slate-200 font-medium truncate">Reset Tailscale Connection</span>
+              </div>
+
+              {/* 3. Flush DNS Cache */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-amber-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-amber-950 text-amber-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-amber-800/60">3</span>
+                <span className="text-slate-200 font-medium truncate">Flush DNS Cache</span>
+              </div>
+            </div>
+
+            {/* Middle Bracket connecting all 3 steps to copy button */}
+            <div className="flex items-center justify-center shrink-0 text-amber-500 select-none">
+              <svg className="w-4 h-[96px] text-amber-500" viewBox="0 0 14 84" fill="none">
+                <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Right: Restart copy button vertically centered in the middle */}
+            <div className="shrink-0 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => copyToClipboard(restartCombinedCmd, 'proc-restart-all')}
+                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                title="Copy all 3 restart commands into PowerShell"
+              >
+                {copiedId === 'proc-restart-all' ? (
+                  <>
+                    <Check className="w-4 h-4 text-white" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>Restart code</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Option: Status code */}
+      {controlProcessTab === 'status' && (
+        <div className="space-y-3 bg-cyan-950/20 p-4 sm:p-5 rounded-xl border border-cyan-900/60 max-w-2xl">
+          <div className="flex items-center gap-2 font-bold text-sm text-cyan-400">
+            <Activity className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span>Status</span>
+          </div>
+
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Left: 3 steps stacked */}
+            <div className="flex-1 space-y-2 text-xs min-w-0">
+              {/* 1. FileZilla Service Status */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-cyan-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-800/60">1</span>
+                <span className="text-slate-200 font-medium truncate">FileZilla Service Status</span>
+              </div>
+
+              {/* 2. Tailscale Mesh Status & IP Check */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-cyan-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-800/60">2</span>
+                <span className="text-slate-200 font-medium truncate">Tailscale Mesh Status & IP Check</span>
+              </div>
+
+              {/* 3. Test TCP Port 22 SFTP Listener */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-cyan-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-800/60">3</span>
+                <span className="text-slate-200 font-medium truncate">Test TCP Port 22 SFTP Listener</span>
+              </div>
+            </div>
+
+            {/* Middle Bracket connecting all 3 steps to copy button */}
+            <div className="flex items-center justify-center shrink-0 text-cyan-500 select-none">
+              <svg className="w-4 h-[96px] text-cyan-500" viewBox="0 0 14 84" fill="none">
+                <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Right: Status copy button vertically centered in the middle */}
+            <div className="shrink-0 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => copyToClipboard(statusCombinedCmd, 'proc-status-all')}
+                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                title="Copy all 3 status diagnostic commands into PowerShell"
+              >
+                {copiedId === 'proc-status-all' ? (
+                  <>
+                    <Check className="w-4 h-4 text-white" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>Status code</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Option 5 Content: Permanent Delete All code */}
+      {controlProcessTab === 'delete' && (
+        <div className="space-y-3 bg-rose-950/20 p-4 sm:p-5 rounded-xl border border-rose-900/60 max-w-2xl">
+          <div className="flex items-center gap-2 font-bold text-sm text-rose-400">
+            <Trash2 className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>Permanent Delete</span>
+          </div>
+
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Left: 3 steps stacked */}
+            <div className="flex-1 space-y-2 text-xs min-w-0">
+              {/* 1. Tailscale Delete */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-rose-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-rose-950 text-rose-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-rose-800/60">1</span>
+                <span className="text-slate-200 font-medium truncate">Delete Tailscale (Uninstall)</span>
+              </div>
+
+              {/* 2. FileZilla Server Delete */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-rose-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-rose-950 text-rose-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-rose-800/60">2</span>
+                <span className="text-slate-200 font-medium truncate">Delete FileZilla Server (Uninstall)</span>
+              </div>
+
+              {/* 3. Screen time normal mode to 3 minutes */}
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-rose-900/40 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-rose-950 text-rose-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-rose-800/60">3</span>
+                <span className="text-slate-200 font-medium truncate">Screen Normal (3 Min)</span>
+              </div>
+            </div>
+
+            {/* Middle Bracket connecting all 3 steps to copy button */}
+            <div className="flex items-center justify-center shrink-0 text-rose-500 select-none">
+              <svg className="w-4 h-[96px] text-rose-500" viewBox="0 0 14 84" fill="none">
+                <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Right: perment delete all copy button vertically centered in the middle */}
+            <div className="shrink-0 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => copyToClipboard(permanentDeleteCombinedCmd, 'proc-delete-all')}
+                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-rose-700 hover:bg-rose-800 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                title="Copy all 3 permanent deletion commands into PowerShell"
+              >
+                {copiedId === 'proc-delete-all' ? (
+                  <>
+                    <Check className="w-4 h-4 text-white" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>perment delete all code</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div 
       className="getting-started-guide-container space-y-8 w-full max-w-full"
       style={{ width: '100%', maxWidth: '100%' }}
     >
-      {/* Top Banner & Fast-Track Selector */}
+      {/* Top Banner */}
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          {/* Engine Selector Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-[#f5ece1] rounded-xl border border-[#dfcebd] text-xs shadow-2xs">
-            <button
-              onClick={() => handleEngineSwitch('sftp')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
-                engine === 'sftp'
-                  ? 'bg-white text-amber-950 border border-amber-400 shadow-xs'
-                  : 'text-[#6b4c35] hover:text-[#2d1c10] hover:bg-amber-100/50'
-              }`}
-            >
-              <Server className="w-3.5 h-3.5 text-amber-700" />
-              <span>Direct SFTP (5 Min)</span>
-            </button>
-
-            <button
-              onClick={() => handleEngineSwitch('nextcloud')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
-                engine === 'nextcloud'
-                  ? 'bg-white text-emerald-950 border border-emerald-400 shadow-xs'
-                  : 'text-[#6b4c35] hover:text-[#2d1c10] hover:bg-emerald-100/50'
-              }`}
-            >
-              <FolderSync className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Nextcloud AIO (5 Min)</span>
-            </button>
-          </div>
-        </div>
-
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
@@ -445,428 +809,12 @@ Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
               )}
             </div>
           </div>
-
-          {/* Process Controls (3 Options: 1. Shutdown copy, 2. Retrieve copy, 3. Permanent Delete All copy) */}
-          <div className="bg-[#fff9f6] p-3 rounded-xl border border-amber-200/90 shadow-2xs text-xs shrink-0 w-full sm:w-auto max-w-lg space-y-2.5 transition-all">
-            <div className={`${showShutdownNow ? 'border-b border-[#ebdcd0] pb-2' : ''}`}>
-              <button
-                type="button"
-                onClick={() => setShowShutdownNow(prev => !prev)}
-                className="flex items-center justify-between w-full gap-2 font-bold text-xs text-[#2d1c10] hover:text-amber-800 transition-colors cursor-pointer group text-left"
-                title={showShutdownNow ? "Click to collapse controls" : "Click to expand controls"}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <PowerOff className="w-3.5 h-3.5 text-red-600 shrink-0" />
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span>Controls</span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900 border border-amber-300 font-semibold">5 Controls</span>
-                  </div>
-                </div>
-                {showShutdownNow ? (
-                  <ChevronUp className="w-3.5 h-3.5 text-[#6b4c35] shrink-0" />
-                ) : (
-                  <ChevronDown className="w-3.5 h-3.5 text-[#6b4c35] shrink-0" />
-                )}
-              </button>
-            </div>
-
-            {/* When open: 5 Options Switcher & Content */}
-            {showShutdownNow && (
-              <div className="space-y-2.5 pt-0.5">
-                {/* 1. Run in CMD / PowerShell line */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#f5ede3] border border-[#dfcebd] text-[11px] font-semibold text-[#543823] shadow-2xs">
-                  <Terminal className="w-3.5 h-3.5 text-amber-800 shrink-0" />
-                  <span>1. Run in CMD / PowerShell</span>
-                </div>
-
-                {/* 5 Options Tabs */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-1 p-1 bg-stone-100/90 rounded-lg border border-[#ebdcd0] text-[10.5px] font-bold">
-                  <button
-                    type="button"
-                    onClick={() => setControlProcessTab('shutdown')}
-                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center ${
-                      controlProcessTab === 'shutdown'
-                        ? 'bg-red-600 text-white shadow-xs font-semibold'
-                        : 'text-stone-700 hover:text-red-900 hover:bg-white/70'
-                    }`}
-                  >
-                    <PowerOff className="w-3 h-3 shrink-0" />
-                    <span className="truncate">Shutdown code</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setControlProcessTab('retrieve')}
-                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center ${
-                      controlProcessTab === 'retrieve'
-                        ? 'bg-emerald-600 text-white shadow-xs font-semibold'
-                        : 'text-stone-700 hover:text-emerald-900 hover:bg-white/70'
-                    }`}
-                  >
-                    <RotateCcw className="w-3 h-3 shrink-0" />
-                    <span className="truncate">Retrieve code</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setControlProcessTab('restart')}
-                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center ${
-                      controlProcessTab === 'restart'
-                        ? 'bg-amber-600 text-white shadow-xs font-semibold'
-                        : 'text-stone-700 hover:text-amber-900 hover:bg-white/70'
-                    }`}
-                  >
-                    <RefreshCw className="w-3 h-3 shrink-0" />
-                    <span className="truncate">Restart code</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setControlProcessTab('status')}
-                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center ${
-                      controlProcessTab === 'status'
-                        ? 'bg-sky-600 text-white shadow-xs font-semibold'
-                        : 'text-stone-700 hover:text-sky-900 hover:bg-white/70'
-                    }`}
-                  >
-                    <Activity className="w-3 h-3 shrink-0" />
-                    <span className="truncate">Status code</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setControlProcessTab('delete')}
-                    className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-md transition-all cursor-pointer text-center col-span-2 sm:col-span-1 ${
-                      controlProcessTab === 'delete'
-                        ? 'bg-rose-700 text-white shadow-xs font-semibold'
-                        : 'text-stone-700 hover:text-rose-900 hover:bg-white/70'
-                    }`}
-                  >
-                    <Trash2 className="w-3 h-3 shrink-0" />
-                    <span className="truncate">Permanent delete code</span>
-                  </button>
-                </div>
-
-                {/* Option 1 Content: Shutdown copy */}
-                {controlProcessTab === 'shutdown' && (
-                  <div className="space-y-2.5 bg-red-50/40 p-2.5 sm:p-3 rounded-xl border border-red-200/80">
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-red-950">
-                      <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
-                      <span>Shutdown</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      {/* Left: 3 steps stacked */}
-                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
-                        {/* 1. Stop FileZilla Server */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-red-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-red-100 text-red-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
-                          <span className="text-red-950 font-medium truncate">Stop FileZilla Server</span>
-                        </div>
-
-                        {/* 2. Disconnect Tailscale */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-red-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-red-100 text-red-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
-                          <span className="text-red-950 font-medium truncate">Disconnect Tailscale</span>
-                        </div>
-
-                        {/* 3. Screen Normal (3 Min) */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-red-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-red-100 text-red-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
-                          <span className="text-red-950 font-medium truncate">Screen Normal (3 Min)</span>
-                        </div>
-                      </div>
-
-                      {/* Middle Bracket connecting all 3 steps to copy button */}
-                      <div className="flex items-center justify-center shrink-0 text-red-500 select-none">
-                        <svg className="w-3.5 h-[84px] text-red-500" viewBox="0 0 14 84" fill="none">
-                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                        </svg>
-                      </div>
-
-                      {/* Right: Shutdown copy button vertically centered in the middle */}
-                      <div className="shrink-0 flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(shutdownCombinedCmd, 'proc-shutdown-all')}
-                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-red-600 hover:bg-red-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
-                          title="Copy all 3 shutdown commands into PowerShell"
-                        >
-                          {copiedId === 'proc-shutdown-all' ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-white" />
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>Shutdown code</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Option 2 Content: Retrieve copy */}
-                {controlProcessTab === 'retrieve' && (
-                  <div className="space-y-2.5 bg-emerald-50/40 p-2.5 sm:p-3 rounded-xl border border-emerald-200/80">
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-950">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                      <span>Retrieve</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      {/* Left: 3 steps stacked */}
-                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
-                        {/* 1. Start FileZilla Server */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
-                          <span className="text-emerald-950 font-medium truncate">Start FileZilla Server</span>
-                        </div>
-
-                        {/* 2. Reconnect Tailscale */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
-                          <span className="text-emerald-950 font-medium truncate">Reconnect Tailscale (tailscale up)</span>
-                        </div>
-
-                        {/* 3. Screen Time 24/7 Always-On */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
-                          <span className="text-emerald-950 font-medium truncate">Host 24/7 Mode (Never Sleep)</span>
-                        </div>
-                      </div>
-
-                      {/* Middle Bracket connecting all 3 steps to copy button */}
-                      <div className="flex items-center justify-center shrink-0 text-emerald-500 select-none">
-                        <svg className="w-3.5 h-[84px] text-emerald-500" viewBox="0 0 14 84" fill="none">
-                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                        </svg>
-                      </div>
-
-                      {/* Right: Retrieve copy button vertically centered in the middle */}
-                      <div className="shrink-0 flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(retrieveCombinedCmd, 'proc-retrieve-all')}
-                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
-                          title="Copy all 3 retrieve commands into PowerShell"
-                        >
-                          {copiedId === 'proc-retrieve-all' ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-white" />
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>Retrieve code</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Option 3 Content: Restart code */}
-                {controlProcessTab === 'restart' && (
-                  <div className="space-y-2.5 bg-amber-50/50 p-2.5 sm:p-3 rounded-xl border border-amber-200/80">
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-amber-950">
-                      <RefreshCw className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Restart Services</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      {/* Left: 3 steps stacked */}
-                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
-                        {/* 1. Restart FileZilla Server */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-amber-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
-                          <span className="text-amber-950 font-medium truncate">Restart FileZilla Server</span>
-                        </div>
-
-                        {/* 2. Reset Tailscale Connection */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-amber-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
-                          <span className="text-amber-950 font-medium truncate">Reset Tailscale Connection</span>
-                        </div>
-
-                        {/* 3. Flush DNS Cache */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-amber-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
-                          <span className="text-amber-950 font-medium truncate">Flush DNS Cache</span>
-                        </div>
-                      </div>
-
-                      {/* Middle Bracket connecting all 3 steps to copy button */}
-                      <div className="flex items-center justify-center shrink-0 text-amber-500 select-none">
-                        <svg className="w-3.5 h-[84px] text-amber-500" viewBox="0 0 14 84" fill="none">
-                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                        </svg>
-                      </div>
-
-                      {/* Right: Restart code button vertically centered */}
-                      <div className="shrink-0 flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(restartCombinedCmd, 'proc-restart-all')}
-                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
-                          title="Copy restart commands into PowerShell"
-                        >
-                          {copiedId === 'proc-restart-all' ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-white" />
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>Restart code</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Option 4 Content: Status code */}
-                {controlProcessTab === 'status' && (
-                  <div className="space-y-2.5 bg-sky-50/50 p-2.5 sm:p-3 rounded-xl border border-sky-200/80">
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-sky-950">
-                      <Activity className="w-3.5 h-3.5 text-sky-600" />
-                      <span>Status & Diagnostics</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      {/* Left: 3 steps stacked */}
-                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
-                        {/* 1. FileZilla Server Status */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-sky-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
-                          <span className="text-sky-950 font-medium truncate">FileZilla Service Status</span>
-                        </div>
-
-                        {/* 2. Tailscale Status & IP */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-sky-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
-                          <span className="text-sky-950 font-medium truncate">Tailscale Mesh Status & IP</span>
-                        </div>
-
-                        {/* 3. Test Port 22 SFTP Listener */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-sky-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
-                          <span className="text-sky-950 font-medium truncate">Test Port 22 SFTP Listener</span>
-                        </div>
-                      </div>
-
-                      {/* Middle Bracket connecting all 3 steps to copy button */}
-                      <div className="flex items-center justify-center shrink-0 text-sky-500 select-none">
-                        <svg className="w-3.5 h-[84px] text-sky-500" viewBox="0 0 14 84" fill="none">
-                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                        </svg>
-                      </div>
-
-                      {/* Right: Status code button vertically centered */}
-                      <div className="shrink-0 flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(statusCombinedCmd, 'proc-status-all')}
-                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-sky-600 hover:bg-sky-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
-                          title="Copy status and diagnostics commands into PowerShell"
-                        >
-                          {copiedId === 'proc-status-all' ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-white" />
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>Status code</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Option 5 Content: Permanent Delete All code */}
-                {controlProcessTab === 'delete' && (
-                  <div className="space-y-2.5 bg-rose-50/40 p-2.5 sm:p-3 rounded-xl border border-rose-200/80">
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-rose-950">
-                      <Trash2 className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>Permanent Delete</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      {/* Left: 3 steps stacked */}
-                      <div className="flex-1 space-y-1.5 text-[11px] min-w-0">
-                        {/* 1. Tailscale Delete */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-rose-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">1</span>
-                          <span className="text-rose-950 font-medium truncate">Delete Tailscale (Uninstall)</span>
-                        </div>
-
-                        {/* 2. FileZilla Server Delete */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-rose-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">2</span>
-                          <span className="text-rose-950 font-medium truncate">Delete FileZilla Server (Uninstall)</span>
-                        </div>
-
-                        {/* 3. Screen time normal mode to 3 minutes */}
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-lg border border-rose-100 shadow-2xs">
-                          <span className="w-4 h-4 rounded-full bg-rose-100 text-rose-800 font-mono text-[9px] flex items-center justify-center shrink-0 font-bold">3</span>
-                          <span className="text-rose-950 font-medium truncate">Screen Normal (3 Min)</span>
-                        </div>
-                      </div>
-
-                      {/* Middle Bracket connecting all 3 steps to copy button */}
-                      <div className="flex items-center justify-center shrink-0 text-rose-500 select-none">
-                        <svg className="w-3.5 h-[84px] text-rose-500" viewBox="0 0 14 84" fill="none">
-                          <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                        </svg>
-                      </div>
-
-                      {/* Right: perment delete all copy button vertically centered in the middle */}
-                      <div className="shrink-0 flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(permanentDeleteCombinedCmd, 'proc-delete-all')}
-                          className="inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold bg-rose-700 hover:bg-rose-800 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs hover:shadow-sm"
-                          title="Copy all 3 permanent deletion commands into PowerShell"
-                        >
-                          {copiedId === 'proc-delete-all' ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-white" />
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>perment delete all code</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
       {/* Pipeline Navigation Bar - Compact Professional Stepper */}
       <nav aria-label="Step Tracker" className="p-1.5 bg-slate-950/90 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-sm">
-        <ol className={`grid grid-cols-2 ${currentSteps.length === 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-5'} gap-1`}>
+        <ol className={`grid grid-cols-2 ${currentSteps.length === 5 ? 'sm:grid-cols-5' : 'sm:grid-cols-6'} gap-1`}>
           {currentSteps.map((s) => {
             const isDone = completedMinutes.includes(s.minute);
             const isCurrent = activeMinute === s.minute;
@@ -956,31 +904,9 @@ Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="font-mono text-cyan-400">4.</span>
-                      <div className="space-y-1.5 flex-1">
-                        <span>
-                          After login, copy your laptop/PC Tailscale IPv4 address (e.g., <code className="px-1.5 py-0.5 bg-slate-900 border border-cyan-500/30 text-cyan-300 font-mono text-[11px] rounded font-semibold">100.116.48.9</code>): In the Tailscale app (or Admin Console <strong>Machines</strong> page), locate your laptop name (e.g., <strong>shaik-mahammed-khasim</strong>) and copy its IPv4 address. You will enter this IP in your phone to connect.
-                        </span>
-                        <div>
-                          <button
-                            type="button"
-                            onClick={() => copyToClipboard('100.116.48.9', 'tailscale-ip-sample')}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 rounded-md transition-colors cursor-pointer"
-                            title="Copy your laptop Tailscale IPv4"
-                          >
-                            {copiedId === 'tailscale-ip-sample' ? (
-                              <>
-                                <Check className="w-3 h-3 text-emerald-400" />
-                                <span className="text-emerald-300 font-semibold">Copied 100.116.48.9</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-3 h-3" />
-                                <span>Copy Laptop IPv4: <strong>100.116.48.9</strong></span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
+                      <span>
+                        After login, copy your laptop/PC Tailscale IPv4 address (e.g., <code className="px-1.5 py-0.5 bg-slate-900 border border-cyan-500/30 text-cyan-300 font-mono text-[11px] rounded font-semibold">100.116.48.9</code>).
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -1002,7 +928,7 @@ Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="font-mono text-cyan-400">3.</span>
-                      <span>Launch <strong>FileZilla Server Administration</strong> (connect to localhost <code className="font-mono text-slate-200">127.0.0.1:14148</code>).</span>
+                      <span>Launch <strong>FileZilla Server Administration</strong> (connect to <code className="font-mono text-slate-200">100.116.48.9</code>).</span>
                     </li>
                   </ol>
                 </div>
@@ -1053,24 +979,13 @@ Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
                     <li>
                       Click the dropdown under <strong>Protocol</strong> for{' '}
                       <code className="font-mono text-amber-950 font-bold bg-[#f5ece1] px-2 py-0.5 rounded border border-[#dfcebd] shadow-2xs">
-                        0.0.0.0 (Port 21)
-                      </code>{' '}
-                      <span className="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-md border border-amber-300">
-                        e.g. Example Port: 21
-                      </span>.
+                        100.116.48.9 (Port 22)
+                      </code>.
                     </li>
                     <li>
                       Change it to <strong className="text-amber-950 bg-amber-100/70 px-1.5 py-0.5 rounded border border-amber-300">Allow explicit FTP over TLS (or Insecure plain FTP)</strong>.
                     </li>
                   </ul>
-                  <div className="p-3 bg-amber-50/90 rounded-lg border border-amber-200 text-amber-950 text-[11px] leading-relaxed mt-2.5 space-y-1.5">
-                    <p>
-                      <strong className="text-amber-900 font-bold">Why?</strong> Tailscale already encrypts 100% of the connection end-to-end with WireGuard. Changing this makes connecting from mobile apps instant without certificate errors.
-                    </p>
-                    <p className="text-amber-900 font-medium">
-                      ⚠️ <strong>Getting &quot;503 Use AUTH first&quot;?</strong> This means the listener protocol is still set to <em>Require explicit FTP over TLS</em>. Switch the dropdown to <strong>Allow explicit FTP over TLS</strong> or <strong>Insecure plain FTP</strong> and click OK.
-                    </p>
-                  </div>
                 </div>
               </div>
 
@@ -1091,22 +1006,9 @@ Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
                       <code className="font-mono text-amber-950 font-bold bg-[#f5ece1] px-2 py-0.5 rounded border border-[#dfcebd] shadow-2xs">
                         {username || 'vaultuser'}
                       </code>{' '}
-                      <span className="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-amber-900 bg-amber-100/90 px-2 py-0.5 rounded-md border border-amber-300">
-                        e.g. (span): vaultuser
-                      </span>{' '}
                       and click <strong>OK</strong>.
                     </li>
                   </ul>
-                  <div className="pt-2 flex flex-wrap items-center gap-2">
-                    <label className="text-[11px] font-medium text-[#7d5b3f]">Custom Username:</label>
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="px-2.5 py-1 text-xs font-mono bg-[#fcf8f3] border border-[#dfcebd] rounded text-[#2d1c10] focus:outline-none focus:border-amber-500 w-44"
-                      placeholder="vaultuser"
-                    />
-                  </div>
                 </div>
               </div>
 
@@ -1272,17 +1174,6 @@ Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
                     <span>Mobile App Connection Card:</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <a
-                      href="https://play.google.com/store/apps/details?id=com.cxinventor.file.explorer&pcampaignid=web_share"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-cyan-300 hover:text-white bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 rounded-lg transition-colors cursor-pointer shadow-2xs group"
-                      title="Install CX File Explorer from Google Play Store"
-                    >
-                      <Download className="w-3 h-3 text-cyan-400 group-hover:scale-110 transition-transform" />
-                      <span>Install CX File Explorer</span>
-                      <ExternalLink className="w-2.5 h-2.5 text-cyan-400/80" />
-                    </a>
                     <button
                       onClick={() => markMinuteCompleted(4)}
                       className="px-3.5 py-1 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
@@ -1292,10 +1183,62 @@ Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
                   </div>
                 </div>
 
+                {/* Step-by-Step Instructions */}
+                <div className="p-3.5 bg-slate-900 rounded-lg border border-slate-800 space-y-2.5">
+                  <div className="text-xs font-semibold text-slate-200">
+                    Step-by-Step Instructions:
+                  </div>
+                  <ol className="space-y-2 text-slate-300 text-xs">
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center text-[10px] font-mono shrink-0 font-bold mt-0.5">
+                        1
+                      </span>
+                      <span>
+                        Open after installing{' '}
+                        <a
+                          href="https://play.google.com/store/apps/details?id=com.cxinventor.file.explorer&pcampaignid=web_share"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-cyan-300 hover:text-white underline font-semibold inline-flex items-center gap-0.5"
+                          title="Install CX File Explorer from Google Play Store"
+                        >
+                          CX File Explorer
+                          <ExternalLink className="w-2.5 h-2.5 text-cyan-400/80" />
+                        </a>
+                        , then click on <strong>Network</strong>.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center text-[10px] font-mono shrink-0 font-bold mt-0.5">
+                        2
+                      </span>
+                      <span>
+                        Click on <strong>+ new location</strong>.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center text-[10px] font-mono shrink-0 font-bold mt-0.5">
+                        3
+                      </span>
+                      <span>
+                        Click on <strong>Remote</strong>, select <strong>FTP</strong>, and in FTP select <strong>FTPS</strong>.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center text-[10px] font-mono shrink-0 font-bold mt-0.5">
+                        4
+                      </span>
+                      <span>
+                        Proceed with your details using the connection settings below:
+                      </span>
+                    </li>
+                  </ol>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 font-mono text-[11px]">
                   <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
                     <span className="text-slate-400 text-[10px]">Connection Type:</span>
-                    <span className="text-white font-bold text-xs mt-1">SFTP</span>
+                    <span className="text-white font-bold text-xs mt-1">FTPS</span>
                   </div>
                   <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
                     <span className="text-slate-400 text-[10px]">Remote Host / Server:</span>
@@ -1346,195 +1289,8 @@ Write-Host "Health diagnostics check complete!" -ForegroundColor Cyan`;
             </div>
           )}
 
-          {/* STEP 5 - HOST CONTROLS */}
-          {activeMinute === 5 && (
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
-                <div>
-                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                    <PowerOff className="w-5 h-5 text-amber-400" />
-                    <span>5. Host Controls & 24/7 Server Management</span>
-                  </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-cyan-300 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
-                    5 PowerShell Automation Controls
-                  </span>
-                  <button
-                    onClick={() => markMinuteCompleted(5)}
-                    className="px-3.5 py-1 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
-                  >
-                    Confirm Controls Verified ✓
-                  </button>
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Manage your host PC without opening configuration menus. Run these 5 pre-configured automation scripts in <strong>Administrator PowerShell</strong> to control your 24/7 SFTP private cloud on demand.
-              </p>
-
-              {/* 5 Control Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {/* 1. Shutdown code */}
-                <div className="p-4 bg-slate-950 rounded-xl border border-red-500/30 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-red-400 text-xs flex items-center gap-1.5">
-                        <PowerOff className="w-3.5 h-3.5 text-red-500" />
-                        <span>1. Shutdown code</span>
-                      </span>
-                      <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">3 actions</span>
-                    </div>
-                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
-                      <li>Stop FileZilla Server service</li>
-                      <li>Disconnect Tailscale mesh</li>
-                      <li>Screen & sleep normal (3 min)</li>
-                    </ul>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(shutdownCombinedCmd, 'step5-shutdown')}
-                    className="w-full py-2 px-3 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
-                  >
-                    {copiedId === 'step5-shutdown' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === 'step5-shutdown' ? 'Copied!' : 'Shutdown code'}</span>
-                  </button>
-                </div>
-
-                {/* 2. Retrieve code */}
-                <div className="p-4 bg-slate-950 rounded-xl border border-emerald-500/30 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-emerald-400 text-xs flex items-center gap-1.5">
-                        <RotateCcw className="w-3.5 h-3.5 text-emerald-500" />
-                        <span>2. Retrieve code</span>
-                      </span>
-                      <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">3 actions</span>
-                    </div>
-                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
-                      <li>Start FileZilla Server daemon</li>
-                      <li>Reconnect Tailscale (tailscale up)</li>
-                      <li>Host 24/7 mode (never sleep)</li>
-                    </ul>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(retrieveCombinedCmd, 'step5-retrieve')}
-                    className="w-full py-2 px-3 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
-                  >
-                    {copiedId === 'step5-retrieve' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === 'step5-retrieve' ? 'Copied!' : 'Retrieve code'}</span>
-                  </button>
-                </div>
-
-                {/* 3. Restart code */}
-                <div className="p-4 bg-slate-950 rounded-xl border border-amber-500/30 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-amber-400 text-xs flex items-center gap-1.5">
-                        <RefreshCw className="w-3.5 h-3.5 text-amber-500" />
-                        <span>3. Restart code</span>
-                      </span>
-                      <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">3 actions</span>
-                    </div>
-                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
-                      <li>Restart FileZilla Server service</li>
-                      <li>Reset Tailscale connection</li>
-                      <li>Flush DNS resolver cache</li>
-                    </ul>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(restartCombinedCmd, 'step5-restart')}
-                    className="w-full py-2 px-3 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
-                  >
-                    {copiedId === 'step5-restart' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === 'step5-restart' ? 'Copied!' : 'Restart code'}</span>
-                  </button>
-                </div>
-
-                {/* 4. Status code */}
-                <div className="p-4 bg-slate-950 rounded-xl border border-sky-500/30 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-sky-400 text-xs flex items-center gap-1.5">
-                        <Activity className="w-3.5 h-3.5 text-sky-500" />
-                        <span>4. Status code</span>
-                      </span>
-                      <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">Diagnostics</span>
-                    </div>
-                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
-                      <li>FileZilla Service status check</li>
-                      <li>Tailscale mesh status & IP</li>
-                      <li>Test TCP Port 22 SFTP listener</li>
-                    </ul>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(statusCombinedCmd, 'step5-status')}
-                    className="w-full py-2 px-3 text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
-                  >
-                    {copiedId === 'step5-status' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === 'step5-status' ? 'Copied!' : 'Status code'}</span>
-                  </button>
-                </div>
-
-                {/* 5. Permanent Delete All code */}
-                <div className="p-4 bg-slate-950 rounded-xl border border-rose-500/30 space-y-3 flex flex-col justify-between md:col-span-2 lg:col-span-2">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-rose-400 text-xs flex items-center gap-1.5">
-                        <Trash2 className="w-3.5 h-3.5 text-rose-500" />
-                        <span>5. Permanent delete all code</span>
-                      </span>
-                      <span className="text-[10px] font-mono text-rose-300/80 bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800/50">Clean Uninstall</span>
-                    </div>
-                    <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
-                      <li>Uninstall & remove Tailscale service & processes</li>
-                      <li>Uninstall & purge FileZilla Server service & software</li>
-                      <li>Restore screen & sleep timeout to normal mode (3 min)</li>
-                    </ul>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(permanentDeleteCombinedCmd, 'step5-delete')}
-                    className="w-full py-2 px-3 text-xs font-bold bg-rose-700 hover:bg-rose-800 text-white rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95"
-                  >
-                    {copiedId === 'step5-delete' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === 'step5-delete' ? 'Copied!' : 'perment delete all code'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {(completedMinutes.includes(5) || uploadVerified) && (
-                <div className="p-4 bg-emerald-950/30 border border-emerald-500/40 rounded-xl text-center space-y-2">
-                  <div className="inline-flex items-center gap-2 text-emerald-300 font-bold text-sm">
-                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                    <span>5-Step Direct SFTP Private Cloud Complete!</span>
-                  </div>
-                  <p className="text-xs text-slate-300 max-w-lg mx-auto">
-                    Your host is fully configured with 24/7 personal cloud storage and 5 one-click automation controls.
-                  </p>
-                  <div className="flex justify-center gap-2 pt-1">
-                    <button
-                      onClick={() => onNavigate('diagnostics')}
-                      className="px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded transition-colors cursor-pointer"
-                    >
-                      Open Diagnostics Workbench
-                    </button>
-                    {onOpenRunbookExport && (
-                      <button
-                        onClick={onOpenRunbookExport}
-                        className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded transition-colors cursor-pointer"
-                      >
-                        Export Standalone Runbook (.md)
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          {/* STEP 5: Controls */}
+          {activeMinute === 5 && renderControlsTab(5)}
         </div>
       )}
 

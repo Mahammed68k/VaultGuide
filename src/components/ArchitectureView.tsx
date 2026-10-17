@@ -69,7 +69,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
               className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Nextcloud AIO Getting Started (5 Min)</span>
+              <span>Nextcloud AIO Getting Started</span>
             </button>
           </div>
         </div>
