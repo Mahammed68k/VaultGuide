@@ -16,7 +16,7 @@ export const TopologyInspector: React.FC = () => {
         protocol: 'WireGuard / ChaCha20-Poly1305 (256-bit)',
         mtu: '1280 bytes (MSS clamped)',
         portExposure: 'Zero inbound listening ports on phone',
-        apps: 'Solid Explorer, CX File Explorer, Nextcloud Android/iOS'
+        apps: 'CX File Explorer, Nextcloud Android/iOS'
       }
     },
     {

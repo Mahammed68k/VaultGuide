@@ -37,17 +37,9 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
   return (
     <div className="space-y-12">
       {/* Hero Showcase with Engineering Asset */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <div className="lg:col-span-7 space-y-5">
-          <div className="flex items-center gap-2 text-xs text-cyan-400 font-mono tracking-wide">
-            <span>ZERO PORT FORWARDING</span>
-            <span aria-hidden="true">·</span>
-            <span>WIREGUARD ENCRYPTED MESH</span>
-            <span aria-hidden="true">·</span>
-            <span>WINDOWS 10/11 HOST</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-0">
+        <div className="lg:col-span-7 space-y-4">
+          <h1 className="-mt-1 sm:-mt-2 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
             Self-Hosted Private Cloud & Direct Storage Stack
           </h1>
 

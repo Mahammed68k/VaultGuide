@@ -165,7 +165,7 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
       timeEst: '04:00',
       title: 'Connect Mobile Phone (5G)',
       shortTitle: 'Mobile Client 5G',
-      subtitle: 'Solid Explorer / CX File Explorer remote streaming & access'
+      subtitle: 'CX File Explorer remote streaming & access'
     },
     {
       minute: 5,
