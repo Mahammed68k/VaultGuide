@@ -1270,10 +1270,10 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                   </p>
                   <div className="flex justify-center gap-2 pt-1">
                     <button
-                      onClick={() => onNavigate('diagnostics')}
+                      onClick={() => onNavigate('backup')}
                       className="px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded transition-colors cursor-pointer"
                     >
-                      Open Diagnostics Workbench
+                      Open 3-2-1 Resilience & Recovery Playbook
                     </button>
                     {onOpenRunbookExport && (
                       <button
@@ -1592,10 +1592,10 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                   </p>
                   <div className="flex justify-center gap-2 pt-1">
                     <button
-                      onClick={() => onNavigate('diagnostics')}
+                      onClick={() => onNavigate('backup')}
                       className="px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded transition-colors cursor-pointer"
                     >
-                      Open Diagnostics Workbench
+                      Open 3-2-1 Resilience & Recovery Playbook
                     </button>
                     {onOpenRunbookExport && (
                       <button

@@ -59,21 +59,21 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
               className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
             >
               <FolderSync className="w-3.5 h-3.5" />
-              <span>Open 3-2-1 Resilience Simulator</span>
+              <span>3-2-1 Resilience & Recovery Playbook</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* Hero Visual Showcase Graphic with zero-broken-image fallback */}
-        <div className="md:col-span-5 relative group min-w-0 w-full flex items-center">
-          <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl w-full h-48 sm:h-56 md:h-60 lg:h-64 max-h-[260px] transition-all duration-300">
+        <div className="md:col-span-5 relative group min-w-0 w-full flex justify-center md:justify-end">
+          <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl aspect-[16/9] w-full max-w-[260px] xs:max-w-[300px] sm:max-w-[360px] md:max-w-[400px] lg:max-w-[460px] xl:max-w-[500px] transition-all duration-300">
             <img
               src={serverMeshNodeImg}
               alt="VaultGuide mesh server node illustration"
               loading="eager"
               decoding="async"
-              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 block"
+              className="w-full h-full max-w-full object-cover group-hover:scale-105 transition-transform duration-500 block"
               onError={(e) => {
                 const target = e.currentTarget;
                 if (!target.dataset.fallbackTried) {

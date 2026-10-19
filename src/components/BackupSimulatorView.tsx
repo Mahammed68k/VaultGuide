@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  HardDrive, 
-  Cloud, 
-  Database, 
   RefreshCw, 
   Copy, 
   Check, 
@@ -291,57 +288,6 @@ export const BackupSimulatorView: React.FC = () => {
                 </>
               )}
             </button>
-          </div>
-        </div>
-      </section>
-
-      {/* The 3-2-1 Rule Visual Cards */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs space-y-3 hover:shadow-md transition-all">
-          <div className="flex items-center justify-end text-xs font-mono text-amber-900 font-semibold">
-            <Database className="w-4 h-4 text-amber-700" />
-          </div>
-          <div>
-            <h2 className="text-sm font-bold text-[#2d1c10]">Primary Working Copy</h2>
-            <div className="text-xs text-[#7d5b3f] mt-0.5 font-mono">Laptop NVMe SSD (Drive D:\)</div>
-          </div>
-          <p className="text-xs text-[#6b4c35] leading-relaxed">
-            The live, active file system served to your devices. Fast read/write performance.
-          </p>
-          <div className="text-[11px] font-mono text-[#8c6b51] pt-1 border-t border-[#ebdcc9]">
-            Media: Internal NVMe / SATA
-          </div>
-        </div>
-
-        <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs space-y-3 hover:shadow-md transition-all">
-          <div className="flex items-center justify-end text-xs font-mono text-amber-900 font-semibold">
-            <HardDrive className="w-4 h-4 text-amber-700" />
-          </div>
-          <div>
-            <h2 className="text-sm font-bold text-[#2d1c10]">Local Borg Snapshot Archive</h2>
-            <div className="text-xs text-[#7d5b3f] mt-0.5 font-mono">External USB Drive (Drive E:\)</div>
-          </div>
-          <p className="text-xs text-[#6b4c35] leading-relaxed">
-            Encrypted, deduplicated incremental snapshots generated nightly by Nextcloud AIO at 02:00 AM.
-          </p>
-          <div className="text-[11px] font-mono text-[#8c6b51] pt-1 border-t border-[#ebdcc9]">
-            Media: External USB HDD / SSD
-          </div>
-        </div>
-
-        <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs space-y-3 hover:shadow-md transition-all">
-          <div className="flex items-center justify-end text-xs font-mono text-emerald-900 font-semibold">
-            <Cloud className="w-4 h-4 text-emerald-700" />
-          </div>
-          <div>
-            <h2 className="text-sm font-bold text-[#2d1c10]">Offsite Cloud Object Sync</h2>
-            <div className="text-xs text-[#7d5b3f] mt-0.5 font-mono">Backblaze B2 / AWS S3 / Wasabi</div>
-          </div>
-          <p className="text-xs text-[#6b4c35] leading-relaxed">
-            Pushed nightly at 04:00 AM via Rclone. Resilient against physical theft, house fire, or surge damage.
-          </p>
-          <div className="text-[11px] font-mono text-[#8c6b51] pt-1 border-t border-[#ebdcc9]">
-            Media: Georeplicated Cloud Storage
           </div>
         </div>
       </section>

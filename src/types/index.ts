@@ -1,8 +1,7 @@
 export type ActiveTab = 
   | 'overview' 
   | 'onboarding'
-  | 'backup' 
-  | 'diagnostics';
+  | 'backup';
 
 export type AppTheme = 'dark' | 'light';
 

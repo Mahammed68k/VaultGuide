@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ActiveTab, AppTheme } from './types';
 import { ArchitectureView } from './components/ArchitectureView';
 import { BackupSimulatorView } from './components/BackupSimulatorView';
-import { DiagnosticsView } from './components/DiagnosticsView';
 import { GettingStartedOnboarding } from './components/GettingStartedOnboarding';
 import { CommandPalette } from './components/CommandPalette';
 import { Footer } from './components/Footer';
@@ -118,10 +117,6 @@ export default function App() {
 
         {activeTab === 'backup' && (
           <BackupSimulatorView />
-        )}
-
-        {activeTab === 'diagnostics' && (
-          <DiagnosticsView />
         )}
       </main>
 

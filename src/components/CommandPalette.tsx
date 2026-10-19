@@ -82,14 +82,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: 'diag-cgnat',
       title: 'Tailscale RFC 6598 CGNAT IP Validator',
       category: 'Troubleshooting',
-      targetTab: 'diagnostics',
+      targetTab: 'backup',
       description: 'Validate 100.64.0.0/10 address space vs local LAN IPs'
     },
     {
       id: 'diag-untrusted',
       title: 'Fix "Access through untrusted domain" error',
       category: 'Troubleshooting',
-      targetTab: 'diagnostics',
+      targetTab: 'backup',
       codeSnippet: 'docker exec -it nextcloud-aio-nextcloud php occ config:system:set trusted_domains 2 --value="your-domain.ts.net"',
       description: 'Add Tailscale domain to Nextcloud config.php'
     }
