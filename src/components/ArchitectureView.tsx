@@ -1,24 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import serverMeshNodeImg from '../assets/images/server_mesh_node_1791216991425.jpg';
 import { ActiveTab } from '../types';
 import { TopologyInspector } from './TopologyInspector';
 import { 
   ShieldCheck, 
-  ShieldAlert, 
   Smartphone, 
   Laptop, 
   HardDrive, 
-  Lock, 
-  Server, 
   FolderSync,
-  HelpCircle,
   Sparkles,
-  Zap,
-  Layers,
-  ChevronRight,
-  ArrowRight,
-  Activity,
-  CheckCircle2
+  ArrowRight
 } from 'lucide-react';
 
 interface ArchitectureViewProps {
@@ -37,9 +28,9 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
   return (
     <div className="space-y-12">
       {/* Hero Showcase with Engineering Asset */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-0">
-        <div className="lg:col-span-7 space-y-4">
-          <h1 className="-mt-1 sm:-mt-2 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+      <section className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center w-full">
+        <div className="md:col-span-7 flex flex-col justify-center space-y-4 w-full min-w-0">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
             Self-Hosted Private Cloud & Direct Storage Stack
           </h1>
 
@@ -63,18 +54,26 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
               <Sparkles className="w-3.5 h-3.5" />
               <span>Nextcloud AIO Getting Started</span>
             </button>
+            <button
+              onClick={() => handleLaunchTab('backup')}
+              className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
+            >
+              <FolderSync className="w-3.5 h-3.5" />
+              <span>Open 3-2-1 Resilience Simulator</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 
         {/* Hero Visual Showcase Graphic with zero-broken-image fallback */}
-        <div className="lg:col-span-5 relative group">
-          <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl aspect-[16/9]">
+        <div className="md:col-span-5 relative group min-w-0 w-full flex items-center">
+          <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl w-full h-48 sm:h-56 md:h-60 lg:h-64 max-h-[260px] transition-all duration-300">
             <img
               src={serverMeshNodeImg}
               alt="VaultGuide mesh server node illustration"
               loading="eager"
               decoding="async"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block"
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 block"
               onError={(e) => {
                 const target = e.currentTarget;
                 if (!target.dataset.fallbackTried) {
@@ -94,10 +93,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
         </div>
       </section>
 
-      {/* Interactive Topology Node Inspector */}
-      <TopologyInspector />
-
-      {/* Interactive Network Security Simulator */}
+      {/* Network Architecture & Security Model (Placed above Interactive Component Inspector) */}
       <section className="p-6 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-6 shadow-xs">
         <div className="border-b border-[#ebdcc9] pb-4">
           <h2 className="text-lg font-bold text-[#2d1c10]">Network Architecture & Security Model</h2>
@@ -150,11 +146,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
                     ? 'bg-emerald-100/90 border-emerald-300 text-emerald-800'
                     : 'bg-rose-100/90 border-rose-300 text-rose-800 animate-pulse'
                 }`}>
-                  {networkMode === 'tailscale' ? (
-                    <ShieldCheck className="w-6 h-6 text-emerald-700" />
-                  ) : (
-                    <ShieldAlert className="w-6 h-6 text-rose-700" />
-                  )}
+                  <ShieldCheck className="w-6 h-6 text-emerald-700" />
                 </div>
                 <div>
                   <div className="text-sm font-bold text-[#2d1c10]">
@@ -234,148 +226,26 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
           </div>
 
           {/* Real-time Architecture Pathway Ribbon */}
-          <div className={`p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs transition-all ${
-            networkMode === 'tailscale'
-              ? 'bg-emerald-50/70 border-emerald-300/80 text-emerald-950'
-              : 'bg-rose-50/70 border-rose-300/80 text-rose-950'
-          }`}>
+          <div className="p-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs transition-all bg-emerald-50/70 border-emerald-300/80 text-emerald-950">
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${networkMode === 'tailscale' ? 'bg-emerald-600 animate-pulse' : 'bg-rose-600 animate-ping'}`} />
+              <div className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
               <span className="font-mono font-bold uppercase text-[11px] tracking-wide">
-                {networkMode === 'tailscale' ? 'Active Route:' : 'Danger Route:'}
+                Active Route:
               </span>
               <span className="font-mono text-[11px]">
-                {networkMode === 'tailscale'
-                  ? 'Phone (5G) ──► WireGuard Tunnel (100.64.0.0/10) ──► Laptop Host (Port 22/8080 Private) ──► D:\\PersonalCloud'
-                  : 'Phone (5G) ──► Public ISP IP ──► Open Router Port 22 & 8080 (Exposed to Internet Botnets) ──► Host Machine'
-                }
+                Phone (5G) ──► WireGuard Tunnel (100.64.0.0/10) ──► Laptop Host (Port 22/8080 Private) ──► D:\PersonalCloud
               </span>
             </div>
 
-            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold shrink-0 self-start sm:self-auto ${
-              networkMode === 'tailscale'
-                ? 'bg-emerald-200/80 text-emerald-900 border border-emerald-400/60'
-                : 'bg-rose-200/80 text-rose-900 border border-rose-400/60'
-            }`}>
-              {networkMode === 'tailscale' ? 'Zero Port Forwarding' : 'High Security Vulnerability'}
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold shrink-0 self-start sm:self-auto bg-emerald-200/80 text-emerald-900 border border-emerald-400/60">
+              Zero Port Forwarding
             </span>
           </div>
         </div>
       </section>
 
-      {/* Operational Workbenches */}
-      <section className="p-6 sm:p-8 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-6 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#ebdcc9] pb-5">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono font-semibold tracking-wider uppercase text-amber-900 bg-amber-100/80 border border-amber-300/80 px-2 py-0.5 rounded">
-                Operational Workbenches
-              </span>
-              <span className="text-xs text-[#8c6b51] font-mono">2 Workbenches</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-[#2d1c10] tracking-tight">
-              Operations, Resilience & Interactive Simulators
-            </h2>
-            <p className="text-xs sm:text-sm text-[#6b4c35]">
-              Directly simulate backup disaster recovery pipelines or validate your Tailscale CGNAT mesh network.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Action 1: Resilience & Recovery */}
-          <div className="p-6 bg-white rounded-xl border border-[#dfcebd] hover:border-amber-400 shadow-xs hover:shadow-md flex flex-col justify-between transition-all duration-200 group">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-lg bg-amber-100/80 border border-amber-300/80 flex items-center justify-center text-amber-800">
-                  <FolderSync className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-900 border border-amber-300/80 font-semibold">
-                  3-2-1 Strategy
-                </span>
-              </div>
-
-              <div>
-                <h3 className="text-base font-bold text-[#2d1c10] group-hover:text-amber-900 transition-colors">
-                  Resilience & Recovery
-                </h3>
-                <p className="text-xs font-mono text-amber-800 mt-0.5">
-                  3-2-1 Backup Simulator
-                </p>
-              </div>
-
-              <p className="text-xs text-[#6b4c35] leading-relaxed">
-                Test automated BorgBackup client-side encrypted repository deduplication, local disk mirroring, and offsite cloud sync with instant RPO/RTO calculation.
-              </p>
-
-              <ul className="space-y-1.5 text-xs text-[#7d5b3f] font-mono">
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                  <span>3 Copies · 2 Media · 1 Cloud</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                  <span>Borg + Rclone Pipeline</span>
-                </li>
-              </ul>
-            </div>
-
-            <button
-              onClick={() => handleLaunchTab('backup')}
-              className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-bold text-amber-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors cursor-pointer shadow-xs"
-            >
-              <span>Launch Resilience & Recovery</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Action 2: Network & Diagnostics Workbench */}
-          <div className="p-6 bg-white rounded-xl border border-[#dfcebd] hover:border-emerald-400 shadow-xs hover:shadow-md flex flex-col justify-between transition-all duration-200 group">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-lg bg-emerald-100/80 border border-emerald-300/80 flex items-center justify-center text-emerald-800">
-                  <Activity className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100/80 text-emerald-900 border border-emerald-300/80 font-semibold">
-                  Diagnostics & Validation
-                </span>
-              </div>
-
-              <div>
-                <h3 className="text-base font-bold text-[#2d1c10] group-hover:text-emerald-900 transition-colors">
-                  Network & Diagnostics Workbench
-                </h3>
-                <p className="text-xs font-mono text-emerald-800 mt-0.5">
-                  Diagnostics & Validation
-                </p>
-              </div>
-
-              <p className="text-xs text-[#6b4c35] leading-relaxed">
-                Inspect 100.64.0.0/10 CGNAT carrier address spaces, validate Tailscale peer handshake state, test Windows Firewall port binding, and fix untrusted domain errors.
-              </p>
-
-              <ul className="space-y-1.5 text-xs text-[#7d5b3f] font-mono">
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>RFC 6598 CGNAT Verifier</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span>Port Binding & TLS Inspection</span>
-                </li>
-              </ul>
-            </div>
-
-            <button
-              onClick={() => handleLaunchTab('diagnostics')}
-              className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-bold text-emerald-950 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors cursor-pointer shadow-xs"
-            >
-              <span>Open Diagnostics Workbench</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* Interactive Topology Node Inspector */}
+      <TopologyInspector />
     </div>
   );
 };

@@ -8,12 +8,26 @@ import {
   Check, 
   Flame,
   FileX,
-  AlertTriangle
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  HelpCircle
 } from 'lucide-react';
 
 export const BackupSimulatorView: React.FC = () => {
   const [selectedScenario, setSelectedScenario] = useState<'ssdFail' | 'accidental' | 'ransomware'>('ssdFail');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [expandedStep, setExpandedStep] = useState<number | null>(null);
+  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+
+  const toggleStep = (idx: number) => {
+    setExpandedStep(prev => (prev === idx ? null : idx));
+  };
+
+  const handleScenarioChange = (scenario: 'ssdFail' | 'accidental' | 'ransomware') => {
+    setSelectedScenario(scenario);
+    setExpandedStep(null);
+  };
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -93,6 +107,39 @@ export const BackupSimulatorView: React.FC = () => {
     }
   };
 
+  const faqs = [
+    {
+      id: 'faq-1',
+      question: 'Mobile client says "Connection Timed Out" when connecting over 5G',
+      answer: 'Ensure both your mobile device and host laptop have Tailscale toggled ON and are logged into the same Tailnet account. Also check that your Windows Defender Firewall has an Inbound rule allowing TCP Port 22 (for SFTP) or Port 443 (for Tailscale Serve).',
+      command: 'Get-NetFirewallRule -DisplayName "*FileZilla*"'
+    },
+    {
+      id: 'faq-2',
+      question: 'Nextcloud Web shows "Access through untrusted domain"',
+      answer: 'This happens when accessing Nextcloud using a domain not yet listed in the trusted_domains array in config.php. When using Tailscale Serve, requests arrive via localhost or your MagicDNS domain name.',
+      command: 'docker exec -it nextcloud-aio-nextcloud php occ config:system:set trusted_domains 2 --value="your-laptop.your-tailnet.ts.net"'
+    },
+    {
+      id: 'faq-3',
+      question: 'External files copied directly to Drive D: do not appear in Nextcloud',
+      answer: 'Nextcloud indexes files inside an internal PostgreSQL database catalog for high performance. If you add or edit files externally (e.g. through FileZilla SFTP or Windows Explorer), run the OCC files scan command to sync the database.',
+      command: 'docker exec -it nextcloud-aio-nextcloud php occ files:scan --all'
+    },
+    {
+      id: 'faq-4',
+      question: 'Docker Desktop / WSL2 uses too much RAM on the host laptop',
+      answer: 'By default, WSL2 can consume up to 50% of total host RAM. You can cap WSL2 memory to 3GB or 4GB by creating a .wslconfig file in your Windows user directory (C:\\Users\\<Username>\\.wslconfig).',
+      command: '[wsl2]\nmemory=3GB\nprocessors=2'
+    },
+    {
+      id: 'faq-5',
+      question: 'Laptop goes to sleep after 30 minutes even though lid is closed',
+      answer: 'Windows Modern Standby (S0) can trigger sleep even when plugged in. Run the powercfg standby disable command and verify "Choose what closing the lid does" is set to "Do Nothing".',
+      command: 'powercfg /change standby-timeout-ac 0'
+    }
+  ];
+
   const activeScenarioData = scenarios[selectedScenario];
 
   return (
@@ -114,11 +161,144 @@ export const BackupSimulatorView: React.FC = () => {
         </p>
       </section>
 
+      {/* Port Listening Verification Commands (Matching Image Reference with working Copy) */}
+      <section className="p-6 sm:p-7 bg-[#fcf8f3] rounded-2xl border border-[#dfcebd] space-y-4 shadow-xs">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-[#c2410c] font-mono font-bold text-lg leading-none select-none">&gt;_</span>
+            <h2 className="text-base sm:text-lg font-bold text-[#2d1c10] tracking-tight">
+              Port Listening Verification Commands
+            </h2>
+          </div>
+          <p className="text-xs sm:text-sm text-[#7d5b3f] mt-1 leading-relaxed">
+            Run these verification commands in Command Prompt or PowerShell to confirm that your background services are actively accepting connections:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+          {/* Card 1: FileZilla SFTP (Port 22) */}
+          <div className="bg-white rounded-xl border border-[#dfcebd] p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm">
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs sm:text-sm font-bold text-[#2d1c10]">
+                  FileZilla SFTP (Port 22)
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#fcd34d] bg-[#fef3c7] text-[#b45309] tracking-wider">
+                  TCP
+                </span>
+              </div>
+
+              <div className="my-5">
+                <code className="no-box font-mono text-xs sm:text-sm text-[#92400e] block select-all !bg-transparent !border-0 !p-0 !shadow-none !rounded-none">
+                  netstat -an | findstr 22
+                </code>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => copyToClipboard('netstat -an | findstr 22', 'verify-netstat')}
+              className="w-full py-2.5 px-3 rounded-xl border border-[#fde68a] bg-[#fffbeb] hover:bg-[#fef3c7] text-[#92400e] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-[0.99]"
+              title="Copy netstat command"
+            >
+              {copiedId === 'verify-netstat' ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-[#b45309]" />
+                  <span>Copy netstat</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Card 2: Nextcloud Master (8080) */}
+          <div className="bg-white rounded-xl border border-[#dfcebd] p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm">
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs sm:text-sm font-bold text-[#2d1c10]">
+                  Nextcloud Master (8080)
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#a5f3fc] bg-[#cffafe] text-[#0e7490] tracking-wider">
+                  CONTAINER
+                </span>
+              </div>
+
+              <div className="my-5">
+                <code className="no-box font-mono text-xs sm:text-sm text-[#0e7490] block select-all !bg-transparent !border-0 !p-0 !shadow-none !rounded-none">
+                  docker ps --filter &quot;name=nextcloud&quot;
+                </code>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => copyToClipboard('docker ps --filter "name=nextcloud"', 'verify-docker')}
+              className="w-full py-2.5 px-3 rounded-xl border border-[#a5f3fc] bg-[#ecfeff] hover:bg-[#cffafe] text-[#0e7490] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-[0.99]"
+              title="Copy docker ps command"
+            >
+              {copiedId === 'verify-docker' ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-[#0e7490]" />
+                  <span>Copy docker ps</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Card 3: Tailscale Serve (Port 443) */}
+          <div className="bg-white rounded-xl border border-[#dfcebd] p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm">
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs sm:text-sm font-bold text-[#2d1c10]">
+                  Tailscale Serve (Port 443)
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#a7f3d0] bg-[#d1fae5] text-[#047857] tracking-wider">
+                  PROXY
+                </span>
+              </div>
+
+              <div className="my-5">
+                <code className="no-box font-mono text-xs sm:text-sm text-[#047857] block select-all !bg-transparent !border-0 !p-0 !shadow-none !rounded-none">
+                  tailscale serve status
+                </code>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => copyToClipboard('tailscale serve status', 'verify-tailscale')}
+              className="w-full py-2.5 px-3 rounded-xl border border-[#a7f3d0] bg-[#ecfdf5] hover:bg-[#d1fae5] text-[#047857] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-[0.99]"
+              title="Copy serve status command"
+            >
+              {copiedId === 'verify-tailscale' ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-[#047857]" />
+                  <span>Copy serve status</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* The 3-2-1 Rule Visual Cards */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs space-y-3 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between text-xs font-mono text-amber-900 font-semibold">
-            <span className="px-2 py-0.5 rounded-full bg-amber-100/90 text-amber-950 border border-amber-300 text-[10px]">COPY 1 OF 3</span>
+          <div className="flex items-center justify-end text-xs font-mono text-amber-900 font-semibold">
             <Database className="w-4 h-4 text-amber-700" />
           </div>
           <div>
@@ -134,8 +314,7 @@ export const BackupSimulatorView: React.FC = () => {
         </div>
 
         <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs space-y-3 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between text-xs font-mono text-amber-900 font-semibold">
-            <span className="px-2 py-0.5 rounded-full bg-amber-100/90 text-amber-950 border border-amber-300 text-[10px]">COPY 2 OF 3</span>
+          <div className="flex items-center justify-end text-xs font-mono text-amber-900 font-semibold">
             <HardDrive className="w-4 h-4 text-amber-700" />
           </div>
           <div>
@@ -151,8 +330,7 @@ export const BackupSimulatorView: React.FC = () => {
         </div>
 
         <div className="p-5 bg-white rounded-xl border border-[#dfcebd] shadow-xs space-y-3 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between text-xs font-mono text-emerald-900 font-semibold">
-            <span className="px-2 py-0.5 rounded-full bg-emerald-100/90 text-emerald-950 border border-emerald-300 text-[10px]">COPY 3 OF 3</span>
+          <div className="flex items-center justify-end text-xs font-mono text-emerald-900 font-semibold">
             <Cloud className="w-4 h-4 text-emerald-700" />
           </div>
           <div>
@@ -169,45 +347,45 @@ export const BackupSimulatorView: React.FC = () => {
       </section>
 
       {/* Interactive Disaster Recovery Simulator */}
-      <section className="p-6 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-6 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ebdcc9] pb-4">
+      <section className="p-6 sm:p-7 bg-[#fcf8f3] rounded-2xl border border-[#dfcebd] space-y-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-base font-bold text-[#2d1c10] flex items-center gap-2">
+            <h2 className="text-base sm:text-lg font-bold text-[#2d1c10] flex items-center gap-2">
               <RefreshCw className="w-4 h-4 text-amber-700" />
               <span>Disaster Recovery Playbook</span>
             </h2>
-            <p className="text-xs text-[#6b4c35] mt-0.5">
+            <p className="text-xs text-[#7d5b3f] mt-0.5">
               Select a failure scenario to view step-by-step restoration procedures:
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-1 p-1 bg-[#f5ece1] rounded-xl border border-[#dfcebd] text-xs shadow-2xs">
+          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-[#f5ece1]/80 rounded-xl border border-[#dfcebd] text-xs">
             <button
-              onClick={() => setSelectedScenario('ssdFail')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              onClick={() => handleScenarioChange('ssdFail')}
+              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 selectedScenario === 'ssdFail'
-                  ? 'bg-white text-amber-950 border border-amber-400 shadow-xs'
-                  : 'text-[#6b4c35] hover:text-[#2d1c10] hover:bg-amber-100/50'
+                  ? 'bg-white text-[#2d1c10] border border-amber-400 shadow-xs'
+                  : 'text-[#6b4c35] hover:text-[#2d1c10]'
               }`}
             >
               Laptop Drive Failure
             </button>
             <button
-              onClick={() => setSelectedScenario('accidental')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              onClick={() => handleScenarioChange('accidental')}
+              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 selectedScenario === 'accidental'
-                  ? 'bg-white text-amber-950 border border-amber-400 shadow-xs'
-                  : 'text-[#6b4c35] hover:text-[#2d1c10] hover:bg-amber-100/50'
+                  ? 'bg-white text-[#2d1c10] border border-amber-400 shadow-xs'
+                  : 'text-[#6b4c35] hover:text-[#2d1c10]'
               }`}
             >
               Accidental Deletion
             </button>
             <button
-              onClick={() => setSelectedScenario('ransomware')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              onClick={() => handleScenarioChange('ransomware')}
+              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
                 selectedScenario === 'ransomware'
-                  ? 'bg-white text-amber-950 border border-amber-400 shadow-xs'
-                  : 'text-[#6b4c35] hover:text-[#2d1c10] hover:bg-amber-100/50'
+                  ? 'bg-white text-[#2d1c10] border border-amber-400 shadow-xs'
+                  : 'text-[#6b4c35] hover:text-[#2d1c10]'
               }`}
             >
               Ransomware Attack
@@ -217,10 +395,10 @@ export const BackupSimulatorView: React.FC = () => {
 
         {/* Selected Scenario Walkthrough */}
         <div className="space-y-4">
-          <div className="p-4 bg-white rounded-xl border border-[#dfcebd] space-y-1.5 shadow-2xs">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-[#2d1c10]">{activeScenarioData.title}</h3>
-              <span className="text-[11px] font-mono text-amber-900 px-2 py-0.5 bg-amber-100/80 rounded-full border border-amber-300 font-semibold">
+          <div className="p-5 sm:p-6 bg-white rounded-2xl border border-[#dfcebd] space-y-1.5 shadow-2xs">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h3 className="text-base font-bold text-[#2d1c10]">{activeScenarioData.title}</h3>
+              <span className="text-[11px] font-mono text-amber-900 px-2.5 py-0.5 bg-amber-50/70 rounded-full border border-amber-400 font-medium">
                 {activeScenarioData.severity}
               </span>
             </div>
@@ -231,84 +409,136 @@ export const BackupSimulatorView: React.FC = () => {
 
           {/* Steps List */}
           <div className="space-y-3">
-            {activeScenarioData.restorationSteps.map((s, idx) => (
-              <div key={idx} className="p-4 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-[#2d1c10]">{s.step}</h4>
-                  <span className="text-[11px] font-mono text-[#8c6b51] font-semibold">Step 0{idx + 1}</span>
-                </div>
+            {activeScenarioData.restorationSteps.map((s, idx) => {
+              const isExpanded = expandedStep === idx;
+              return (
+                <div 
+                  key={idx} 
+                  className="bg-white rounded-2xl border border-[#dfcebd] shadow-2xs overflow-hidden transition-all hover:border-amber-300"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleStep(idx)}
+                    className="w-full py-4 px-5 sm:px-6 flex items-center justify-between text-left transition-colors cursor-pointer select-none"
+                    aria-expanded={isExpanded}
+                    title={isExpanded ? 'Hide step details' : 'Show step details'}
+                  >
+                    <div className="flex items-center min-w-0 pr-4">
+                      <h4 className="text-sm font-bold text-[#2d1c10] truncate">
+                        {s.step}
+                      </h4>
+                    </div>
 
-                <p className="text-xs text-[#6b4c35] leading-relaxed">{s.detail}</p>
+                    <div className="flex items-center shrink-0">
+                      <ChevronDown 
+                        className={`w-4 h-4 text-[#8c6b51] transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180 text-amber-800' : ''
+                        }`} 
+                      />
+                    </div>
+                  </button>
 
-                {s.command && (
-                  <div className="relative group mt-2">
-                    <pre className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-xs text-cyan-300 overflow-x-auto">
-                      {s.command}
-                    </pre>
-                    <button
-                      onClick={() => copyToClipboard(s.command, `recov-step-${idx}`)}
-                      className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded transition-colors cursor-pointer"
-                      title="Copy command"
-                    >
-                      {copiedId === `recov-step-${idx}` ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5 text-slate-400" />
+                  {isExpanded && (
+                    <div className="px-5 sm:px-6 pb-5 space-y-3 border-t border-[#ebdcc9] pt-3.5">
+                      <p className="text-xs text-[#6b4c35] leading-relaxed">{s.detail}</p>
+
+                      {s.command && (
+                        <div className="relative group mt-2">
+                          <pre className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-xs text-cyan-300 overflow-x-auto">
+                            {s.command}
+                          </pre>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(s.command, `recov-step-${idx}`);
+                            }}
+                            className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded transition-colors cursor-pointer"
+                            title="Copy command"
+                          >
+                            {copiedId === `recov-step-${idx}` ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5 text-slate-400" />
+                            )}
+                          </button>
+                        </div>
                       )}
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Routine Verification Test Matrix */}
-      <section className="space-y-3">
-        <h2 className="text-base font-bold text-[#2d1c10]">
-          Routine Verification & Integrity Checks
-        </h2>
 
-        <div className="overflow-x-auto rounded-xl border border-[#dfcebd] bg-white shadow-2xs">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="border-b border-[#ebdcc9] bg-[#f5ece1]/80 font-bold text-[#2d1c10]">
-                <th className="py-3 px-4 w-1/4">Stage</th>
-                <th className="py-3 px-4 w-1/3">Diagnostic Action</th>
-                <th className="py-3 px-4 w-1/3">Expected Healthy Outcome</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#ebdcc9]/60">
-              <tr className="hover:bg-[#f5ece1]/40 transition-colors">
-                <td className="py-3 px-4 font-semibold text-[#2d1c10]">Local Borg Snapshot</td>
-                <td className="py-3 px-4 text-[#6b4c35]">
-                  Inspect <code className="font-mono text-amber-900 bg-amber-100/60 px-1 py-0.5 rounded">E:\NextcloudBorgBackup</code> after 02:00 AM.
-                </td>
-                <td className="py-3 px-4 text-[#6b4c35]">
-                  Directory contains non-zero Borg archive chunk data with recent timestamps.
-                </td>
-              </tr>
-              <tr className="hover:bg-[#f5ece1]/40 transition-colors">
-                <td className="py-3 px-4 font-semibold text-[#2d1c10]">Cloud Sync Run</td>
-                <td className="py-3 px-4 text-[#6b4c35]">
-                  Execute <code className="font-mono text-amber-900 bg-amber-100/60 px-1 py-0.5 rounded">C:\NextcloudAIO\sync-offsite.ps1</code> manually.
-                </td>
-                <td className="py-3 px-4 text-[#6b4c35]">
-                  Check <code className="font-mono text-amber-900 bg-amber-100/60 px-1 py-0.5 rounded">C:\NextcloudAIO\rclone-sync.log</code> for "Cloud sync completed successfully".
-                </td>
-              </tr>
-              <tr className="hover:bg-[#f5ece1]/40 transition-colors">
-                <td className="py-3 px-4 font-semibold text-[#2d1c10]">Disaster Recovery Drill</td>
-                <td className="py-3 px-4 text-[#6b4c35]">
-                  On a secondary PC, install AIO, point to Borg repo, enter key, and click Restore.
-                </td>
-                <td className="py-3 px-4 text-[#6b4c35]">
-                  All Nextcloud database rows, user accounts, and files are 100% restored.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+      {/* Troubleshooting Knowledgebase Accordion (Matching Image Reference) */}
+      <section className="space-y-4 pt-2">
+        <div>
+          <h2 className="text-base font-bold text-[#2d1c10] flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-amber-700" />
+            <span>Troubleshooting & Reference</span>
+          </h2>
+          <p className="text-xs text-[#7d5b3f] mt-0.5">
+            Solutions to common configuration edge cases.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((faq) => {
+            const isOpen = expandedFaq === faq.id;
+            return (
+              <div 
+                key={faq.id}
+                className="bg-white rounded-2xl border border-[#dfcebd] shadow-2xs overflow-hidden transition-all hover:border-amber-300"
+              >
+                <button
+                  type="button"
+                  onClick={() => setExpandedFaq(isOpen ? null : faq.id)}
+                  className="w-full py-4 px-5 sm:px-6 flex items-center justify-between text-left transition-colors cursor-pointer select-none"
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-sm font-bold text-[#2d1c10] pr-4">
+                    {faq.question}
+                  </span>
+                  <ChevronDown 
+                    className={`w-4 h-4 text-[#8c6b51] shrink-0 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180 text-amber-800' : ''
+                    }`} 
+                  />
+                </button>
+
+                {isOpen && (
+                  <div className="px-5 sm:px-6 pb-5 space-y-3 border-t border-[#ebdcc9] pt-3.5 text-xs">
+                    <p className="text-[#6b4c35] leading-relaxed">{faq.answer}</p>
+                    
+                    {faq.command && (
+                      <div className="relative group mt-2">
+                        <pre className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[11px] text-cyan-300 overflow-x-auto">
+                          {faq.command}
+                        </pre>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(faq.command, faq.id)}
+                          className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded transition-colors cursor-pointer"
+                          title="Copy command"
+                        >
+                          {copiedId === faq.id ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5 text-slate-400" />
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>

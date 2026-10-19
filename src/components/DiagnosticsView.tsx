@@ -150,64 +150,74 @@ export const DiagnosticsView: React.FC = () => {
       </section>
 
       {/* Listening Port Verification Guide */}
-      <section className="p-6 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-4 shadow-xs">
-        <div className="flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-amber-700" />
-          <h2 className="text-base font-bold text-[#2d1c10]">
-            Port Listening Verification Commands
-          </h2>
+      <section className="p-6 sm:p-7 bg-[#fcf8f3] rounded-2xl border border-[#dfcebd] space-y-5 shadow-xs">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Terminal className="w-4 h-4 text-amber-700" />
+            <h2 className="text-base font-bold text-[#2d1c10]">
+              Port Listening Verification Commands
+            </h2>
+          </div>
+          <p className="text-xs text-[#7d5b3f]">
+            Run these verification commands in Command Prompt or PowerShell to confirm that your background services are actively accepting connections:
+          </p>
         </div>
 
-        <p className="text-xs text-[#6b4c35]">
-          Run these verification commands in Command Prompt or PowerShell to confirm that your background services are actively accepting connections:
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="p-4 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-2.5">
-            <div className="text-xs font-bold text-[#2d1c10] flex items-center justify-between">
-              <span>FileZilla SFTP (Port 22)</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-semibold">TCP</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+          <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#dfcebd] shadow-2xs space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs font-bold text-[#2d1c10]">
+                <span>FileZilla SFTP (Port 22)</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-300 font-semibold">TCP</span>
+              </div>
+              <div className="font-mono text-xs text-[#6b4c35] select-all">
+                netstat -an | findstr 22
+              </div>
             </div>
-            <pre className="p-2.5 bg-slate-950 rounded-lg font-mono text-[11px] text-cyan-300 overflow-x-auto">
-              netstat -an | findstr 22
-            </pre>
             <button
+              type="button"
               onClick={() => copyToClipboard('netstat -an | findstr 22', 'chk-22')}
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold bg-amber-100/80 hover:bg-amber-200 text-amber-950 rounded-lg border border-amber-300 transition-colors cursor-pointer"
+              className="w-full py-2.5 px-3 text-xs font-semibold bg-amber-50 hover:bg-amber-100/80 text-amber-900 border border-amber-300 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
               {copiedId === 'chk-22' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-amber-800" />}
               <span>{copiedId === 'chk-22' ? 'Copied netstat!' : 'Copy netstat'}</span>
             </button>
           </div>
 
-          <div className="p-4 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-2.5">
-            <div className="text-xs font-bold text-[#2d1c10] flex items-center justify-between">
-              <span>Nextcloud Master (8080)</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-900 border border-cyan-300 font-semibold">CONTAINER</span>
+          <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#dfcebd] shadow-2xs space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs font-bold text-[#2d1c10]">
+                <span>Nextcloud Master (8080)</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-900 border border-cyan-300 font-semibold">CONTAINER</span>
+              </div>
+              <div className="font-mono text-xs text-[#6b4c35] select-all">
+                docker ps --filter "name=nextcloud"
+              </div>
             </div>
-            <pre className="p-2.5 bg-slate-950 rounded-lg font-mono text-[11px] text-cyan-300 overflow-x-auto">
-              docker ps --filter "name=nextcloud"
-            </pre>
             <button
+              type="button"
               onClick={() => copyToClipboard('docker ps --filter "name=nextcloud"', 'chk-docker')}
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold bg-cyan-100/80 hover:bg-cyan-200 text-cyan-950 rounded-lg border border-cyan-300 transition-colors cursor-pointer"
+              className="w-full py-2.5 px-3 text-xs font-semibold bg-cyan-50 hover:bg-cyan-100/80 text-cyan-900 border border-cyan-300 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
               {copiedId === 'chk-docker' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-cyan-800" />}
               <span>{copiedId === 'chk-docker' ? 'Copied docker ps!' : 'Copy docker ps'}</span>
             </button>
           </div>
 
-          <div className="p-4 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-2.5">
-            <div className="text-xs font-bold text-[#2d1c10] flex items-center justify-between">
-              <span>Tailscale Serve (Port 443)</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-semibold">PROXY</span>
+          <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#dfcebd] shadow-2xs space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs font-bold text-[#2d1c10]">
+                <span>Tailscale Serve (Port 443)</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-300 font-semibold">PROXY</span>
+              </div>
+              <div className="font-mono text-xs text-[#6b4c35] select-all">
+                tailscale serve status
+              </div>
             </div>
-            <pre className="p-2.5 bg-slate-950 rounded-lg font-mono text-[11px] text-cyan-300 overflow-x-auto">
-              tailscale serve status
-            </pre>
             <button
+              type="button"
               onClick={() => copyToClipboard('tailscale serve status', 'chk-ts')}
-              className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold bg-emerald-100/80 hover:bg-emerald-200 text-emerald-950 rounded-lg border border-emerald-300 transition-colors cursor-pointer"
+              className="w-full py-2.5 px-3 text-xs font-semibold bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 border border-emerald-300 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
               {copiedId === 'chk-ts' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-emerald-800" />}
               <span>{copiedId === 'chk-ts' ? 'Copied serve status!' : 'Copy serve status'}</span>

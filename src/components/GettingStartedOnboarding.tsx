@@ -354,78 +354,78 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
       </div>
 
       {/* 5 Options Tabs */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs font-bold max-w-3xl">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 p-1.5 bg-slate-950/90 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-sm text-xs sm:text-sm w-full max-w-4xl">
         <button
           type="button"
           onClick={() => setControlProcessTab('shutdown')}
-          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'shutdown'
-              ? 'bg-red-600 text-white shadow-xs font-semibold'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
-          <PowerOff className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">Shutdown code</span>
+          <PowerOff className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'shutdown' ? 'text-cyan-400' : 'text-slate-400'}`} />
+          <span className="whitespace-nowrap">Shutdown code</span>
         </button>
 
         <button
           type="button"
           onClick={() => setControlProcessTab('retrieve')}
-          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'retrieve'
-              ? 'bg-emerald-600 text-white shadow-xs font-semibold'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
-          <RotateCcw className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">Retrieve code</span>
+          <RotateCcw className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'retrieve' ? 'text-cyan-400' : 'text-slate-400'}`} />
+          <span className="whitespace-nowrap">Retrieve code</span>
         </button>
 
         <button
           type="button"
           onClick={() => setControlProcessTab('restart')}
-          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'restart'
-              ? 'bg-amber-600 text-white shadow-xs font-semibold'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
-          <RefreshCw className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">Restart code</span>
+          <RefreshCw className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'restart' ? 'text-cyan-400' : 'text-slate-400'}`} />
+          <span className="whitespace-nowrap">Restart code</span>
         </button>
 
         <button
           type="button"
           onClick={() => setControlProcessTab('status')}
-          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'status'
-              ? 'bg-cyan-600 text-white shadow-xs font-semibold'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Activity className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">Status code</span>
+          <Activity className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'status' ? 'text-cyan-400' : 'text-slate-400'}`} />
+          <span className="whitespace-nowrap">Status code</span>
         </button>
 
         <button
           type="button"
           onClick={() => setControlProcessTab('delete')}
-          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all cursor-pointer text-center ${
+          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'delete'
-              ? 'bg-rose-700 text-white shadow-xs font-semibold'
-              : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Trash2 className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">Permanent delete</span>
+          <Trash2 className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'delete' ? 'text-cyan-400' : 'text-slate-400'}`} />
+          <span className="whitespace-nowrap">Permanent delete</span>
         </button>
       </div>
 
       {/* Option 1 Content: Shutdown code */}
       {controlProcessTab === 'shutdown' && (
-        <div className="space-y-3 bg-red-950/20 p-4 sm:p-5 rounded-xl border border-red-900/60 max-w-2xl">
-          <div className="flex items-center gap-2 font-bold text-sm text-red-400">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+        <div className="space-y-4 bg-slate-900/60 p-5 sm:p-6 rounded-2xl border border-slate-800/80 w-full max-w-4xl shadow-sm">
+          <div className="flex items-center gap-2 font-bold text-sm text-slate-200">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
             <span>Shutdown</span>
           </div>
 
@@ -433,27 +433,27 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. Stop FileZilla Server */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-red-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-red-950 text-red-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-red-800/60">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
                 <span className="text-slate-200 font-medium truncate">Stop FileZilla Server</span>
               </div>
 
               {/* 2. Disconnect Tailscale */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-red-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-red-950 text-red-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-red-800/60">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
                 <span className="text-slate-200 font-medium truncate">Disconnect Tailscale</span>
               </div>
 
               {/* 3. Screen Normal (3 Min) */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-red-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-red-950 text-red-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-red-800/60">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
                 <span className="text-slate-200 font-medium truncate">Screen Normal (3 Min)</span>
               </div>
             </div>
 
             {/* Middle Bracket connecting all 3 steps to copy button */}
-            <div className="flex items-center justify-center shrink-0 text-red-500 select-none">
-              <svg className="w-4 h-[96px] text-red-500" viewBox="0 0 14 84" fill="none">
+            <div className="flex items-center justify-center shrink-0 text-slate-500 select-none">
+              <svg className="w-4 h-[96px] text-slate-500" viewBox="0 0 14 84" fill="none">
                 <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
               </svg>
             </div>
@@ -463,12 +463,12 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
               <button
                 type="button"
                 onClick={() => copyToClipboard(shutdownCombinedCmd, 'proc-shutdown-all')}
-                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-red-600 hover:bg-red-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold bg-cyan-400 hover:bg-cyan-300 active:scale-95 text-slate-950 rounded-lg transition-all cursor-pointer shadow-xs"
                 title="Copy all 3 shutdown commands into PowerShell"
               >
                 {copiedId === 'proc-shutdown-all' ? (
                   <>
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-4 h-4 text-slate-950" />
                     <span>Copied!</span>
                   </>
                 ) : (
@@ -485,9 +485,9 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
 
       {/* Option 2 Content: Retrieve code */}
       {controlProcessTab === 'retrieve' && (
-        <div className="space-y-3 bg-emerald-950/20 p-4 sm:p-5 rounded-xl border border-emerald-900/60 max-w-2xl">
-          <div className="flex items-center gap-2 font-bold text-sm text-emerald-400">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+        <div className="space-y-4 bg-slate-900/60 p-5 sm:p-6 rounded-2xl border border-slate-800/80 w-full max-w-4xl shadow-sm">
+          <div className="flex items-center gap-2 font-bold text-sm text-slate-200">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
             <span>Retrieve</span>
           </div>
 
@@ -495,27 +495,27 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. Start FileZilla Server */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-emerald-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-emerald-950 text-emerald-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-emerald-800/60">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
                 <span className="text-slate-200 font-medium truncate">Start FileZilla Server</span>
               </div>
 
               {/* 2. Reconnect Tailscale */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-emerald-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-emerald-950 text-emerald-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-emerald-800/60">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
                 <span className="text-slate-200 font-medium truncate">Reconnect Tailscale (tailscale up)</span>
               </div>
 
               {/* 3. Screen Time 24/7 Always-On */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-emerald-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-emerald-950 text-emerald-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-emerald-800/60">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
                 <span className="text-slate-200 font-medium truncate">Host 24/7 Mode (Never Sleep)</span>
               </div>
             </div>
 
             {/* Middle Bracket connecting all 3 steps to copy button */}
-            <div className="flex items-center justify-center shrink-0 text-emerald-500 select-none">
-              <svg className="w-4 h-[96px] text-emerald-500" viewBox="0 0 14 84" fill="none">
+            <div className="flex items-center justify-center shrink-0 text-slate-500 select-none">
+              <svg className="w-4 h-[96px] text-slate-500" viewBox="0 0 14 84" fill="none">
                 <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
               </svg>
             </div>
@@ -525,12 +525,12 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
               <button
                 type="button"
                 onClick={() => copyToClipboard(retrieveCombinedCmd, 'proc-retrieve-all')}
-                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold bg-cyan-400 hover:bg-cyan-300 active:scale-95 text-slate-950 rounded-lg transition-all cursor-pointer shadow-xs"
                 title="Copy all 3 retrieve commands into PowerShell"
               >
                 {copiedId === 'proc-retrieve-all' ? (
                   <>
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-4 h-4 text-slate-950" />
                     <span>Copied!</span>
                   </>
                 ) : (
@@ -547,9 +547,9 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
 
       {/* Option: Restart code */}
       {controlProcessTab === 'restart' && (
-        <div className="space-y-3 bg-amber-950/20 p-4 sm:p-5 rounded-xl border border-amber-900/60 max-w-2xl">
-          <div className="flex items-center gap-2 font-bold text-sm text-amber-400">
-            <RefreshCw className="w-4 h-4 text-amber-400 shrink-0" />
+        <div className="space-y-4 bg-slate-900/60 p-5 sm:p-6 rounded-2xl border border-slate-800/80 w-full max-w-4xl shadow-sm">
+          <div className="flex items-center gap-2 font-bold text-sm text-slate-200">
+            <RefreshCw className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>Restart</span>
           </div>
 
@@ -557,27 +557,27 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. Restart FileZilla Server */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-amber-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-amber-950 text-amber-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-amber-800/60">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
                 <span className="text-slate-200 font-medium truncate">Restart FileZilla Server</span>
               </div>
 
               {/* 2. Reset Tailscale Connection */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-amber-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-amber-950 text-amber-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-amber-800/60">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
                 <span className="text-slate-200 font-medium truncate">Reset Tailscale Connection</span>
               </div>
 
               {/* 3. Flush DNS Cache */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-amber-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-amber-950 text-amber-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-amber-800/60">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
                 <span className="text-slate-200 font-medium truncate">Flush DNS Cache</span>
               </div>
             </div>
 
             {/* Middle Bracket connecting all 3 steps to copy button */}
-            <div className="flex items-center justify-center shrink-0 text-amber-500 select-none">
-              <svg className="w-4 h-[96px] text-amber-500" viewBox="0 0 14 84" fill="none">
+            <div className="flex items-center justify-center shrink-0 text-slate-500 select-none">
+              <svg className="w-4 h-[96px] text-slate-500" viewBox="0 0 14 84" fill="none">
                 <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
               </svg>
             </div>
@@ -587,12 +587,12 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
               <button
                 type="button"
                 onClick={() => copyToClipboard(restartCombinedCmd, 'proc-restart-all')}
-                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold bg-cyan-400 hover:bg-cyan-300 active:scale-95 text-slate-950 rounded-lg transition-all cursor-pointer shadow-xs"
                 title="Copy all 3 restart commands into PowerShell"
               >
                 {copiedId === 'proc-restart-all' ? (
                   <>
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-4 h-4 text-slate-950" />
                     <span>Copied!</span>
                   </>
                 ) : (
@@ -609,8 +609,8 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
 
       {/* Option: Status code */}
       {controlProcessTab === 'status' && (
-        <div className="space-y-3 bg-cyan-950/20 p-4 sm:p-5 rounded-xl border border-cyan-900/60 max-w-2xl">
-          <div className="flex items-center gap-2 font-bold text-sm text-cyan-400">
+        <div className="space-y-4 bg-slate-900/60 p-5 sm:p-6 rounded-2xl border border-slate-800/80 w-full max-w-4xl shadow-sm">
+          <div className="flex items-center gap-2 font-bold text-sm text-slate-200">
             <Activity className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>Status</span>
           </div>
@@ -619,27 +619,27 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. FileZilla Service Status */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-cyan-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-800/60">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
                 <span className="text-slate-200 font-medium truncate">FileZilla Service Status</span>
               </div>
 
               {/* 2. Tailscale Mesh Status & IP Check */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-cyan-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-800/60">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
                 <span className="text-slate-200 font-medium truncate">Tailscale Mesh Status & IP Check</span>
               </div>
 
               {/* 3. Test TCP Port 22 SFTP Listener */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-cyan-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-800/60">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
                 <span className="text-slate-200 font-medium truncate">Test TCP Port 22 SFTP Listener</span>
               </div>
             </div>
 
             {/* Middle Bracket connecting all 3 steps to copy button */}
-            <div className="flex items-center justify-center shrink-0 text-cyan-500 select-none">
-              <svg className="w-4 h-[96px] text-cyan-500" viewBox="0 0 14 84" fill="none">
+            <div className="flex items-center justify-center shrink-0 text-slate-500 select-none">
+              <svg className="w-4 h-[96px] text-slate-500" viewBox="0 0 14 84" fill="none">
                 <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
               </svg>
             </div>
@@ -649,12 +649,12 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
               <button
                 type="button"
                 onClick={() => copyToClipboard(statusCombinedCmd, 'proc-status-all')}
-                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-cyan-600 hover:bg-cyan-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold bg-cyan-400 hover:bg-cyan-300 active:scale-95 text-slate-950 rounded-lg transition-all cursor-pointer shadow-xs"
                 title="Copy all 3 status diagnostic commands into PowerShell"
               >
                 {copiedId === 'proc-status-all' ? (
                   <>
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-4 h-4 text-slate-950" />
                     <span>Copied!</span>
                   </>
                 ) : (
@@ -671,9 +671,9 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
 
       {/* Option 5 Content: Permanent Delete All code */}
       {controlProcessTab === 'delete' && (
-        <div className="space-y-3 bg-rose-950/20 p-4 sm:p-5 rounded-xl border border-rose-900/60 max-w-2xl">
-          <div className="flex items-center gap-2 font-bold text-sm text-rose-400">
-            <Trash2 className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="space-y-4 bg-slate-900/60 p-5 sm:p-6 rounded-2xl border border-slate-800/80 w-full max-w-4xl shadow-sm">
+          <div className="flex items-center gap-2 font-bold text-sm text-slate-200">
+            <Trash2 className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>Permanent Delete</span>
           </div>
 
@@ -681,27 +681,27 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. Tailscale Delete */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-rose-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-rose-950 text-rose-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-rose-800/60">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
                 <span className="text-slate-200 font-medium truncate">Delete Tailscale (Uninstall)</span>
               </div>
 
               {/* 2. FileZilla Server Delete */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-rose-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-rose-950 text-rose-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-rose-800/60">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
                 <span className="text-slate-200 font-medium truncate">Delete FileZilla Server (Uninstall)</span>
               </div>
 
               {/* 3. Screen time normal mode to 3 minutes */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-rose-900/40 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-rose-950 text-rose-400 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-rose-800/60">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
+                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
                 <span className="text-slate-200 font-medium truncate">Screen Normal (3 Min)</span>
               </div>
             </div>
 
             {/* Middle Bracket connecting all 3 steps to copy button */}
-            <div className="flex items-center justify-center shrink-0 text-rose-500 select-none">
-              <svg className="w-4 h-[96px] text-rose-500" viewBox="0 0 14 84" fill="none">
+            <div className="flex items-center justify-center shrink-0 text-slate-500 select-none">
+              <svg className="w-4 h-[96px] text-slate-500" viewBox="0 0 14 84" fill="none">
                 <path d="M 2 4 C 6 4, 7 20, 7 38 C 7 41, 12 42, 12 42 C 12 42, 7 43, 7 46 C 7 64, 6 80, 2 80" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
               </svg>
             </div>
@@ -711,12 +711,12 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
               <button
                 type="button"
                 onClick={() => copyToClipboard(permanentDeleteCombinedCmd, 'proc-delete-all')}
-                className="inline-flex items-center gap-2 px-4 py-3 text-xs font-bold bg-rose-700 hover:bg-rose-800 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-md hover:shadow-lg"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold bg-cyan-400 hover:bg-cyan-300 active:scale-95 text-slate-950 rounded-lg transition-all cursor-pointer shadow-xs"
                 title="Copy all 3 permanent deletion commands into PowerShell"
               >
                 {copiedId === 'proc-delete-all' ? (
                   <>
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-4 h-4 text-slate-950" />
                     <span>Copied!</span>
                   </>
                 ) : (
