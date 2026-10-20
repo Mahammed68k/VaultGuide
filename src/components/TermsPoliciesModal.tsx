@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, Scale, FileText, Check, Copy, ExternalLink, Lock, EyeOff, Server, HardDrive, AlertCircle } from 'lucide-react';
+import { X, ShieldCheck, Scale, FileText, ExternalLink, Lock, EyeOff, Server, HardDrive, AlertCircle } from 'lucide-react';
 
 interface TermsPoliciesModalProps {
   isOpen: boolean;
@@ -13,7 +13,6 @@ export const TermsPoliciesModal: React.FC<TermsPoliciesModalProps> = ({
   initialTab = 'terms'
 }) => {
   const [activeDoc, setActiveDoc] = useState<'terms' | 'privacy' | 'security'>(initialTab);
-  const [copied, setCopied] = useState<boolean>(false);
 
   // Sync initialTab when opened
   React.useEffect(() => {
@@ -21,12 +20,6 @@ export const TermsPoliciesModal: React.FC<TermsPoliciesModalProps> = ({
   }, [initialTab, isOpen]);
 
   if (!isOpen) return null;
-
-  const handleCopyText = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <div 
@@ -245,14 +238,6 @@ export const TermsPoliciesModal: React.FC<TermsPoliciesModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleCopyText(`VaultGuide ${activeDoc === 'terms' ? 'Terms of Service' : activeDoc === 'privacy' ? 'Privacy Policy' : 'Security Model'} - Verified October 2026. Zero Telemetry, 100% Local Storage Sovereignty.`)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Copied' : 'Copy Summary'}</span>
-            </button>
-
             <button
               onClick={onClose}
               className="px-4 py-1.5 font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-lg transition-colors cursor-pointer shadow-xs"

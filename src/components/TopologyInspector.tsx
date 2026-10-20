@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Smartphone, Shield, Laptop, Server, Cloud, Layers, Lock } from 'lucide-react';
+import { Smartphone, Shield, Laptop, Server, Cloud, Layers } from 'lucide-react';
 
 const nodes = [
   {
@@ -110,17 +110,7 @@ export const TopologyInspector: React.FC = () => {
   const ActiveIcon = activeNode.icon;
 
   return (
-    <div className="p-6 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-6 shadow-xs">
-      <div>
-        <h3 className="text-base font-bold text-[#2d1c10] flex items-center gap-2">
-          <Lock className="w-4 h-4 text-amber-700" />
-          <span>Interactive Component Inspector</span>
-        </h3>
-        <p className="text-xs text-[#6b4c35] mt-0.5">
-          Select any node in the stack to inspect its protocols, port exposure, and security boundaries.
-        </p>
-      </div>
-
+    <div className="space-y-4">
       {/* Sleek Connected Pipeline Bar (No Black Shades) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2 p-1.5 bg-[#f5ece1]/90 rounded-xl border border-[#dfcebd] shadow-2xs">
         {nodes.map((node) => {

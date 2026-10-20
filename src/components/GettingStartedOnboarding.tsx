@@ -358,66 +358,66 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
         <button
           type="button"
           onClick={() => setControlProcessTab('shutdown')}
-          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
+          className={`w-full px-2.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'shutdown'
-              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white font-semibold'
               : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
           <PowerOff className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'shutdown' ? 'text-cyan-400' : 'text-slate-400'}`} />
-          <span className="whitespace-nowrap">Shutdown code</span>
+          <span className={`text-xs font-medium whitespace-nowrap ${controlProcessTab === 'shutdown' ? 'text-white font-semibold' : 'text-slate-400'}`}>Shutdown code</span>
         </button>
 
         <button
           type="button"
           onClick={() => setControlProcessTab('retrieve')}
-          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
+          className={`w-full px-2.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'retrieve'
-              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white font-semibold'
               : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
           <RotateCcw className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'retrieve' ? 'text-cyan-400' : 'text-slate-400'}`} />
-          <span className="whitespace-nowrap">Retrieve code</span>
+          <span className={`text-xs font-medium whitespace-nowrap ${controlProcessTab === 'retrieve' ? 'text-white font-semibold' : 'text-slate-400'}`}>Retrieve code</span>
         </button>
 
         <button
           type="button"
           onClick={() => setControlProcessTab('restart')}
-          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
+          className={`w-full px-2.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'restart'
-              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white font-semibold'
               : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
           <RefreshCw className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'restart' ? 'text-cyan-400' : 'text-slate-400'}`} />
-          <span className="whitespace-nowrap">Restart code</span>
+          <span className={`text-xs font-medium whitespace-nowrap ${controlProcessTab === 'restart' ? 'text-white font-semibold' : 'text-slate-400'}`}>Restart code</span>
         </button>
 
         <button
           type="button"
           onClick={() => setControlProcessTab('status')}
-          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
+          className={`w-full px-2.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'status'
-              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white font-semibold'
               : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
           <Activity className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'status' ? 'text-cyan-400' : 'text-slate-400'}`} />
-          <span className="whitespace-nowrap">Status code</span>
+          <span className={`text-xs font-medium whitespace-nowrap ${controlProcessTab === 'status' ? 'text-white font-semibold' : 'text-slate-400'}`}>Status code</span>
         </button>
 
         <button
           type="button"
           onClick={() => setControlProcessTab('delete')}
-          className={`w-full px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
+          className={`w-full px-2.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 ${
             controlProcessTab === 'delete'
-              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs font-semibold'
+              ? 'bg-slate-900 border border-cyan-500/40 text-white font-semibold'
               : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
           }`}
         >
           <Trash2 className={`w-3.5 h-3.5 shrink-0 ${controlProcessTab === 'delete' ? 'text-cyan-400' : 'text-slate-400'}`} />
-          <span className="whitespace-nowrap">Permanent delete</span>
+          <span className={`text-xs font-medium whitespace-nowrap ${controlProcessTab === 'delete' ? 'text-white font-semibold' : 'text-slate-400'}`}>Permanent delete</span>
         </button>
       </div>
 
@@ -433,20 +433,20 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. Stop FileZilla Server */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">1</span>
                 <span className="text-slate-200 font-medium truncate">Stop FileZilla Server</span>
               </div>
 
               {/* 2. Disconnect Tailscale */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">2</span>
                 <span className="text-slate-200 font-medium truncate">Disconnect Tailscale</span>
               </div>
 
               {/* 3. Screen Normal (3 Min) */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">3</span>
                 <span className="text-slate-200 font-medium truncate">Screen Normal (3 Min)</span>
               </div>
             </div>
@@ -495,20 +495,20 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. Start FileZilla Server */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">1</span>
                 <span className="text-slate-200 font-medium truncate">Start FileZilla Server</span>
               </div>
 
               {/* 2. Reconnect Tailscale */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">2</span>
                 <span className="text-slate-200 font-medium truncate">Reconnect Tailscale (tailscale up)</span>
               </div>
 
               {/* 3. Screen Time 24/7 Always-On */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">3</span>
                 <span className="text-slate-200 font-medium truncate">Host 24/7 Mode (Never Sleep)</span>
               </div>
             </div>
@@ -557,20 +557,20 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. Restart FileZilla Server */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">1</span>
                 <span className="text-slate-200 font-medium truncate">Restart FileZilla Server</span>
               </div>
 
               {/* 2. Reset Tailscale Connection */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">2</span>
                 <span className="text-slate-200 font-medium truncate">Reset Tailscale Connection</span>
               </div>
 
               {/* 3. Flush DNS Cache */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">3</span>
                 <span className="text-slate-200 font-medium truncate">Flush DNS Cache</span>
               </div>
             </div>
@@ -619,20 +619,20 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. FileZilla Service Status */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">1</span>
                 <span className="text-slate-200 font-medium truncate">FileZilla Service Status</span>
               </div>
 
               {/* 2. Tailscale Mesh Status & IP Check */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">2</span>
                 <span className="text-slate-200 font-medium truncate">Tailscale Mesh Status & IP Check</span>
               </div>
 
               {/* 3. Test TCP Port 22 SFTP Listener */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">3</span>
                 <span className="text-slate-200 font-medium truncate">Test TCP Port 22 SFTP Listener</span>
               </div>
             </div>
@@ -681,20 +681,20 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left: 3 steps stacked */}
             <div className="flex-1 space-y-2 text-xs min-w-0">
               {/* 1. Tailscale Delete */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">1</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">1</span>
                 <span className="text-slate-200 font-medium truncate">Delete Tailscale (Uninstall)</span>
               </div>
 
               {/* 2. FileZilla Server Delete */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">2</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">2</span>
                 <span className="text-slate-200 font-medium truncate">Delete FileZilla Server (Uninstall)</span>
               </div>
 
               {/* 3. Screen time normal mode to 3 minutes */}
-              <div className="flex items-center gap-2.5 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800/80 shadow-2xs">
-                <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-slate-700/80">3</span>
+              <div className="flex items-center gap-2.5 bg-slate-900/60 px-3 py-2 rounded-lg border border-slate-800/80">
+                <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px] flex items-center justify-center shrink-0 font-bold border border-cyan-500/40">3</span>
                 <span className="text-slate-200 font-medium truncate">Screen Normal (3 Min)</span>
               </div>
             </div>
