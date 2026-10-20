@@ -24,15 +24,6 @@ export interface CloudProviderOption {
   pricingNote: string;
 }
 
-export interface SearchItem {
-  id: string;
-  title: string;
-  category: 'Command' | 'Guide' | 'Troubleshooting' | 'Architecture';
-  targetTab: ActiveTab;
-  codeSnippet?: string;
-  description: string;
-}
-
 export interface ScriptVersion {
   id: string;
   versionNumber: number;

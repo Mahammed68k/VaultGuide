@@ -3,18 +3,16 @@ import { ActiveTab, AppTheme } from './types';
 import { ArchitectureView } from './components/ArchitectureView';
 import { BackupSimulatorView } from './components/BackupSimulatorView';
 import { GettingStartedOnboarding } from './components/GettingStartedOnboarding';
-import { CommandPalette } from './components/CommandPalette';
 import { Footer } from './components/Footer';
 import { TermsPoliciesModal } from './components/TermsPoliciesModal';
 import IntroScreen from './components/IntroScreen';
-import { Shield, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export default function App() {
   const [showIntro, setShowIntro] = useState<boolean>(true);
   const theme: AppTheme = 'light'; // Permanent Latte theme
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
   const [onboardingEngine, setOnboardingEngine] = useState<'sftp' | 'nextcloud'>('sftp');
-  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
   const [isTermsOpen, setIsTermsOpen] = useState<boolean>(false);
   const [termsInitialTab, setTermsInitialTab] = useState<'terms' | 'privacy' | 'security'>('terms');
 
@@ -27,17 +25,6 @@ export default function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [activeTab]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setIsCommandPaletteOpen(prev => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   const handleSelectOnboarding = (engine: 'sftp' | 'nextcloud') => {
     setOnboardingEngine(engine);
@@ -127,12 +114,6 @@ export default function App() {
       />
 
       {/* Modals & Overlays */}
-      <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
-        onNavigate={(tab) => setActiveTab(tab)}
-      />
-
       <TermsPoliciesModal
         isOpen={isTermsOpen}
         onClose={() => setIsTermsOpen(false)}
