@@ -10,7 +10,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenTerms 
 }) => {
   return (
-    <footer className="w-full border-t border-slate-800/80 bg-slate-950/70 backdrop-blur-md mt-16 transition-colors">
+    <footer className="w-full border-t border-slate-800/80 bg-slate-950/70 backdrop-blur-md transition-colors">
       <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 xl:px-12 py-6 text-xs text-slate-500">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
