@@ -162,10 +162,16 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
 
   // Script for SFTP Minute 4
   const sftpPowerShell = `# Run in PowerShell as Administrator:
+
+# 1. Clean up existing firewall rule if previously created (prevents Error 183 'Cannot create a file when that file already exists')
+Get-NetFirewallRule -Name "Allow_FileZilla_SFTP" -ErrorAction SilentlyContinue | Remove-NetFirewallRule -ErrorAction SilentlyContinue
+
+# 2. Allow SFTP inbound traffic on Port 22
 New-NetFirewallRule -Name "Allow_FileZilla_SFTP" \`
   -DisplayName "FileZilla SFTP Server (Port 22)" \`
   -Direction Inbound -Protocol TCP -LocalPort 22 -Action Allow
 
+# 3. Configure 24/7 server power plan (Never sleep on AC, Lid Close = Do Nothing)
 powercfg /change standby-timeout-ac 0
 powercfg -setacvalueindex SCHEME_CURRENT 4f971e89-eebd-4455-a8de-9e59040e7347 5ca83367-6e45-459f-a27b-476b1d01c936 0
 powercfg -setactive SCHEME_CURRENT
