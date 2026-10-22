@@ -67,7 +67,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
                 const target = e.currentTarget;
                 if (!target.dataset.fallbackTried) {
                   target.dataset.fallbackTried = 'true';
-                  target.src = '/assets/images/server_mesh_node_1791216991425.jpg';
+                  target.src = '/server_mesh_node_1791216991425.jpg';
                 }
               }}
             />
