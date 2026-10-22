@@ -102,10 +102,6 @@ export const TopologyInspector: React.FC = () => {
     return () => clearInterval(timer);
   }, [selectedNode]);
 
-  const handleSelectNode = (id: string) => {
-    setSelectedNode(id);
-  };
-
   const activeNode = nodes.find(n => n.id === selectedNode) || nodes[0];
   const ActiveIcon = activeNode.icon;
 
@@ -119,7 +115,7 @@ export const TopologyInspector: React.FC = () => {
           return (
             <button
               key={node.id}
-              onClick={() => handleSelectNode(node.id)}
+              onClick={() => setSelectedNode(node.id)}
               className={`relative overflow-hidden flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50 ${
                 isSelected
                   ? 'bg-white text-amber-950 font-bold border border-amber-400 shadow-xs ring-1 ring-amber-400/30'

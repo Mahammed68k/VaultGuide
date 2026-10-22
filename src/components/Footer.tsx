@@ -1,8 +1,6 @@
 import React from 'react';
-import { ActiveTab } from '../types';
-
+ 
 interface FooterProps {
-  onNavigate?: (tab: ActiveTab) => void;
   onOpenTerms: (tab?: 'terms' | 'privacy' | 'security') => void;
 }
 

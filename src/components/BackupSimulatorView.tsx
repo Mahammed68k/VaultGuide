@@ -7,7 +7,6 @@ import {
   FileX,
   AlertTriangle,
   ChevronDown,
-  ChevronUp,
   HelpCircle
 } from 'lucide-react';
 
@@ -418,8 +417,6 @@ export const BackupSimulatorView: React.FC = () => {
           </div>
         </div>
       </section>
-
-
 
       {/* Troubleshooting Knowledgebase Accordion (Matching Image Reference) */}
       <section className="space-y-4 pt-2">

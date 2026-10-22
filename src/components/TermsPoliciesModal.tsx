@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, Scale, FileText, ExternalLink, Lock, EyeOff, Server, HardDrive, AlertCircle } from 'lucide-react';
+import { X, ShieldCheck, Scale, Lock, EyeOff, AlertCircle } from 'lucide-react';
 
 interface TermsPoliciesModalProps {
   isOpen: boolean;

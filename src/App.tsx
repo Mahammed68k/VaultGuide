@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActiveTab, AppTheme } from './types';
+import { ActiveTab } from './types';
 import { ArchitectureView } from './components/ArchitectureView';
 import { BackupSimulatorView } from './components/BackupSimulatorView';
 import { GettingStartedOnboarding } from './components/GettingStartedOnboarding';
@@ -10,7 +10,6 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function App() {
   const [showIntro, setShowIntro] = useState<boolean>(true);
-  const theme: AppTheme = 'light'; // Permanent Latte theme
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
   const [onboardingEngine, setOnboardingEngine] = useState<'sftp' | 'nextcloud'>('sftp');
   const [isTermsOpen, setIsTermsOpen] = useState<boolean>(false);
@@ -109,7 +108,6 @@ export default function App() {
 
       {/* Global Application Footer */}
       <Footer 
-        onNavigate={(tab) => setActiveTab(tab)}
         onOpenTerms={handleOpenTerms}
       />
 

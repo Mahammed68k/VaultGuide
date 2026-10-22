@@ -6,33 +6,18 @@ import {
   ArrowLeft, 
   ShieldCheck, 
   Server, 
-  FolderSync, 
   Smartphone, 
   HardDrive, 
   Terminal, 
   Copy, 
   Check, 
-  Zap, 
-  Lock, 
-  Sparkles, 
-  Wifi, 
-  FileText, 
-  UploadCloud, 
-  FileCheck, 
-  Clock, 
   ExternalLink, 
-  AlertTriangle, 
-  Layers, 
   Container, 
   Key, 
-  ShieldAlert,
   PowerOff,
   RotateCcw,
   RefreshCw,
   Activity,
-  Download,
-  ChevronDown,
-  ChevronUp,
   Trash2
 } from 'lucide-react';
 
@@ -70,15 +55,8 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
 
   // Nextcloud specific states
   const [passphrase, setPassphrase] = useState<string>('aio-master-secret-vault-2026-safe-key');
-  const [collaboraEnabled, setCollaboraEnabled] = useState<boolean>(true);
   const [memoriesEnabled, setMemoriesEnabled] = useState<boolean>(true);
   const [borgBackupEnabled, setBorgBackupEnabled] = useState<boolean>(true);
-
-  // Simulation states
-  const [handshakeStatus, setHandshakeStatus] = useState<'idle' | 'testing' | 'success'>('idle');
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadVerified, setUploadVerified] = useState<boolean>(false);
 
   const completedMinutes = engine === 'sftp' ? completedMinutesSftp : completedMinutesNextcloud;
   const setCompletedMinutes = engine === 'sftp' ? setCompletedMinutesSftp : setCompletedMinutesNextcloud;
@@ -89,52 +67,16 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
     setTimeout(() => setCopiedId(null), 1800);
   };
 
-  // RFC 6598 CGNAT validator
-  const isValidTailscaleIp = (ip: string) => {
-    const parts = ip.trim().split('.');
-    if (parts.length !== 4) return false;
-    const [o1, o2, o3, o4] = parts.map(Number);
-    if ([o1, o2, o3, o4].some(isNaN) || [o1, o2, o3, o4].some(n => n < 0 || n > 255)) return false;
-    return o1 === 100 && o2 >= 64 && o2 <= 127;
-  };
-
   const markMinuteCompleted = (minute: number) => {
     if (!completedMinutes.includes(minute)) {
       setCompletedMinutes(prev => [...prev, minute]);
     }
   };
 
-  const testHandshake = () => {
-    setHandshakeStatus('testing');
-    setTimeout(() => {
-      setHandshakeStatus('success');
-      markMinuteCompleted(1);
-    }, 1100);
-  };
-
-  const simulateMobileUpload = () => {
-    setIsUploading(true);
-    setUploadProgress(0);
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          setUploadVerified(true);
-          markMinuteCompleted(5);
-          return 100;
-        }
-        return prev + 25;
-      });
-    }, 300);
-  };
-
   // Switch engines & reset step index
   const handleEngineSwitch = (newEngine: 'sftp' | 'nextcloud') => {
     setEngine(newEngine);
     setActiveMinute(1);
-    setHandshakeStatus('idle');
-    setUploadVerified(false);
   };
 
   // SFTP Steps definition
@@ -1259,7 +1201,7 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                 </p>
               </div>
 
-              {(completedMinutes.includes(4) || uploadVerified) && (
+              {completedMinutes.includes(4) && (
                 <div className="p-4 bg-emerald-950/30 border border-emerald-500/40 rounded-xl text-center space-y-2">
                   <div className="inline-flex items-center gap-2 text-emerald-300 font-bold text-sm">
                     <ShieldCheck className="w-5 h-5 text-emerald-400" />
@@ -1581,7 +1523,7 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                 </p>
               </div>
 
-              {(completedMinutes.includes(5) || uploadVerified) && (
+              {completedMinutes.includes(5) && (
                 <div className="p-4 bg-emerald-950/30 border border-emerald-500/40 rounded-xl text-center space-y-2">
                   <div className="inline-flex items-center gap-2 text-emerald-300 font-bold text-sm">
                     <ShieldCheck className="w-5 h-5 text-emerald-400" />

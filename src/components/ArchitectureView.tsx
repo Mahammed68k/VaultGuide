@@ -14,12 +14,6 @@ interface ArchitectureViewProps {
 }
 
 export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab, onSelectOnboarding }) => {
-
-  const handleLaunchTab = (tab: ActiveTab) => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    onSelectTab(tab);
-  };
-
   return (
     <div className="space-y-12">
       {/* Hero Showcase with Engineering Asset */}
@@ -50,7 +44,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
               <span>Nextcloud AIO Getting Started</span>
             </button>
             <button
-              onClick={() => handleLaunchTab('backup')}
+              onClick={() => onSelectTab('backup')}
               className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
             >
               <FolderSync className="w-3.5 h-3.5" />
