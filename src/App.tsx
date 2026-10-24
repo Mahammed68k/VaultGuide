@@ -54,13 +54,6 @@ export default function App() {
                 src="/logo.svg" 
                 alt="VaultGuide Logo" 
                 className="w-full h-full object-contain p-0.5"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.dataset.fallbackTried) {
-                    target.dataset.fallbackTried = 'true';
-                    target.src = '/download.jpeg';
-                  }
-                }}
               />
             </div>
             <div>

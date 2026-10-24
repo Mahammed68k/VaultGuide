@@ -18,7 +18,9 @@ import {
   RotateCcw,
   RefreshCw,
   Activity,
-  Trash2
+  Trash2,
+  Play,
+  X
 } from 'lucide-react';
 
 interface GettingStartedOnboardingProps {
@@ -58,6 +60,9 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
   const [memoriesEnabled, setMemoriesEnabled] = useState<boolean>(true);
   const [borgBackupEnabled, setBorgBackupEnabled] = useState<boolean>(true);
 
+  // Walkthrough video in-page player state
+  const [isPlayingWalkthrough, setIsPlayingWalkthrough] = useState<boolean>(false);
+
   const completedMinutes = engine === 'sftp' ? completedMinutesSftp : completedMinutesNextcloud;
   const setCompletedMinutes = engine === 'sftp' ? setCompletedMinutesSftp : setCompletedMinutesNextcloud;
 
@@ -77,6 +82,7 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
   const handleEngineSwitch = (newEngine: 'sftp' | 'nextcloud') => {
     setEngine(newEngine);
     setActiveMinute(1);
+    setIsPlayingWalkthrough(false);
   };
 
   // SFTP Steps definition
@@ -688,76 +694,134 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
     >
       {/* Top Banner */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
-              <span>
-                {engine === 'sftp' ? 'Direct SFTP Getting Started Guide' : 'Nextcloud AIO Getting Started Guide'}
-              </span>
-              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
-                ~5 Minutes Total
-              </span>
-            </h1>
-            <p className="text-xs text-[#6b4c35] mt-1.5 max-w-none leading-relaxed">
-              {engine === 'sftp' ? (
-                <>
-                  Fastest, lightest private cloud setup: Direct <strong>FileZilla Server</strong> + <strong>Tailscale WireGuard</strong>. Delivers maximum disk throughput, 4K streaming with ~15 MB RAM overhead, zero database indexing lag, and complete isolation on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports.
-                </>
-              ) : (
-                <>
-                  Enterprise personal cloud setup: Full <strong>Google Photos & Drive replacement</strong> via <strong>Docker AIO</strong> + <strong>Tailscale Serve HTTPS</strong>. Delivers native automatic background camera backup, web file portal, AI photo album indexing (Memories), automated 3-2-1 BorgBackup snapshots, and local drive storage on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports and zero domain subscription costs.
-                </>
-              )}
-            </p>
+        {engine === 'sftp' ? (
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+            {/* Left Column: Title, Description, Pills */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
+                <span>Direct SFTP Getting Started Guide</span>
+                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
+                  ~5 Minutes Total
+                </span>
+              </h1>
+              <p className="text-xs text-[#6b4c35] mt-1.5 max-w-none leading-relaxed">
+                Fastest, lightest private cloud setup: Direct <strong>FileZilla Server</strong> + <strong>Tailscale WireGuard</strong>. Delivers maximum disk throughput, 4K streaming with ~15 MB RAM overhead, zero database indexing lag, and complete isolation on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports.
+              </p>
 
-            {/* Best Points Feature Highlights */}
-            <div className="flex flex-wrap items-center gap-2 pt-2.5">
-              {engine === 'sftp' ? (
-                <>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                    <span>~15 MB RAM Footprint</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                    <span>Direct Raw Disk Speed</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                    <span>Zero Indexing Lag</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50/80 border border-emerald-300 text-emerald-900 shadow-2xs">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
-                    <span>Zero Open Router Ports</span>
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                    <span>Google Photos & Drive Clone</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                    <span>Auto Camera Roll Sync (5G)</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50/80 border border-emerald-300 text-emerald-900 shadow-2xs">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
-                    <span>Free Tailscale HTTPS</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-                    <span>3-2-1 BorgBackup Redundancy</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                    <span>D:\PersonalCloud Native Mount</span>
-                  </span>
-                </>
-              )}
+              {/* Best Points Feature Highlights */}
+              <div className="flex flex-wrap items-center gap-2 pt-2.5">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                  <span>~15 MB RAM Footprint</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <span>Direct Raw Disk Speed</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                  <span>Zero Indexing Lag</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50/80 border border-emerald-300 text-emerald-900 shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+                  <span>Zero Open Router Ports</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Right Column: In-Page Walkthrough Video Player */}
+            <div className="w-full sm:w-[350px] lg:w-[360px] xl:w-[400px] shrink-0 self-center lg:self-start">
+              <div className="rounded-2xl border border-amber-900/40 bg-[#1c120c] p-2 shadow-md overflow-hidden transition-all hover:border-amber-500/60 hover:shadow-amber-950/40">
+                {!isPlayingWalkthrough ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsPlayingWalkthrough(true)}
+                    className="group relative aspect-video w-full rounded-xl overflow-hidden bg-black flex flex-col items-center justify-center p-4 select-none cursor-pointer focus:outline-none"
+                    aria-label="Play 5-Minute Direct SFTP Walkthrough Video"
+                  >
+                    {/* Background Preview Video (First Frame preview) */}
+                    <video
+                      src="/walkthrough.mp4#t=0.5"
+                      preload="metadata"
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-75 group-hover:scale-105 transition-all duration-500 pointer-events-none"
+                    />
+
+                    {/* Dark Scrim */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/50 pointer-events-none" />
+
+                    {/* Amber Circular Play Button */}
+                    <div className="relative z-10 w-13 h-13 rounded-full bg-amber-500 group-hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg shadow-black/80 transition-all duration-300 group-hover:scale-110 active:scale-95">
+                      <Play className="w-5 h-5 fill-current ml-0.5" />
+                    </div>
+                  </button>
+                ) : (
+                  <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-black shadow-inner">
+                    <video
+                      src="/walkthrough.mp4"
+                      controls
+                      autoPlay
+                      preload="metadata"
+                      playsInline
+                      className="w-full h-full object-contain"
+                    >
+                      <source src="/walkthrough.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                    <button
+                      type="button"
+                      onClick={() => setIsPlayingWalkthrough(false)}
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/85 hover:bg-black text-amber-300 hover:text-white border border-amber-500/40 text-[10px] font-semibold flex items-center gap-1 z-20 cursor-pointer shadow-md transition-colors"
+                      title="Close player and return to preview"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      <span>Close</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
+                <span>Nextcloud AIO Getting Started Guide</span>
+                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
+                  ~5 Minutes Total
+                </span>
+              </h1>
+              <p className="text-xs text-[#6b4c35] mt-1.5 max-w-none leading-relaxed">
+                Enterprise personal cloud setup: Full <strong>Google Photos & Drive replacement</strong> via <strong>Docker AIO</strong> + <strong>Tailscale Serve HTTPS</strong>. Delivers native automatic background camera backup, web file portal, AI photo album indexing (Memories), automated 3-2-1 BorgBackup snapshots, and local drive storage on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports and zero domain subscription costs.
+              </p>
+
+              {/* Best Points Feature Highlights */}
+              <div className="flex flex-wrap items-center gap-2 pt-2.5">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <span>Google Photos & Drive Clone</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                  <span>Auto Camera Roll Sync (5G)</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50/80 border border-emerald-300 text-emerald-900 shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+                  <span>Free Tailscale HTTPS</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
+                  <span>3-2-1 BorgBackup Redundancy</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                  <span>D:\PersonalCloud Native Mount</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Pipeline Navigation Bar - Compact Professional Stepper */}
