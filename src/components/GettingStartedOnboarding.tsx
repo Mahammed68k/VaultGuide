@@ -695,48 +695,91 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
       {/* Top Banner */}
       <div className="space-y-4">
         {engine === 'sftp' ? (
-          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
-            {/* Left Column: Title, Description, Pills */}
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
-                <span>Direct SFTP Getting Started Guide</span>
-                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
-                  ~5 Minutes Total
-                </span>
-              </h1>
-              <p className="text-xs text-[#6b4c35] mt-1.5 max-w-none leading-relaxed">
-                Fastest, lightest private cloud setup: Direct <strong>FileZilla Server</strong> + <strong>Tailscale WireGuard</strong>. Delivers maximum disk throughput, 4K streaming with ~15 MB RAM overhead, zero database indexing lag, and complete isolation on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports.
-              </p>
+          <div className="flex flex-col lg:flex-row lg:items-stretch justify-between gap-6">
+            {/* Left Column: Title, Description, Pills, and Step Navigation Bar */}
+            <div className="flex-1 min-w-0 flex flex-col justify-between">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
+                  <span>Direct SFTP Getting Started Guide</span>
+                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
+                    ~5 Minutes Total
+                  </span>
+                </h1>
+                <p className="text-xs text-[#6b4c35] mt-2.5 sm:mt-3 max-w-none leading-relaxed">
+                  Fastest, lightest private cloud setup: Direct <strong>FileZilla Server</strong> + <strong>Tailscale WireGuard</strong>. Delivers maximum disk throughput, 4K streaming with ~15 MB RAM overhead, zero database indexing lag, and complete isolation on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports.
+                </p>
 
-              {/* Best Points Feature Highlights */}
-              <div className="flex flex-wrap items-center gap-2 pt-2.5">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                  <span>~15 MB RAM Footprint</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                  <span>Direct Raw Disk Speed</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                  <span>Zero Indexing Lag</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50/80 border border-emerald-300 text-emerald-900 shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
-                  <span>Zero Open Router Ports</span>
-                </span>
+                {/* Best Points Feature Highlights (Vertical List) */}
+                <div className="flex flex-col gap-1.5 pt-3 sm:pt-3.5">
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a2e1b]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <span>~15 MB RAM Footprint</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a2e1b]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span>Direct Raw Disk Speed</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a2e1b]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <span>Zero Indexing Lag</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-emerald-800">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                    <span>Zero Open Router Ports</span>
+                  </span>
+                </div>
               </div>
+
+              {/* 5-Step Navigation Bar - Integrated Directly in Left Column */}
+              <nav aria-label="Step Tracker" className="mt-5 sm:mt-6 lg:mt-auto p-1.5 bg-slate-950/90 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-sm">
+                <ol className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-1.5">
+                  {currentSteps.map((s) => {
+                    const isDone = completedMinutes.includes(s.minute);
+                    const isCurrent = activeMinute === s.minute;
+                    return (
+                      <li key={s.minute} className={s.minute === 5 ? 'col-span-2 sm:col-span-1' : ''}>
+                        <button
+                          onClick={() => setActiveMinute(s.minute)}
+                          className={`w-full px-2.5 py-1.5 rounded-lg text-left transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
+                            isCurrent
+                              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs'
+                              : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
+                          }`}
+                          title={`Minute ${s.minute}: ${s.title}`}
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0 w-full">
+                            <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 transition-colors ${
+                              isDone
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                                : isCurrent
+                                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold'
+                                  : 'bg-slate-800 text-slate-400'
+                            }`}>
+                              {isDone ? <Check className="w-2.5 h-2.5" /> : s.minute}
+                            </span>
+
+                            <span className={`text-[11px] font-medium truncate ${
+                              isCurrent ? 'text-white font-semibold' : isDone ? 'text-slate-300' : 'text-slate-400'
+                            }`}>
+                              {s.shortTitle}
+                            </span>
+                          </div>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </nav>
             </div>
 
             {/* Right Column: In-Page Walkthrough Video Player */}
-            <div className="w-full sm:w-[350px] lg:w-[360px] xl:w-[400px] shrink-0 self-center lg:self-start">
-              <div className="rounded-2xl border border-amber-900/40 bg-[#1c120c] p-2 shadow-md overflow-hidden transition-all hover:border-amber-500/60 hover:shadow-amber-950/40">
+            <div className="w-full sm:w-[380px] md:w-[420px] lg:w-[420px] xl:w-[460px] max-w-[560px] shrink-0 self-center lg:self-start">
+              <div className="relative w-full rounded-2xl border border-amber-900/40 bg-[#1c120c] p-1.5 sm:p-2 shadow-md overflow-hidden transition-all hover:border-amber-500/60 hover:shadow-amber-950/40">
                 {!isPlayingWalkthrough ? (
                   <button
                     type="button"
                     onClick={() => setIsPlayingWalkthrough(true)}
-                    className="group relative aspect-video w-full rounded-xl overflow-hidden bg-black flex flex-col items-center justify-center p-4 select-none cursor-pointer focus:outline-none"
+                    className="group relative aspect-video w-full rounded-xl overflow-hidden bg-black flex flex-col items-center justify-center select-none cursor-pointer focus:outline-none"
                     aria-label="Play 5-Minute Direct SFTP Walkthrough Video"
                   >
                     {/* Background Preview Video (First Frame preview) */}
@@ -745,26 +788,26 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                       preload="metadata"
                       muted
                       playsInline
-                      className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-75 group-hover:scale-105 transition-all duration-500 pointer-events-none"
+                      className="absolute inset-0 w-full h-full object-cover opacity-65 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500 pointer-events-none"
                     />
 
                     {/* Dark Scrim */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/50 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/50 pointer-events-none" />
 
                     {/* Amber Circular Play Button */}
-                    <div className="relative z-10 w-13 h-13 rounded-full bg-amber-500 group-hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg shadow-black/80 transition-all duration-300 group-hover:scale-110 active:scale-95">
-                      <Play className="w-5 h-5 fill-current ml-0.5" />
+                    <div className="relative z-10 w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-amber-500 group-hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-xl shadow-black/80 transition-all duration-300 group-hover:scale-110 active:scale-95">
+                      <Play className="w-5 h-5 sm:w-5.5 sm:h-5.5 fill-current ml-0.5" />
                     </div>
                   </button>
                 ) : (
-                  <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-black shadow-inner">
+                  <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-black shadow-inner flex items-center justify-center">
                     <video
                       src="/walkthrough.mp4"
                       controls
                       autoPlay
                       preload="metadata"
                       playsInline
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover block"
                     >
                       <source src="/walkthrough.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
@@ -772,7 +815,7 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     <button
                       type="button"
                       onClick={() => setIsPlayingWalkthrough(false)}
-                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/85 hover:bg-black text-amber-300 hover:text-white border border-amber-500/40 text-[10px] font-semibold flex items-center gap-1 z-20 cursor-pointer shadow-md transition-colors"
+                      className="absolute top-2.5 right-2.5 px-2 py-1 rounded-md bg-black/85 hover:bg-black text-amber-300 hover:text-white border border-amber-500/40 text-[11px] font-semibold flex items-center gap-1 z-20 cursor-pointer shadow-md backdrop-blur-xs transition-colors"
                       title="Close player and return to preview"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -784,86 +827,143 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             </div>
           </div>
         ) : (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
-                <span>Nextcloud AIO Getting Started Guide</span>
-                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
-                  ~5 Minutes Total
-                </span>
-              </h1>
-              <p className="text-xs text-[#6b4c35] mt-1.5 max-w-none leading-relaxed">
-                Enterprise personal cloud setup: Full <strong>Google Photos & Drive replacement</strong> via <strong>Docker AIO</strong> + <strong>Tailscale Serve HTTPS</strong>. Delivers native automatic background camera backup, web file portal, AI photo album indexing (Memories), automated 3-2-1 BorgBackup snapshots, and local drive storage on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports and zero domain subscription costs.
-              </p>
+          <div className="flex flex-col lg:flex-row lg:items-stretch justify-between gap-6">
+            {/* Left Column: Title, Description, Pills, and Step Navigation Bar */}
+            <div className="flex-1 min-w-0 flex flex-col justify-between">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
+                  <span>Nextcloud AIO Getting Started Guide</span>
+                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
+                    ~5 Minutes Total
+                  </span>
+                </h1>
+                <p className="text-xs text-[#6b4c35] mt-1.5 sm:mt-2 max-w-none leading-relaxed">
+                  Enterprise personal cloud setup: Full <strong>Google Photos & Drive replacement</strong> via <strong>Docker AIO</strong> + <strong>Tailscale Serve HTTPS</strong>. Delivers native automatic background camera backup, web file portal, AI photo album indexing (Memories), automated 3-2-1 BorgBackup snapshots, and local drive storage on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports and zero domain subscription costs.
+                </p>
 
-              {/* Best Points Feature Highlights */}
-              <div className="flex flex-wrap items-center gap-2 pt-2.5">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                  <span>Google Photos & Drive Clone</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                  <span>Auto Camera Roll Sync (5G)</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50/80 border border-emerald-300 text-emerald-900 shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
-                  <span>Free Tailscale HTTPS</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-purple-500 shrink-0" />
-                  <span>3-2-1 BorgBackup Redundancy</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-[#dfcebd] text-[#2d1c10] shadow-2xs hover:border-amber-400 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                  <span>D:\PersonalCloud Native Mount</span>
-                </span>
+                {/* Best Points Feature Highlights (Vertical List) */}
+                <div className="flex flex-col gap-1.5 pt-1.5 sm:pt-2">
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a2e1b]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span>Google Photos & Drive Clone</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a2e1b]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <span>Auto Camera Roll Sync (5G)</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-emerald-800">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                    <span>Free Tailscale HTTPS</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a2e1b]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
+                    <span>3-2-1 BorgBackup Redundancy</span>
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-xs font-medium text-[#4a2e1b]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <span>D:\PersonalCloud Native Mount</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Step Navigation Bar for Nextcloud */}
+              <nav aria-label="Step Tracker" className="mt-3 lg:mt-auto p-1.5 bg-slate-950/90 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-sm">
+                <ol className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-1.5">
+                  {currentSteps.map((s) => {
+                    const isDone = completedMinutes.includes(s.minute);
+                    const isCurrent = activeMinute === s.minute;
+                    return (
+                      <li key={s.minute} className={s.minute === 5 ? 'col-span-2 sm:col-span-1' : ''}>
+                        <button
+                          onClick={() => setActiveMinute(s.minute)}
+                          className={`w-full px-2.5 py-1.5 rounded-lg text-left transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
+                            isCurrent
+                              ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs'
+                              : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
+                          }`}
+                          title={`Minute ${s.minute}: ${s.title}`}
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0 w-full">
+                            <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 transition-colors ${
+                              isDone
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                                : isCurrent
+                                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold'
+                                  : 'bg-slate-800 text-slate-400'
+                            }`}>
+                              {isDone ? <Check className="w-2.5 h-2.5" /> : s.minute}
+                            </span>
+
+                            <span className={`text-[11px] font-medium truncate ${
+                              isCurrent ? 'text-white font-semibold' : isDone ? 'text-slate-300' : 'text-slate-400'
+                            }`}>
+                              {s.shortTitle}
+                            </span>
+                          </div>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </nav>
+            </div>
+
+            {/* Right Column: In-Page Walkthrough Video Player (Nextcloud Coming Soon clip) */}
+            <div className="w-full sm:w-[380px] md:w-[420px] lg:w-[420px] xl:w-[460px] max-w-[560px] shrink-0 self-center lg:self-start">
+              <div className="relative w-full rounded-2xl border border-amber-900/40 bg-[#1c120c] p-1.5 sm:p-2 shadow-md overflow-hidden transition-all hover:border-amber-500/60 hover:shadow-amber-950/40">
+                {!isPlayingWalkthrough ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsPlayingWalkthrough(true)}
+                    className="group relative aspect-video w-full rounded-xl overflow-hidden bg-black flex flex-col items-center justify-center select-none cursor-pointer focus:outline-none"
+                    aria-label="Play Nextcloud AIO Walkthrough Video"
+                  >
+                    {/* Background Preview Video (First Frame preview) */}
+                    <video
+                      src="/nextcloud_walkthrough.mp4#t=0.5"
+                      preload="metadata"
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover opacity-65 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500 pointer-events-none"
+                    />
+
+                    {/* Dark Scrim */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/50 pointer-events-none" />
+
+                    {/* Amber Circular Play Button */}
+                    <div className="relative z-10 w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-amber-500 group-hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-xl shadow-black/80 transition-all duration-300 group-hover:scale-110 active:scale-95">
+                      <Play className="w-5 h-5 sm:w-5.5 sm:h-5.5 fill-current ml-0.5" />
+                    </div>
+                  </button>
+                ) : (
+                  <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-black shadow-inner flex items-center justify-center">
+                    <video
+                      src="/nextcloud_walkthrough.mp4"
+                      controls
+                      autoPlay
+                      preload="metadata"
+                      playsInline
+                      className="w-full h-full object-cover block"
+                    >
+                      <source src="/nextcloud_walkthrough.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                    <button
+                      type="button"
+                      onClick={() => setIsPlayingWalkthrough(false)}
+                      className="absolute top-2.5 right-2.5 px-2 py-1 rounded-md bg-black/85 hover:bg-black text-amber-300 hover:text-white border border-amber-500/40 text-[11px] font-semibold flex items-center gap-1 z-20 cursor-pointer shadow-md backdrop-blur-xs transition-colors"
+                      title="Close player and return to preview"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      <span>Close</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         )}
       </div>
-
-      {/* Pipeline Navigation Bar - Compact Professional Stepper */}
-      <nav aria-label="Step Tracker" className="p-1.5 bg-slate-950/90 backdrop-blur-md rounded-xl border border-slate-800/90 shadow-sm">
-        <ol className={`grid grid-cols-2 ${currentSteps.length === 5 ? 'sm:grid-cols-5' : 'sm:grid-cols-6'} gap-1`}>
-          {currentSteps.map((s) => {
-            const isDone = completedMinutes.includes(s.minute);
-            const isCurrent = activeMinute === s.minute;
-            return (
-              <li key={s.minute}>
-                <button
-                  onClick={() => setActiveMinute(s.minute)}
-                  className={`w-full px-2.5 py-1.5 rounded-lg text-left transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
-                    isCurrent
-                      ? 'bg-slate-900 border border-cyan-500/40 text-white shadow-2xs'
-                      : 'bg-transparent border border-transparent hover:bg-slate-900/50 hover:border-slate-800/80 text-slate-400 hover:text-slate-200'
-                  }`}
-                  title={`Minute ${s.minute}: ${s.title}`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 transition-colors ${
-                      isDone
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                        : isCurrent
-                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold'
-                          : 'bg-slate-800 text-slate-400'
-                    }`}>
-                      {isDone ? <Check className="w-2.5 h-2.5" /> : s.minute}
-                    </span>
-
-                    <span className={`text-[11px] font-medium truncate ${
-                      isCurrent ? 'text-white font-semibold' : isDone ? 'text-slate-300' : 'text-slate-400'
-                    }`}>
-                      {s.shortTitle}
-                    </span>
-                  </div>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-      </nav>
 
       {/* ========================================================================= */}
       {/* SFTP PROCEDURE (5 MIN) */}
@@ -1061,7 +1161,7 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     <div className="p-3 bg-[#f5ece1] rounded-lg border border-[#dfcebd] flex items-center justify-between">
                       <span className="text-[#7d5b3f]">Native path:</span>
                       <span className="text-emerald-900 font-bold bg-white px-2 py-0.5 rounded border border-[#dfcebd]">
-                        Click browse or type {storagePath}
+                        Type C:\ or D:\
                       </span>
                     </div>
                   </div>

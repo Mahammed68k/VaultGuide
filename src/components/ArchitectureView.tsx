@@ -15,48 +15,58 @@ interface ArchitectureViewProps {
 
 export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab, onSelectOnboarding }) => {
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 sm:space-y-10">
       {/* Hero Showcase with Engineering Asset */}
-      <section className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center w-full">
-        <div className="md:col-span-7 flex flex-col justify-center space-y-4 w-full min-w-0">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
-            Self-Hosted Private Cloud & Direct Storage Stack
-          </h1>
+      <div className="flex flex-col lg:flex-row lg:items-stretch justify-between gap-6 lg:gap-8 w-full">
+        <div className="flex-1 min-w-0 flex flex-col justify-between h-full space-y-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-[29px] xl:text-[36px] 2xl:text-[40px] font-bold tracking-tight text-white leading-tight lg:whitespace-nowrap">
+              Self-Hosted Private Cloud & Direct Storage Stack
+            </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-            Transform your home PC or laptop into an enterprise-grade private cloud server accessible worldwide over 5G and Wi-Fi. 
-            Bypass fragile dynamic DNS, avoid risky router port forwarding, and preserve complete data ownership on your local hard drives.
-          </p>
+            <p className="mt-3 sm:mt-4 text-sm sm:text-base text-slate-300 leading-relaxed max-w-none">
+              Transform your home PC or laptop into an enterprise-grade private cloud server accessible worldwide over 5G. 
+              Bypass fragile dynamic DNS, avoid risky router port forwarding, and preserve complete data ownership on your local hard drives.
+            </p>
+          </div>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-col items-stretch w-full max-w-md gap-2.5 pt-2 pb-0 mb-0">
             <button
               onClick={() => onSelectOnboarding ? onSelectOnboarding('sftp') : onSelectTab('onboarding')}
-              className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
+              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-all cursor-pointer shadow-xs group"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Direct SFTP Getting Started (5 Min)</span>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Direct SFTP Getting Started (5 Min)</span>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </button>
             <button
               onClick={() => onSelectOnboarding ? onSelectOnboarding('nextcloud') : onSelectTab('onboarding')}
-              className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
+              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-all cursor-pointer shadow-xs group"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Nextcloud AIO Getting Started</span>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Nextcloud AIO Getting Started</span>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </button>
             <button
               onClick={() => onSelectTab('backup')}
-              className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
+              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-all cursor-pointer shadow-xs group"
             >
-              <FolderSync className="w-3.5 h-3.5" />
-              <span>3-2-1 Resilience & Recovery Playbook</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-2">
+                <FolderSync className="w-3.5 h-3.5" />
+                <span>3-2-1 Resilience & Recovery Playbook</span>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
         </div>
 
         {/* Hero Visual Showcase Graphic with zero-broken-image fallback */}
-        <div className="md:col-span-5 relative group min-w-0 w-full flex justify-center md:justify-end">
-          <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl aspect-[16/9] w-full max-w-[260px] xs:max-w-[300px] sm:max-w-[360px] md:max-w-[400px] lg:max-w-[460px] xl:max-w-[500px] transition-all duration-300">
+        <div className="w-full sm:w-[380px] md:w-[420px] lg:w-[460px] xl:w-[500px] shrink-0 relative group min-w-0 flex flex-col justify-end items-center lg:items-end self-center lg:self-stretch">
+          <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl aspect-[16/9] w-full transition-all duration-300">
             <img
               src={serverMeshNodeImg}
               alt="VaultGuide mesh server node illustration"
@@ -80,7 +90,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({ onSelectTab,
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Network Architecture & Security Model */}
       <section className="p-6 bg-[#f5ece1]/50 rounded-xl border border-[#dfcebd] space-y-6 shadow-xs">
