@@ -296,14 +296,13 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <PowerOff className="w-5 h-5 text-red-500" />
-            <span>{stepNum}. Controls</span>
+          <h2 className="text-xl font-bold text-white">
+            {stepNum}. Controls
           </h2>
         </div>
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#241a15] border border-amber-900/60 text-[11px] font-semibold text-amber-300 shadow-2xs">
           <Terminal className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-          <span>1. Run in CMD / PowerShell</span>
+          <span>Run in PowerShell(Admin)</span>
         </div>
       </div>
 
@@ -699,11 +698,8 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left Column: Title, Description, Pills, and Step Navigation Bar */}
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10]">
                   <span>Direct SFTP Getting Started Guide</span>
-                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
-                    ~5 Minutes Total
-                  </span>
                 </h1>
                 <p className="text-xs text-[#6b4c35] mt-2.5 sm:mt-3 max-w-none leading-relaxed">
                   Fastest, lightest private cloud setup: Direct <strong>FileZilla Server</strong> + <strong>Tailscale WireGuard</strong>. Delivers maximum disk throughput, 4K streaming with ~15 MB RAM overhead, zero database indexing lag, and complete isolation on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports.
@@ -831,11 +827,8 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
             {/* Left Column: Title, Description, Pills, and Step Navigation Bar */}
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10] flex items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10]">
                   <span>Nextcloud AIO Getting Started Guide</span>
-                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 font-semibold">
-                    ~5 Minutes Total
-                  </span>
                 </h1>
                 <p className="text-xs text-[#6b4c35] mt-1.5 sm:mt-2 max-w-none leading-relaxed">
                   Enterprise personal cloud setup: Full <strong>Google Photos & Drive replacement</strong> via <strong>Docker AIO</strong> + <strong>Tailscale Serve HTTPS</strong>. Delivers native automatic background camera backup, web file portal, AI photo album indexing (Memories), automated 3-2-1 BorgBackup snapshots, and local drive storage on <code className="text-amber-800 font-semibold font-mono bg-amber-100/60 px-1 py-0.5 rounded">D:\PersonalCloud</code> with 0 open router ports and zero domain subscription costs.
@@ -1057,165 +1050,152 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     2. Configure User & Storage Mount
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-amber-800 px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 font-semibold">
-                  User & Storage Mount (Port 21)
-                </span>
               </div>
 
-              {/* 1. Click "Connect to Server..." */}
-              <div className="p-4 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-2">
-                <div className="flex items-center gap-2.5 font-bold text-base text-[#2d1c10]">
-                  <span className="w-6 h-6 rounded-full bg-amber-600 text-white flex items-center justify-center text-xs font-mono font-bold shrink-0">
-                    1
-                  </span>
-                  <h3 className="font-bold">1. Click &quot;Connect to Server...&quot;</h3>
-                </div>
-                <p className="text-xs text-[#6b4c35] pl-8.5 leading-relaxed">
-                  Click the <strong>Connect to Server...</strong> button in the center of your FileZilla Server window (or press <kbd className="px-1.5 py-0.5 text-[11px] font-mono bg-[#f5ece1] border border-[#dfcebd] rounded text-[#2d1c10]">Enter</kbd>).
-                </p>
-              </div>
+              {/* Point directly under Configure user header (like ref image) */}
+              <p className="text-xs text-[#6b4c35] leading-relaxed">
+                Launch <strong>FileZilla Server Administration</strong> and click the <strong>Connect to Server...</strong> button in the center of your window (or press <kbd className="px-1.5 py-0.5 text-[11px] font-mono bg-[#f5ece1] border border-[#dfcebd] rounded text-[#2d1c10]">Enter</kbd>). Then complete the 4 steps below:
+              </p>
 
-              {/* Step 1: Set Listener Protocol (Recommended) */}
-              <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3">
-                <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
-                  <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
-                    Step 1
-                  </span>
-                  <h4 className="font-bold">Set Listener Protocol (Recommended)</h4>
-                </div>
-                <div className="text-xs text-[#6b4c35] space-y-2 pl-2 leading-relaxed">
-                  <p className="font-medium text-[#2d1c10]">
-                    Under <strong>Server listeners</strong> where you are right now:
-                  </p>
-                  <ul className="space-y-1.5 list-disc pl-5">
-                    <li>
-                      Click the dropdown under <strong>Protocol</strong> for{' '}
-                      <code className="font-mono text-amber-950 font-bold bg-[#f5ece1] px-2 py-0.5 rounded border border-[#dfcebd] shadow-2xs">
-                        100.116.48.9 (Port 22)
-                      </code>.
-                    </li>
-                    <li>
-                      Change it to <strong className="text-amber-950 bg-amber-100/70 px-1.5 py-0.5 rounded border border-amber-300">Allow explicit FTP over TLS (or Insecure plain FTP)</strong>.
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Step 2: Click "Users" on the Left Sidebar */}
-              <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3">
-                <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
-                  <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
-                    Step 2
-                  </span>
-                  <h4 className="font-bold">Click &quot;Users&quot; on the Left Sidebar</h4>
-                </div>
-                <div className="text-xs text-[#6b4c35] space-y-2 pl-2 leading-relaxed">
-                  <ul className="space-y-1.5 list-disc pl-5">
-                    <li>In the left panel, click on <strong>Users</strong> (under <em>Rights management</em>).</li>
-                    <li>Click the <strong>Add</strong> button on the right.</li>
-                    <li>
-                      Enter your mobile username: e.g.{' '}
-                      <code className="font-mono text-amber-950 font-bold bg-[#f5ece1] px-2 py-0.5 rounded border border-[#dfcebd] shadow-2xs">
-                        {username || 'vaultuser'}
-                      </code>{' '}
-                      and click <strong>OK</strong>.
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Step 3: Set Your Password */}
-              <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3">
-                <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
-                  <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
-                    Step 3
-                  </span>
-                  <h4 className="font-bold">Set Your Password</h4>
-                </div>
-                <div className="text-xs text-[#6b4c35] space-y-2 pl-2 leading-relaxed">
-                  <ul className="space-y-1.5 list-disc pl-5">
-                    <li>With your new user selected, look under <strong>Credentials (Authentication)</strong>.</li>
-                    <li>Choose <strong>Require password to log in</strong>.</li>
-                    <li>Type a password of your choice (you will use this on your phone).</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Step 4: Choose Your Storage Folder (Mount Points) */}
-              <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3">
-                <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
-                  <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
-                    Step 4
-                  </span>
-                  <h4 className="font-bold">Choose Your Storage Folder (Mount Points)</h4>
-                </div>
-                <div className="text-xs text-[#6b4c35] space-y-3 pl-2 leading-relaxed">
-                  <p>In the user settings sub-list on the left, click <strong>Mount points</strong>.</p>
-                  <p className="font-semibold text-[#2d1c10]">Click the <strong>Add</strong> button:</p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-mono text-xs">
-                    <div className="p-3 bg-[#f5ece1] rounded-lg border border-[#dfcebd] flex items-center justify-between">
-                      <span className="text-[#7d5b3f]">Virtual path:</span>
-                      <span className="text-amber-950 font-bold bg-white px-2 py-0.5 rounded border border-[#dfcebd]">Type /</span>
-                    </div>
-                    <div className="p-3 bg-[#f5ece1] rounded-lg border border-[#dfcebd] flex items-center justify-between">
-                      <span className="text-[#7d5b3f]">Native path:</span>
-                      <span className="text-emerald-900 font-bold bg-white px-2 py-0.5 rounded border border-[#dfcebd]">
-                        Type C:\ or D:\
+              {/* 4 Steps in 2-Column Grid (Left & Right) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Step 1: Set Listener Protocol (Recommended) */}
+                <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
+                      <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
+                        Step 1
                       </span>
+                      <h4 className="font-bold">Set Listener Protocol (Recommended)</h4>
                     </div>
-                  </div>
-
-                  <div className="pt-1">
-                    <label className="text-[11px] font-medium text-[#7d5b3f] block mb-1">
-                      Native path on your hard drive (to store files in):
-                    </label>
-                    <input
-                      type="text"
-                      value={storagePath}
-                      onChange={(e) => setStoragePath(e.target.value)}
-                      className="w-full px-3 py-1.5 text-xs font-mono bg-[#fcf8f3] border border-[#dfcebd] rounded text-[#2d1c10] focus:outline-none focus:border-amber-500"
-                      placeholder="D:\PersonalCloud"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5 pt-1">
-                    <p className="font-semibold text-[#2d1c10]">Under Permissions, check:</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
-                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-300 text-emerald-950 font-bold flex items-center gap-2">
-                        <span className="text-emerald-700">☑</span>
-                        <span>Read</span>
-                      </div>
-                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-300 text-emerald-950 font-bold flex items-center gap-2">
-                        <span className="text-emerald-700">☑</span>
-                        <span>Write</span>
-                      </div>
-                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-300 text-emerald-950 font-bold flex items-center gap-2">
-                        <span className="text-emerald-700">☑</span>
-                        <span>Delete</span>
-                      </div>
-                      <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-300 text-emerald-950 font-bold flex items-center gap-2">
-                        <span className="text-emerald-700">☑</span>
-                        <span>Create directory</span>
-                      </div>
+                    <div className="text-xs text-[#6b4c35] space-y-2 pl-1 pt-2 leading-relaxed">
+                      <p className="font-medium text-[#2d1c10]">
+                        Under <strong>Server listeners</strong> where you are right now:
+                      </p>
+                      <ul className="space-y-1.5 list-disc pl-5">
+                        <li>
+                          Click the dropdown under <strong>Protocol</strong> for{' '}
+                          <code className="font-mono text-amber-950 font-bold bg-[#f5ece1] px-2 py-0.5 rounded border border-[#dfcebd] shadow-2xs">
+                            100.116.48.9 (Port 22)
+                          </code>.
+                        </li>
+                        <li>
+                          Change it to <strong className="text-amber-950 bg-amber-100/70 px-1.5 py-0.5 rounded border border-amber-300">Allow explicit FTP over TLS (or Insecure plain FTP)</strong>.
+                        </li>
+                      </ul>
                     </div>
-                  </div>
-
-                  <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#dfcebd] mt-3">
-                    <p className="font-semibold text-amber-950 flex items-center gap-1.5 text-xs">
-                      <span>Click</span>
-                      <strong className="px-2 py-0.5 bg-amber-100 rounded border border-amber-300 text-amber-950 font-bold">OK</strong>
-                      <span>at the very bottom right of the window to save!</span>
-                    </p>
-
-                    <button
-                      onClick={() => markMinuteCompleted(2)}
-                      className="w-full sm:w-auto px-4 py-2 text-xs font-semibold text-white bg-amber-700 hover:bg-amber-800 rounded-lg transition-colors cursor-pointer shadow-xs"
-                    >
-                      Confirm User & Storage Done ✓
-                    </button>
                   </div>
                 </div>
+
+                {/* Step 2: Click "Users" on the Left Sidebar */}
+                <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
+                      <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
+                        Step 2
+                      </span>
+                      <h4 className="font-bold">Click &quot;Users&quot; on Left Sidebar</h4>
+                    </div>
+                    <div className="text-xs text-[#6b4c35] space-y-2 pl-1 pt-2 leading-relaxed">
+                      <ul className="space-y-1.5 list-disc pl-5">
+                        <li>In the left panel, click on <strong>Users</strong> (under <em>Rights management</em>).</li>
+                        <li>Click the <strong>Add</strong> button on the right.</li>
+                        <li>
+                          Enter your mobile username: e.g.{' '}
+                          <code className="font-mono text-amber-950 font-bold bg-[#f5ece1] px-2 py-0.5 rounded border border-[#dfcebd] shadow-2xs">
+                            {username || 'vaultuser'}
+                          </code>{' '}
+                          and click <strong>OK</strong>.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3: Set Your Password */}
+                <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
+                      <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
+                        Step 3
+                      </span>
+                      <h4 className="font-bold">Set Your Password</h4>
+                    </div>
+                    <div className="text-xs text-[#6b4c35] space-y-2 pl-1 pt-2 leading-relaxed">
+                      <ul className="space-y-1.5 list-disc pl-5">
+                        <li>With your new user selected, look under <strong>Credentials (Authentication)</strong>.</li>
+                        <li>Choose <strong>Require password to log in</strong>.</li>
+                        <li>Type a password of your choice (you will use this on your phone).</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 4: Choose Your Storage Folder (Mount Points) */}
+                <div className="p-4.5 bg-white rounded-xl border border-[#dfcebd] shadow-2xs space-y-3 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 font-bold text-[#2d1c10] text-sm">
+                      <span className="px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 text-xs font-mono font-bold">
+                        Step 4
+                      </span>
+                      <h4 className="font-bold">Choose Storage Folder (Mount Points)</h4>
+                    </div>
+                    <div className="text-xs text-[#6b4c35] space-y-2.5 pl-1 pt-2 leading-relaxed">
+                      <p>In user settings on the left, click <strong>Mount points</strong>, then click <strong>Add</strong>:</p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-xs">
+                        <div className="p-2.5 bg-[#f5ece1] rounded-lg border border-[#dfcebd] flex items-center justify-between">
+                          <span className="text-[#7d5b3f]">Virtual:</span>
+                          <span className="text-amber-950 font-bold bg-white px-2 py-0.5 rounded border border-[#dfcebd]">Type /</span>
+                        </div>
+                        <div className="p-2.5 bg-[#f5ece1] rounded-lg border border-[#dfcebd] flex items-center justify-between">
+                          <span className="text-[#7d5b3f]">Native:</span>
+                          <span className="text-emerald-900 font-bold bg-white px-2 py-0.5 rounded border border-[#dfcebd]">
+                            Type C:\ or D:\
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5 pt-1">
+                        <p className="font-semibold text-[#2d1c10]">Under Permissions, check:</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 font-mono text-xs">
+                          <div className="p-1.5 bg-emerald-50 rounded border border-emerald-300 text-emerald-950 font-bold flex items-center gap-1.5">
+                            <span className="text-emerald-700">☑</span>
+                            <span>Read</span>
+                          </div>
+                          <div className="p-1.5 bg-emerald-50 rounded border border-emerald-300 text-emerald-950 font-bold flex items-center gap-1.5">
+                            <span className="text-emerald-700">☑</span>
+                            <span>Write</span>
+                          </div>
+                          <div className="p-1.5 bg-emerald-50 rounded border border-emerald-300 text-emerald-950 font-bold flex items-center gap-1.5">
+                            <span className="text-emerald-700">☑</span>
+                            <span>Delete</span>
+                          </div>
+                          <div className="p-1.5 bg-emerald-50 rounded border border-emerald-300 text-emerald-950 font-bold flex items-center gap-1.5">
+                            <span className="text-emerald-700">☑</span>
+                            <span>Create dir</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Save & Confirmation Action Bar */}
+              <div className="p-4 bg-white rounded-xl border border-[#dfcebd] shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p className="font-semibold text-amber-950 flex items-center gap-1.5 text-xs">
+                  <span>Click</span>
+                  <strong className="px-2 py-0.5 bg-amber-100 rounded border border-amber-300 text-amber-950 font-bold">OK</strong>
+                  <span>at the very bottom right of the window to save!</span>
+                </p>
+
+                <button
+                  onClick={() => markMinuteCompleted(2)}
+                  className="w-full sm:w-auto px-4 py-2 text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors cursor-pointer shadow-xs"
+                >
+                  Confirm User & Storage Done ✓
+                </button>
               </div>
             </div>
           )}
@@ -1229,7 +1209,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     3. Open Firewall Port 22 & Configure 24/7 Power Plan
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-purple-300">PowerShell Automation</span>
               </div>
 
               <p className="text-xs text-slate-300 leading-relaxed">
@@ -1238,13 +1217,13 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
 
               <div className="relative group">
                 <div className="flex items-center justify-between px-4 py-2 bg-slate-950 border-t border-x border-slate-800 rounded-t-xl text-[11px] font-mono text-slate-400">
-                  <span>PowerShell (Administrator) Script</span>
+                  <span>PowerShell (Administrator)</span>
                   <button
                     onClick={() => copyToClipboard(sftpPowerShell, 'pwr-sftp')}
                     className="flex items-center gap-1 text-cyan-300 hover:text-white cursor-pointer"
                   >
                     {copiedId === 'pwr-sftp' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === 'pwr-sftp' ? 'Copied to Clipboard!' : 'Copy Script'}</span>
+                    <span>{copiedId === 'pwr-sftp' ? 'Copied to Clipboard!' : 'Copy'}</span>
                   </button>
                 </div>
 
@@ -1276,7 +1255,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     4. Connect Mobile Phone over 5G
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-emerald-300">Mobile Setup</span>
               </div>
 
               <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 space-y-4 text-xs">
@@ -1381,12 +1359,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     Your laptop is now a 24/7 private cloud. You can stream 4K movies, access uncompressed camera RAW files, and manage your hard drive from anywhere in the world.
                   </p>
                   <div className="flex justify-center gap-2 pt-1">
-                    <button
-                      onClick={() => onNavigate('backup')}
-                      className="px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded transition-colors cursor-pointer"
-                    >
-                      Open 3-2-1 Resilience & Recovery Playbook
-                    </button>
                     {onOpenRunbookExport && (
                       <button
                         onClick={onOpenRunbookExport}
@@ -1611,13 +1583,13 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
 
               <div className="relative group">
                 <div className="flex items-center justify-between px-4 py-2 bg-slate-950 border-t border-x border-slate-800 rounded-t-xl text-[11px] font-mono text-slate-400">
-                  <span>PowerShell (Administrator) Script</span>
+                  <span>PowerShell (Administrator)</span>
                   <button
                     onClick={() => copyToClipboard(nextcloudPowerShell, 'pwr-nc')}
                     className="flex items-center gap-1 text-cyan-300 hover:text-white cursor-pointer"
                   >
                     {copiedId === 'pwr-nc' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedId === 'pwr-nc' ? 'Copied to Clipboard!' : 'Copy Script'}</span>
+                    <span>{copiedId === 'pwr-nc' ? 'Copied to Clipboard!' : 'Copy'}</span>
                   </button>
                 </div>
 
@@ -1703,12 +1675,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     Your personal Google Drive & Google Photos alternative is active. All data lives on your local partition <code className="text-cyan-300">{storagePath}</code> with private Tailscale HTTPS encryption.
                   </p>
                   <div className="flex justify-center gap-2 pt-1">
-                    <button
-                      onClick={() => onNavigate('backup')}
-                      className="px-3 py-1.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded transition-colors cursor-pointer"
-                    >
-                      Open 3-2-1 Resilience & Recovery Playbook
-                    </button>
                     {onOpenRunbookExport && (
                       <button
                         onClick={onOpenRunbookExport}
