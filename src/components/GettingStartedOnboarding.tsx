@@ -52,6 +52,7 @@ export const GettingStartedOnboarding: React.FC<GettingStartedOnboardingProps> =
   const [tailscaleIp, setTailscaleIp] = useState<string>('100.116.48.9');
   const [storagePath, setStoragePath] = useState<string>('D:\\PersonalCloud');
   const [username, setUsername] = useState<string>('vaultuser');
+  const [password, setPassword] = useState<string>('vaultpass123');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [controlProcessTab, setControlProcessTab] = useState<'shutdown' | 'retrieve' | 'restart' | 'status' | 'delete'>('shutdown');
 
@@ -1116,7 +1117,7 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                       <ul className="space-y-1.5 list-disc pl-5">
                         <li>With your new user selected, look under <strong>Credentials (Authentication)</strong>.</li>
                         <li>Choose <strong>Require password to log in</strong>.</li>
-                        <li>Type a password of your choice (you will use this on your phone).</li>
+                        <li>Put strong password as correct manner.</li>
                       </ul>
                     </div>
                   </div>
@@ -1169,20 +1170,12 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                         </div>
                       </div>
 
-                      {/* Click OK instruction and confirm button at the bottom of Step 4 */}
-                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                      {/* Click Apply & OK instruction at the bottom of Step 4 */}
+                      <div className="pt-2">
                         <p className="font-semibold text-amber-950 flex items-center gap-1.5 text-xs">
                           <span>Click</span>
-                          <strong className="px-2 py-0.5 bg-amber-100 rounded border border-amber-300 text-amber-950 font-bold">OK</strong>
-                          <span>at bottom right to save!</span>
+                          <strong className="px-2 py-0.5 bg-amber-100 rounded border border-amber-300 text-amber-950 font-bold">Apply &amp; OK</strong>
                         </p>
-
-                        <button
-                          onClick={() => markMinuteCompleted(2)}
-                          className="w-full sm:w-auto px-4 py-1.5 text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors cursor-pointer shadow-xs"
-                        >
-                          Confirm User & Storage Done ✓
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -1294,7 +1287,7 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                   </ol>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 font-mono text-[11px]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 font-mono text-[11px]">
                   <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
                     <span className="text-slate-400 text-[10px]">Connection Type:</span>
                     <span className="text-white font-bold text-xs mt-1">FTPS</span>
@@ -1310,6 +1303,10 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                   <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
                     <span className="text-slate-400 text-[10px]">Username:</span>
                     <span className="text-emerald-300 font-bold text-xs mt-1">{username}</span>
+                  </div>
+                  <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex flex-col justify-between">
+                    <span className="text-slate-400 text-[10px]">Password:</span>
+                    <span className="text-amber-300 font-bold text-xs mt-1 tracking-wider">******</span>
                   </div>
                 </div>
 
@@ -1631,15 +1628,18 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
       )}
 
       {/* Footer Navigation Bar */}
-      <div className="flex items-center justify-between border-t border-slate-800/80 pt-5 text-xs">
-        <button
-          onClick={() => setActiveMinute(prev => Math.max(1, prev - 1))}
-          disabled={activeMinute === 1}
-          className="flex items-center gap-1.5 px-3 py-1.5 font-medium text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Step {Math.max(1, activeMinute - 1)}</span>
-        </button>
+      <div className="flex items-center justify-between pt-5 text-xs">
+        {activeMinute > 1 ? (
+          <button
+            onClick={() => setActiveMinute(prev => Math.max(1, prev - 1))}
+            className="flex items-center gap-1.5 px-3 py-1.5 font-medium text-slate-400 hover:text-white transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Step {activeMinute - 1}</span>
+          </button>
+        ) : (
+          <div />
+        )}
 
         {activeMinute < currentSteps.length ? (
           <button
