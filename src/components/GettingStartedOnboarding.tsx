@@ -803,7 +803,7 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                       autoPlay
                       preload="metadata"
                       playsInline
-                      className="w-full h-full object-cover block"
+                      className="w-full h-full object-contain block bg-black"
                     >
                       <source src="/walkthrough.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
@@ -936,7 +936,7 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                       autoPlay
                       preload="metadata"
                       playsInline
-                      className="w-full h-full object-cover block"
+                      className="w-full h-full object-contain block bg-black"
                     >
                       <source src="/nextcloud_walkthrough.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
@@ -971,15 +971,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                   <h2 className="text-xl font-bold text-white">
                     1. Install Tailscale & FileZilla Server
                   </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-slate-400">Prerequisites</span>
-                  <button
-                    onClick={() => markMinuteCompleted(1)}
-                    className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
-                  >
-                    Confirm Software Installed ✓
-                  </button>
                 </div>
               </div>
 
@@ -1177,25 +1168,25 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                           </div>
                         </div>
                       </div>
+
+                      {/* Click OK instruction and confirm button at the bottom of Step 4 */}
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                        <p className="font-semibold text-amber-950 flex items-center gap-1.5 text-xs">
+                          <span>Click</span>
+                          <strong className="px-2 py-0.5 bg-amber-100 rounded border border-amber-300 text-amber-950 font-bold">OK</strong>
+                          <span>at bottom right to save!</span>
+                        </p>
+
+                        <button
+                          onClick={() => markMinuteCompleted(2)}
+                          className="w-full sm:w-auto px-4 py-1.5 text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors cursor-pointer shadow-xs"
+                        >
+                          Confirm User & Storage Done ✓
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Bottom Save & Confirmation Action Bar */}
-              <div className="p-4 bg-white rounded-xl border border-[#dfcebd] shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
-                <p className="font-semibold text-amber-950 flex items-center gap-1.5 text-xs">
-                  <span>Click</span>
-                  <strong className="px-2 py-0.5 bg-amber-100 rounded border border-amber-300 text-amber-950 font-bold">OK</strong>
-                  <span>at the very bottom right of the window to save!</span>
-                </p>
-
-                <button
-                  onClick={() => markMinuteCompleted(2)}
-                  className="w-full sm:w-auto px-4 py-2 text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors cursor-pointer shadow-xs"
-                >
-                  Confirm User & Storage Done ✓
-                </button>
               </div>
             </div>
           )}
@@ -1231,18 +1222,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                   {sftpPowerShell}
                 </pre>
               </div>
-
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-400">
-                  Applied PowerShell rule and verified standby timeout is 0?
-                </span>
-                <button
-                  onClick={() => markMinuteCompleted(3)}
-                  className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
-                >
-                  Mark Step Complete ✓
-                </button>
-              </div>
             </div>
           )}
 
@@ -1258,19 +1237,9 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
               </div>
 
               <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 space-y-4 text-xs">
-                <div className="flex items-center justify-between">
-                  <div className="font-bold text-white flex items-center gap-2">
-                    <Smartphone className="w-4 h-4 text-cyan-400" />
-                    <span>Mobile App Connection Card:</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => markMinuteCompleted(4)}
-                      className="px-3.5 py-1 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
-                    >
-                      Confirm Mobile Connected ✓
-                    </button>
-                  </div>
+                <div className="font-bold text-white flex items-center gap-2">
+                  <Smartphone className="w-4 h-4 text-cyan-400" />
+                  <span>Mobile App Connection Card:</span>
                 </div>
 
                 {/* Step-by-Step Instructions */}
@@ -1344,9 +1313,17 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                   </div>
                 </div>
 
-                <p className="text-[11px] text-slate-400">
-                  Ensure the Tailscale VPN key toggle is <strong>ACTIVE</strong> on your phone before tapping Connect.
-                </p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+                  <p className="text-[11px] text-slate-400">
+                    Ensure the Tailscale VPN key toggle is <strong>ACTIVE</strong> on your phone before tapping Connect.
+                  </p>
+                  <button
+                    onClick={() => markMinuteCompleted(4)}
+                    className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer shrink-0 shadow-xs"
+                  >
+                    Mobile Connected ✓
+                  </button>
+                </div>
               </div>
 
               {completedMinutes.includes(4) && (
@@ -1392,7 +1369,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     1. Verify Docker Desktop + WSL2 & Tailscale Mesh IP
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-slate-400">Host Virtualization & Tunnel</span>
               </div>
 
               <p className="text-xs text-slate-300 leading-relaxed">
@@ -1405,12 +1381,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     <Container className="w-4 h-4 text-cyan-400" />
                     <span>Prerequisites Checklist:</span>
                   </div>
-                  <button
-                    onClick={() => markMinuteCompleted(1)}
-                    className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
-                  >
-                    Mark Step Complete ✓
-                  </button>
                 </div>
 
                 <ul className="space-y-2 text-slate-300">
@@ -1442,7 +1412,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     2. Deploy Nextcloud AIO Mastercontainer
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-emerald-400">Docker Command</span>
               </div>
 
               <p className="text-xs text-slate-300 leading-relaxed">
@@ -1466,20 +1435,13 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                 </pre>
               </div>
 
-              <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs">
                 <div className="space-y-0.5">
                   <span className="font-bold text-white block">Nextcloud AIO Admin Interface:</span>
                   <span className="text-slate-400">
                     Once the container starts, open in your browser: <code className="text-cyan-300 font-mono">https://localhost:8080</code>
                   </span>
                 </div>
-
-                <button
-                  onClick={() => markMinuteCompleted(2)}
-                  className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer shrink-0"
-                >
-                  Confirm Mastercontainer Started ✓
-                </button>
               </div>
             </div>
           )}
@@ -1493,7 +1455,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     3. Save Master Passphrase & Mount D:\PersonalCloud
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-amber-400">Security & Persistent Storage</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -1553,13 +1514,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                       </label>
                     </div>
                   </div>
-
-                  <button
-                    onClick={() => markMinuteCompleted(3)}
-                    className="w-full py-1.5 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded transition-colors cursor-pointer mt-1"
-                  >
-                    Confirm Storage & Passphrase Configured ✓
-                  </button>
                 </div>
               </div>
             </div>
@@ -1574,7 +1528,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     4. Tailscale Serve HTTPS & 24/7 Host Power Plan
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-purple-300">Zero Public DNS Hassle</span>
               </div>
 
               <p className="text-xs text-slate-300 leading-relaxed">
@@ -1597,18 +1550,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                   {nextcloudPowerShell}
                 </pre>
               </div>
-
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-400">
-                  Applied Tailscale Serve HTTPS and host sleep prevention?
-                </span>
-                <button
-                  onClick={() => markMinuteCompleted(4)}
-                  className="px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
-                >
-                  Mark Step Complete ✓
-                </button>
-              </div>
             </div>
           )}
 
@@ -1621,7 +1562,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     5. Connect Nextcloud Mobile App (5G)
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-emerald-300">Mobile Setup</span>
               </div>
 
               <div className="p-5 bg-slate-950 rounded-xl border border-slate-800 space-y-4 text-xs">
@@ -1631,7 +1571,6 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
                     <span>Nextcloud iOS / Android Connection:</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-cyan-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Official App</span>
                     <button
                       onClick={() => markMinuteCompleted(5)}
                       className="px-3.5 py-1 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded transition-colors cursor-pointer"
@@ -1708,9 +1647,10 @@ Write-Host "Tailscale uninstalled, FileZilla removed & Screen Timeout reset to 3
               markMinuteCompleted(activeMinute);
               setActiveMinute(prev => Math.min(currentSteps.length, prev + 1));
             }}
-            className="flex items-center gap-1.5 px-4 py-2 font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors cursor-pointer shadow-xs"
+            className="flex items-center gap-2 px-4 py-2 font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-md transition-colors cursor-pointer shadow-xs"
           >
-            <span>Next: Step {activeMinute + 1}</span>
+            <Check className="w-4 h-4 text-slate-950" />
+            <span>Confirm & Continue to Step {activeMinute + 1}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         ) : (
