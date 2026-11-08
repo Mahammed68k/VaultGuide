@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   RefreshCw, 
   Copy, 
@@ -7,20 +7,49 @@ import {
   FileX,
   AlertTriangle,
   ChevronDown,
-  HelpCircle
+  HelpCircle,
+  Play,
+  Pause
 } from 'lucide-react';
 
+const TABS: Array<'troubleshooting' | 'ssdFail' | 'accidental' | 'ransomware'> = [
+  'troubleshooting',
+  'ssdFail',
+  'accidental',
+  'ransomware'
+];
+
 export const BackupSimulatorView: React.FC = () => {
-  const [selectedScenario, setSelectedScenario] = useState<'ssdFail' | 'accidental' | 'ransomware'>('ssdFail');
+  const [selectedScenario, setSelectedScenario] = useState<'troubleshooting' | 'ssdFail' | 'accidental' | 'ransomware'>('troubleshooting');
+  const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const isHoveredRef = useRef<boolean>(false);
+
+  // 3-second automated loop moving across tabs
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      if (isHoveredRef.current) return; // Pause while user is hovering or reading
+
+      setSelectedScenario(prev => {
+        const currentIndex = TABS.indexOf(prev);
+        const nextIndex = (currentIndex + 1) % TABS.length;
+        return TABS[nextIndex];
+      });
+      setExpandedStep(null);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
 
   const toggleStep = (idx: number) => {
     setExpandedStep(prev => (prev === idx ? null : idx));
   };
 
-  const handleScenarioChange = (scenario: 'ssdFail' | 'accidental' | 'ransomware') => {
+  const handleScenarioChange = (scenario: 'troubleshooting' | 'ssdFail' | 'accidental' | 'ransomware') => {
     setSelectedScenario(scenario);
     setExpandedStep(null);
   };
@@ -136,24 +165,22 @@ export const BackupSimulatorView: React.FC = () => {
     }
   ];
 
-  const activeScenarioData = scenarios[selectedScenario];
+  const activeScenarioData = selectedScenario !== 'troubleshooting' ? scenarios[selectedScenario] : null;
 
   return (
     <div className="space-y-10 text-[#2d1c10]">
       {/* Header */}
-      <section className="space-y-2 border-b border-[#dfcebd] pb-4">
+      <section className="w-full space-y-2 border-b border-[#dfcebd] pb-4">
         <div className="text-xs font-mono text-amber-900 uppercase tracking-wider font-semibold">
-          Resilience & Recovery
+          Resilience &amp; Recovery
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2d1c10]">
-          3-2-1 Automated Backup Strategy & Recovery Playbook
+          3-2-1 Automated Backup Strategy &amp; Recovery Playbook
         </h1>
 
-        <p className="text-sm text-[#6b4c35] max-w-3xl leading-relaxed">
-          Hosting on local hardware carries physical risks (drive wear, hardware failure). 
-          By combining Nextcloud AIO's transactional BorgBackup engine with automated Rclone cloud object sync, 
-          you ensure complete resilience against data loss.
+        <p className="text-sm text-[#6b4c35] w-full leading-relaxed">
+          Hosting on local hardware carries physical risks (drive wear, hardware failure). By combining Nextcloud AIO&apos;s transactional BorgBackup engine with automated Rclone cloud object sync, you ensure complete resilience against data loss.
         </p>
       </section>
 
@@ -291,20 +318,44 @@ export const BackupSimulatorView: React.FC = () => {
         </div>
       </section>
 
-      {/* Interactive Disaster Recovery Simulator */}
+      {/* Interactive Disaster Recovery & Troubleshooting Playbook */}
       <section className="p-6 sm:p-7 bg-[#fcf8f3] rounded-2xl border border-[#dfcebd] space-y-5 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-[#2d1c10] flex items-center gap-2">
-              <RefreshCw className="w-4 h-4 text-amber-700" />
-              <span>Disaster Recovery Playbook</span>
+              {selectedScenario === 'troubleshooting' ? (
+                <HelpCircle className="w-4 h-4 text-amber-700" />
+              ) : (
+                <RefreshCw className="w-4 h-4 text-amber-700" />
+              )}
+              <span>
+                {selectedScenario === 'troubleshooting' 
+                  ? 'Troubleshooting & Reference' 
+                  : 'Disaster Recovery Playbook'}
+              </span>
             </h2>
             <p className="text-xs text-[#7d5b3f] mt-0.5">
-              Select a failure scenario to view step-by-step restoration procedures:
+              {selectedScenario === 'troubleshooting'
+                ? 'Solutions to common configuration and connection edge cases:'
+                : 'Select a failure scenario to view step-by-step restoration procedures:'}
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-[#f5ece1]/80 rounded-xl border border-[#dfcebd] text-xs">
+          <div 
+            className="flex flex-wrap items-center gap-1.5 p-1 bg-[#f5ece1]/80 rounded-xl border border-[#dfcebd] text-xs"
+            onMouseEnter={() => { isHoveredRef.current = true; }}
+            onMouseLeave={() => { isHoveredRef.current = false; }}
+          >
+            <button
+              onClick={() => handleScenarioChange('troubleshooting')}
+              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+                selectedScenario === 'troubleshooting'
+                  ? 'bg-white text-[#2d1c10] border border-amber-400 shadow-xs'
+                  : 'text-[#6b4c35] hover:text-[#2d1c10]'
+              }`}
+            >
+              Troubleshooting &amp; Reference
+            </button>
             <button
               onClick={() => handleScenarioChange('ssdFail')}
               className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
@@ -338,70 +389,48 @@ export const BackupSimulatorView: React.FC = () => {
           </div>
         </div>
 
-        {/* Selected Scenario Walkthrough */}
-        <div className="space-y-4">
-          <div className="p-5 sm:p-6 bg-white rounded-2xl border border-[#dfcebd] space-y-1.5 shadow-2xs">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h3 className="text-base font-bold text-[#2d1c10]">{activeScenarioData.title}</h3>
-              <span className="text-[11px] font-mono text-amber-900 px-2.5 py-0.5 bg-amber-50/70 rounded-full border border-amber-400 font-medium">
-                {activeScenarioData.severity}
-              </span>
-            </div>
-            <p className="text-xs text-[#6b4c35] leading-relaxed">
-              {activeScenarioData.description}
-            </p>
-          </div>
-
-          {/* Steps List */}
+        {/* Dynamic Content Area: Either Troubleshooting Accordion or Recovery Steps */}
+        {selectedScenario === 'troubleshooting' ? (
           <div className="space-y-3">
-            {activeScenarioData.restorationSteps.map((s, idx) => {
-              const isExpanded = expandedStep === idx;
+            {faqs.map((faq) => {
+              const isOpen = expandedFaq === faq.id;
               return (
                 <div 
-                  key={idx} 
+                  key={faq.id}
                   className="bg-white rounded-2xl border border-[#dfcebd] shadow-2xs overflow-hidden transition-all hover:border-amber-300"
                 >
                   <button
                     type="button"
-                    onClick={() => toggleStep(idx)}
+                    onClick={() => setExpandedFaq(isOpen ? null : faq.id)}
                     className="w-full py-4 px-5 sm:px-6 flex items-center justify-between text-left transition-colors cursor-pointer select-none"
-                    aria-expanded={isExpanded}
-                    title={isExpanded ? 'Hide step details' : 'Show step details'}
+                    aria-expanded={isOpen}
                   >
-                    <div className="flex items-center min-w-0 pr-4">
-                      <h4 className="text-sm font-bold text-[#2d1c10] truncate">
-                        {s.step}
-                      </h4>
-                    </div>
-
-                    <div className="flex items-center shrink-0">
-                      <ChevronDown 
-                        className={`w-4 h-4 text-[#8c6b51] transition-transform duration-200 ${
-                          isExpanded ? 'rotate-180 text-amber-800' : ''
-                        }`} 
-                      />
-                    </div>
+                    <span className="text-sm font-bold text-[#2d1c10] pr-4">
+                      {faq.question}
+                    </span>
+                    <ChevronDown 
+                      className={`w-4 h-4 text-[#8c6b51] shrink-0 transition-transform duration-200 ${
+                        isOpen ? 'rotate-180 text-amber-800' : ''
+                      }`} 
+                    />
                   </button>
 
-                  {isExpanded && (
-                    <div className="px-5 sm:px-6 pb-5 space-y-3 border-t border-[#ebdcc9] pt-3.5">
-                      <p className="text-xs text-[#6b4c35] leading-relaxed">{s.detail}</p>
-
-                      {s.command && (
+                  {isOpen && (
+                    <div className="px-5 sm:px-6 pb-5 space-y-3 border-t border-[#ebdcc9] pt-3.5 text-xs">
+                      <p className="text-[#6b4c35] leading-relaxed">{faq.answer}</p>
+                      
+                      {faq.command && (
                         <div className="relative group mt-2">
-                          <pre className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-xs text-cyan-300 overflow-x-auto">
-                            {s.command}
+                          <pre className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[11px] text-cyan-300 overflow-x-auto">
+                            {faq.command}
                           </pre>
                           <button
                             type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(s.command, `recov-step-${idx}`);
-                            }}
+                            onClick={() => copyToClipboard(faq.command, faq.id)}
                             className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded transition-colors cursor-pointer"
                             title="Copy command"
                           >
-                            {copiedId === `recov-step-${idx}` ? (
+                            {copiedId === faq.id ? (
                               <Check className="w-3.5 h-3.5 text-emerald-400" />
                             ) : (
                               <Copy className="w-3.5 h-3.5 text-slate-400" />
@@ -415,74 +444,86 @@ export const BackupSimulatorView: React.FC = () => {
               );
             })}
           </div>
-        </div>
-      </section>
+        ) : activeScenarioData ? (
+          /* Selected Disaster Scenario Walkthrough */
+          <div className="space-y-4">
+            <div className="p-5 sm:p-6 bg-white rounded-2xl border border-[#dfcebd] space-y-1.5 shadow-2xs">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h3 className="text-base font-bold text-[#2d1c10]">{activeScenarioData.title}</h3>
+                <span className="text-[11px] font-mono text-amber-900 px-2.5 py-0.5 bg-amber-50/70 rounded-full border border-amber-400 font-medium">
+                  {activeScenarioData.severity}
+                </span>
+              </div>
+              <p className="text-xs text-[#6b4c35] leading-relaxed">
+                {activeScenarioData.description}
+              </p>
+            </div>
 
-      {/* Troubleshooting Knowledgebase Accordion (Matching Image Reference) */}
-      <section className="space-y-4 pt-2">
-        <div>
-          <h2 className="text-base font-bold text-[#2d1c10] flex items-center gap-2">
-            <HelpCircle className="w-4 h-4 text-amber-700" />
-            <span>Troubleshooting & Reference</span>
-          </h2>
-          <p className="text-xs text-[#7d5b3f] mt-0.5">
-            Solutions to common configuration edge cases.
-          </p>
-        </div>
+            {/* Steps List */}
+            <div className="space-y-3">
+              {activeScenarioData.restorationSteps.map((s, idx) => {
+                const isExpanded = expandedStep === idx;
+                return (
+                  <div 
+                    key={idx} 
+                    className="bg-white rounded-2xl border border-[#dfcebd] shadow-2xs overflow-hidden transition-all hover:border-amber-300"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleStep(idx)}
+                      className="w-full py-4 px-5 sm:px-6 flex items-center justify-between text-left transition-colors cursor-pointer select-none"
+                      aria-expanded={isExpanded}
+                      title={isExpanded ? 'Hide step details' : 'Show step details'}
+                    >
+                      <div className="flex items-center min-w-0 pr-4">
+                        <h4 className="text-sm font-bold text-[#2d1c10] truncate">
+                          {s.step}
+                        </h4>
+                      </div>
 
-        <div className="space-y-3">
-          {faqs.map((faq) => {
-            const isOpen = expandedFaq === faq.id;
-            return (
-              <div 
-                key={faq.id}
-                className="bg-white rounded-2xl border border-[#dfcebd] shadow-2xs overflow-hidden transition-all hover:border-amber-300"
-              >
-                <button
-                  type="button"
-                  onClick={() => setExpandedFaq(isOpen ? null : faq.id)}
-                  className="w-full py-4 px-5 sm:px-6 flex items-center justify-between text-left transition-colors cursor-pointer select-none"
-                  aria-expanded={isOpen}
-                >
-                  <span className="text-sm font-bold text-[#2d1c10] pr-4">
-                    {faq.question}
-                  </span>
-                  <ChevronDown 
-                    className={`w-4 h-4 text-[#8c6b51] shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-amber-800' : ''
-                    }`} 
-                  />
-                </button>
+                      <div className="flex items-center shrink-0">
+                        <ChevronDown 
+                          className={`w-4 h-4 text-[#8c6b51] transition-transform duration-200 ${
+                            isExpanded ? 'rotate-180 text-amber-800' : ''
+                          }`} 
+                        />
+                      </div>
+                    </button>
 
-                {isOpen && (
-                  <div className="px-5 sm:px-6 pb-5 space-y-3 border-t border-[#ebdcc9] pt-3.5 text-xs">
-                    <p className="text-[#6b4c35] leading-relaxed">{faq.answer}</p>
-                    
-                    {faq.command && (
-                      <div className="relative group mt-2">
-                        <pre className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[11px] text-cyan-300 overflow-x-auto">
-                          {faq.command}
-                        </pre>
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(faq.command, faq.id)}
-                          className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded transition-colors cursor-pointer"
-                          title="Copy command"
-                        >
-                          {copiedId === faq.id ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-400" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5 text-slate-400" />
-                          )}
-                        </button>
+                    {isExpanded && (
+                      <div className="px-5 sm:px-6 pb-5 space-y-3 border-t border-[#ebdcc9] pt-3.5">
+                        <p className="text-xs text-[#6b4c35] leading-relaxed">{s.detail}</p>
+
+                        {s.command && (
+                          <div className="relative group mt-2">
+                            <pre className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-xs text-cyan-300 overflow-x-auto">
+                              {s.command}
+                            </pre>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(s.command, `recov-step-${idx}`);
+                              }}
+                              className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded transition-colors cursor-pointer"
+                              title="Copy command"
+                            >
+                              {copiedId === `recov-step-${idx}` ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5 text-slate-400" />
+                              )}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </section>
     </div>
   );
