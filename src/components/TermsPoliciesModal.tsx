@@ -34,14 +34,14 @@ export const TermsPoliciesModal: React.FC<TermsPoliciesModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
-          <div className="flex items-center gap-2.5">
-            <Scale className="w-5 h-5 text-cyan-400" />
-            <div>
-              <h2 id="terms-modal-title" className="text-base font-bold text-white tracking-tight">
-                VaultGuide Compliance, Terms & Policies
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 bg-slate-950">
+          <div className="flex items-center gap-2.5 min-w-0 pr-2">
+            <Scale className="w-5 h-5 text-cyan-400 shrink-0" />
+            <div className="min-w-0">
+              <h2 id="terms-modal-title" className="text-sm sm:text-base font-bold text-white tracking-tight truncate">
+                VaultGuide Compliance &amp; Policies
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5 line-clamp-1 sm:line-clamp-none">
                 Self-hosted infrastructure guidelines, zero-telemetry commitment, and privacy rights.
               </p>
             </div>
@@ -49,7 +49,7 @@ export const TermsPoliciesModal: React.FC<TermsPoliciesModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
@@ -57,7 +57,7 @@ export const TermsPoliciesModal: React.FC<TermsPoliciesModalProps> = ({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 px-6 py-3 border-b border-slate-800 bg-slate-900/80 overflow-x-auto text-xs">
+        <div className="flex items-center gap-1 sm:gap-1.5 px-4 sm:px-6 py-2.5 sm:py-3 border-b border-slate-800 bg-slate-900/80 overflow-x-auto text-xs no-scrollbar">
           <button
             onClick={() => setActiveDoc('terms')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap ${
@@ -223,7 +223,38 @@ export const TermsPoliciesModal: React.FC<TermsPoliciesModalProps> = ({
               <section className="space-y-2">
                 <h4 className="text-sm font-bold text-white">3. Automatic HTTPS via Tailscale Serve</h4>
                 <p>
-                  Nextcloud AIO traffic is served with automated Let's Encrypt TLS certificates provisioned directly by Tailscale MagicDNS. This delivers green padlock HTTPS in mobile browsers without purchasing custom domain names or exposing web ports to ACME challenges.
+                  Nextcloud AIO traffic is served with automated Let&apos;s Encrypt TLS certificates provisioned directly by Tailscale MagicDNS. This delivers green padlock HTTPS in mobile browsers without purchasing custom domain names or exposing web ports to ACME challenges.
+                </p>
+              </section>
+
+              <section className="space-y-2">
+                <h4 className="text-sm font-bold text-white">4. Secrets &amp; Token Hygiene (Zero Leaks)</h4>
+                <p>
+                  In accordance with production hardening standards:
+                </p>
+                <ul className="list-disc list-inside space-y-1 pl-2 text-slate-400 text-xs">
+                  <li><strong>Zero Frontend Secrets:</strong> API secrets, SSH private keys, and Borg passphrases are never stored in client-side code, public bundles, or insecure local storage.</li>
+                  <li><strong>Strict Environment Isolation:</strong> Environment keys and root credentials remain strictly confined to the local host machine (<code className="text-cyan-300 font-mono">.env</code> is excluded from git version control).</li>
+                  <li><strong>Non-Default Passwords:</strong> Default admin passwords are prohibited during initial onboarding.</li>
+                </ul>
+              </section>
+
+              <section className="space-y-2">
+                <h4 className="text-sm font-bold text-white">5. Input Validation &amp; Access Controls</h4>
+                <p>
+                  Nextcloud and SFTP components implement strict backend authorization:
+                </p>
+                <ul className="list-disc list-inside space-y-1 pl-2 text-slate-400 text-xs">
+                  <li><strong>Parameterized Queries:</strong> Nextcloud PostgreSQL database uses parameterized queries and ORM mappings, eliminating SQL injection vectors.</li>
+                  <li><strong>Scope Isolation:</strong> The FileZilla SFTP service mounts strictly to <code className="text-cyan-300 font-mono">D:\PersonalCloud</code>, preventing directory traversal into sensitive system directories (<code className="text-cyan-300 font-mono">C:\Windows</code>).</li>
+                  <li><strong>Brute-Force &amp; Rate Limiting:</strong> Failed login attempts trigger exponential backoff penalties.</li>
+                </ul>
+              </section>
+
+              <section className="space-y-2">
+                <h4 className="text-sm font-bold text-white">6. Dependency &amp; Runtime Integrity</h4>
+                <p>
+                  Containers and binaries are pinned to LTS stable releases, scanned for known vulnerabilities, and run under minimal privilege execution policies.
                 </p>
               </section>
             </div>

@@ -185,11 +185,11 @@ export const BackupSimulatorView: React.FC = () => {
       </section>
 
       {/* Port Listening Verification Commands (Matching Image Reference with working Copy) */}
-      <section className="p-6 sm:p-7 bg-[#fcf8f3] rounded-2xl border border-[#dfcebd] space-y-4 shadow-xs">
+      <section className="p-4 sm:p-6 md:p-7 bg-[#fcf8f3] rounded-2xl border border-[#dfcebd] space-y-4 shadow-xs">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[#c2410c] font-mono font-bold text-lg leading-none select-none">&gt;_</span>
-            <h2 className="text-base sm:text-lg font-bold text-[#2d1c10] tracking-tight">
+            <span className="text-[#c2410c] font-mono font-bold text-base sm:text-lg leading-none select-none">&gt;_</span>
+            <h2 className="text-sm sm:text-base md:text-lg font-bold text-[#2d1c10] tracking-tight">
               Port Listening Verification Commands
             </h2>
           </div>
@@ -198,7 +198,7 @@ export const BackupSimulatorView: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 pt-1">
           {/* Card 1: FileZilla SFTP (Port 22) */}
           <div className="bg-white rounded-xl border border-[#dfcebd] p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-shadow hover:shadow-sm">
             <div>
@@ -319,14 +319,14 @@ export const BackupSimulatorView: React.FC = () => {
       </section>
 
       {/* Interactive Disaster Recovery & Troubleshooting Playbook */}
-      <section className="p-6 sm:p-7 bg-[#fcf8f3] rounded-2xl border border-[#dfcebd] space-y-5 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <section className="p-4 sm:p-6 md:p-7 bg-[#fcf8f3] rounded-2xl border border-[#dfcebd] space-y-4 sm:space-y-5 shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-[#2d1c10] flex items-center gap-2">
+            <h2 className="text-sm sm:text-base md:text-lg font-bold text-[#2d1c10] flex items-center gap-2">
               {selectedScenario === 'troubleshooting' ? (
-                <HelpCircle className="w-4 h-4 text-amber-700" />
+                <HelpCircle className="w-4 h-4 text-amber-700 shrink-0" />
               ) : (
-                <RefreshCw className="w-4 h-4 text-amber-700" />
+                <RefreshCw className="w-4 h-4 text-amber-700 shrink-0" />
               )}
               <span>
                 {selectedScenario === 'troubleshooting' 
@@ -342,13 +342,13 @@ export const BackupSimulatorView: React.FC = () => {
           </div>
 
           <div 
-            className="flex flex-wrap items-center gap-1.5 p-1 bg-[#f5ece1]/80 rounded-xl border border-[#dfcebd] text-xs"
+            className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-1 bg-[#f5ece1]/80 rounded-xl border border-[#dfcebd] text-xs w-full md:w-auto"
             onMouseEnter={() => { isHoveredRef.current = true; }}
             onMouseLeave={() => { isHoveredRef.current = false; }}
           >
             <button
               onClick={() => handleScenarioChange('troubleshooting')}
-              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-initial text-center px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer text-xs ${
                 selectedScenario === 'troubleshooting'
                   ? 'bg-white text-[#2d1c10] border border-amber-400 shadow-xs'
                   : 'text-[#6b4c35] hover:text-[#2d1c10]'
@@ -358,7 +358,7 @@ export const BackupSimulatorView: React.FC = () => {
             </button>
             <button
               onClick={() => handleScenarioChange('ssdFail')}
-              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-initial text-center px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer text-xs ${
                 selectedScenario === 'ssdFail'
                   ? 'bg-white text-[#2d1c10] border border-amber-400 shadow-xs'
                   : 'text-[#6b4c35] hover:text-[#2d1c10]'
@@ -368,7 +368,7 @@ export const BackupSimulatorView: React.FC = () => {
             </button>
             <button
               onClick={() => handleScenarioChange('accidental')}
-              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-initial text-center px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer text-xs ${
                 selectedScenario === 'accidental'
                   ? 'bg-white text-[#2d1c10] border border-amber-400 shadow-xs'
                   : 'text-[#6b4c35] hover:text-[#2d1c10]'
@@ -378,7 +378,7 @@ export const BackupSimulatorView: React.FC = () => {
             </button>
             <button
               onClick={() => handleScenarioChange('ransomware')}
-              className={`px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-initial text-center px-2.5 sm:px-3.5 py-1.5 rounded-lg font-semibold transition-all cursor-pointer text-xs ${
                 selectedScenario === 'ransomware'
                   ? 'bg-white text-[#2d1c10] border border-amber-400 shadow-xs'
                   : 'text-[#6b4c35] hover:text-[#2d1c10]'
